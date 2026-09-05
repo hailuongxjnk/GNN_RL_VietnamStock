@@ -167,23 +167,21 @@ def build_snapshot_tensor(
     N        = len(symbols)
     T        = lookback
     F        = len(feature_cols)
-    date2idx = {d: i for i, d in enumerate(window_dates)}   # giữ thứ tự thời gian
 
-    # ── Xây tensor X: groupby symbol để tránh leakage ────────
-    # Khởi tạo toàn NaN — cổ phiếu thiếu phiên nào sẽ giữ NaN
-    X = np.full((N, T, F), np.nan, dtype=np.float32)
-
-    for ni, sym in enumerate(symbols):
-        # Lọc đúng cổ phiếu này — không chạm sang cổ phiếu khác
-        df_sym = df_win[df_win['symbol'] == sym]
-
-        for _, row in df_sym.iterrows():
-            ti = date2idx.get(row['date'])
-            if ti is None:
-                continue
-            for fi, col in enumerate(feature_cols):
-                if col in row.index and not pd.isna(row[col]):
-                    X[ni, ti, fi] = float(row[col])
+    # ── Xây tensor X: pivot vector hoá (thay double for-loop chậm bằng reindex) ──
+    # Kết quả giống hệt bản gốc: X[n,t,f] = giá trị nếu (symbol,date) có mặt
+    # trong df_win, ngược lại NaN. Trùng (symbol,date) thì giữ dòng CUỐI, đúng
+    # như vòng lặp iterrows() cũ (ghi đè tuần tự).
+    df_idx = (
+        df_win[['symbol', 'date'] + feature_cols]
+        .groupby(['symbol', 'date'], sort=False).last()
+    )
+    full_index = pd.MultiIndex.from_product([symbols, window_dates], names=['symbol', 'date'])
+    X = (
+        df_idx.reindex(full_index)[feature_cols]
+        .to_numpy(dtype=np.float32)
+        .reshape(N, T, F)
+    )
 
     # ── Tính mask ─────────────────────────────────────────────
     # Mask gốc từ DataFrame: 1 nếu eligible (vốn hoá + niêm yết >= 6 tháng)

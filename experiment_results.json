@@ -1,0 +1,110 @@
+{
+  "Full model (Proposed)": {
+    "1": {
+      "Agent (GNN+RL)": {
+        "cum_return": 0.4585818769662189,
+        "sharpe": 1.7832257673737306,
+        "max_drawdown": -0.03882922341199083
+      },
+      "Equal-weight (1/N)": {
+        "cum_return": 0.2065392454107462,
+        "sharpe": 0.7161640286993104,
+        "max_drawdown": -0.0911065888742646
+      },
+      "VN-Index": {
+        "cum_return": 0.503613968119327,
+        "sharpe": 1.449437519076306,
+        "max_drawdown": -0.05866411605292492
+      }
+    },
+    "2": {
+      "Agent (GNN+RL)": {
+        "cum_return": 0.13369275782248646,
+        "sharpe": 0.5686838322034953,
+        "max_drawdown": -0.11998249495924418
+      },
+      "Equal-weight (1/N)": {
+        "cum_return": 0.2065392454107462,
+        "sharpe": 0.7161640286993104,
+        "max_drawdown": -0.0911065888742646
+      },
+      "VN-Index": {
+        "cum_return": 0.503613968119327,
+        "sharpe": 1.449437519076306,
+        "max_drawdown": -0.05866411605292492
+      }
+    }
+  },
+  "w/o Temporal Attention (LSTM thay Transformer)": {
+    "1": {
+      "Agent (GNN+RL)": {
+        "cum_return": 0.9400015407251379,
+        "sharpe": 2.252084157342619,
+        "max_drawdown": -0.07356590994286698
+      },
+      "Equal-weight (1/N)": {
+        "cum_return": 0.2065392454107462,
+        "sharpe": 0.7161640286993104,
+        "max_drawdown": -0.0911065888742646
+      },
+      "VN-Index": {
+        "cum_return": 0.503613968119327,
+        "sharpe": 1.449437519076306,
+        "max_drawdown": -0.05866411605292492
+      }
+    },
+    "2": {
+      "Agent (GNN+RL)": {
+        "cum_return": -0.008073726782104051,
+        "sharpe": 0.004026868694409199,
+        "max_drawdown": -0.09371094246411117
+      },
+      "Equal-weight (1/N)": {
+        "cum_return": 0.2065392454107462,
+        "sharpe": 0.7161640286993104,
+        "max_drawdown": -0.0911065888742646
+      },
+      "VN-Index": {
+        "cum_return": 0.503613968119327,
+        "sharpe": 1.449437519076306,
+        "max_drawdown": -0.05866411605292492
+      }
+    }
+  },
+  "w/o GAT (GCN thay GAT)": {
+    "1": {
+      "Agent (GNN+RL)": {
+        "cum_return": 0.32315305143168405,
+        "sharpe": 1.362441443301452,
+        "max_drawdown": -0.05433854399673798
+      },
+      "Equal-weight (1/N)": {
+        "cum_return": 0.2065392454107462,
+        "sharpe": 0.7161640286993104,
+        "max_drawdown": -0.0911065888742646
+      },
+      "VN-Index": {
+        "cum_return": 0.503613968119327,
+        "sharpe": 1.449437519076306,
+        "max_drawdown": -0.05866411605292492
+      }
+    },
+    "2": {
+      "Agent (GNN+RL)": {
+        "cum_return": 0.10792785157001439,
+        "sharpe": 0.3694441507020125,
+        "max_drawdown": -0.12107582048345836
+      },
+      "Equal-weight (1/N)": {
+        "cum_return": 0.2065392454107462,
+        "sharpe": 0.7161640286993104,
+        "max_drawdown": -0.0911065888742646
+      },
+      "VN-Index": {
+        "cum_return": 0.503613968119327,
+        "sharpe": 1.449437519076306,
+        "max_drawdown": -0.05866411605292492
+      }
+    }
+  }
+}
