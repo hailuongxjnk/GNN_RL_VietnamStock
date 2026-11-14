@@ -20,3 +20,4 @@ thesis/*.xdv
 thesis/build.log
 experiments/results/*.log
 experiments/results/untrained*.pkl
+experiments/results/unused/

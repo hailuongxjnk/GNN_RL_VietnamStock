@@ -161,7 +161,7 @@ if MAIN in runs:
     ax.plot(xs, eq(bm['VN-Index']['returns']), color=C3, label='VN-Index')
     ax.plot(xs, eq(bm['Mean-Variance']['returns']), color=C4, label='Mean–Variance (Ledoit–Wolf)')
     ax.axhline(0, color=MUTED, lw=0.8); ax.set_ylabel('Lợi suất tích lũy (%)')
-    ax.legend(loc='upper left', fontsize=8.5)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=2, fontsize=8.5)
     fig.savefig(os.path.join(FIG, 'equity_monthly.pdf')); plt.close(fig)
 
     # ── HÌNH: lịch sử huấn luyện ──

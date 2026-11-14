@@ -1,1 +1,39 @@
-\chapter{Stub}\label{ch:x07_ketluan} x
+\chapter*{KẾT LUẬN VÀ HƯỚNG NGHIÊN CỨU TIẾP THEO}
+\addcontentsline{toc}{chapter}{Kết luận và hướng nghiên cứu tiếp theo}
+\markboth{KẾT LUẬN}{KẾT LUẬN}
+
+\section*{1. Kết luận của luận văn}
+
+Luận văn đã nghiên cứu tính khả thi của một mô hình học sâu lai, kết hợp mạng nơ-ron đồ thị với học tăng cường, trong bài toán phân bổ danh mục cho nhóm cổ phiếu có quan hệ tương quan dài hạn tại thị trường chứng khoán Việt Nam. Mục tiêu của luận văn không phải là tạo ra một hệ thống giao dịch vượt trội thị trường, mà là kiểm chứng xem phương pháp có thể được xây dựng và vận hành đúng đắn trên dữ liệu thực hay không, đánh giá khách quan hành vi của nó và xác định các điều kiện cần cho việc phát triển tiếp theo.
+
+Về dữ liệu, luận văn đã xây dựng một bộ dữ liệu gồm 222 mã cổ phiếu vốn hóa vừa và lớn trong giai đoạn 2016--2025 với 19 đặc trưng thuộc ba nhóm: giá và kỹ thuật, tài chính doanh nghiệp, vĩ mô. Chuỗi giá được điều chỉnh theo các sự kiện doanh nghiệp bằng phép đối chiếu chéo với hệ số P/B; chỉ số tài chính được gắn theo ngày công bố; tập cổ phiếu đủ điều kiện được xác định lại định kỳ bằng thông tin quá khứ.
+
+Về quan hệ tương quan dài hạn, luận văn đã chỉ ra bằng dữ liệu rằng quan hệ này tồn tại, có cấu trúc và bền vững trên thị trường Việt Nam. Các nhóm cổ phiếu tìm được hoàn toàn từ tương quan lợi suất giai đoạn 2016--2022 trùng với các nhóm ngành thép, chứng khoán, dầu khí, ngân hàng và bất động sản. Trong các cặp cổ phiếu có tương quan từ 0,30 trở lên ở giai đoạn này, 76\% tiếp tục có tương quan từ 0,30 trở lên ở giai đoạn 2024--2025. Đồ thị tương quan ước lượng trên 250 phiên giữ được trung bình 81\% tập cạnh qua mỗi tháng, so với 52\% của đồ thị 60 phiên.
+
+Về mô hình, luận văn đã thiết kế và cài đặt một kiến trúc huấn luyện đầu--cuối gồm bộ mã hóa Transformer có mặt nạ nhân quả, mạng chú ý đồ thị hai tầng trên đồ thị tương quan dài hạn và tác tử PPO với chính sách Dirichlet, phần thưởng là tỷ số Sharpe vi phân tính trên lợi suất ròng sau phí giao dịch. Mô hình xử lý được tập cổ phiếu thay đổi theo thời gian và luôn tạo ra danh mục thỏa mãn ràng buộc.
+
+Về kết quả thực nghiệm trên giai đoạn kiểm tra 2024--2025, có thể rút ra bốn kết luận:
+\begin{itemize}
+  \item \textit{Phương pháp khả thi.} Mô hình với đồ thị tương quan dài hạn đạt tỷ số Sharpe $1{,}32\pm0{,}24$, lợi suất tích lũy 36,8\% và mức sụt giảm tối đa $-5{,}9\%$ trên 5 hạt giống ngẫu nhiên, tốt hơn danh mục phân bổ đều (0,90; 28,0\%; $-8{,}9\%$) ở mọi hạt giống và nằm trong khoảng phân vị 84--99,5\% của phân phối danh mục ngẫu nhiên. Mỗi lần huấn luyện mất dưới 15 phút trên CPU.
+  \item \textit{Quan hệ tương quan dài hạn là thành phần có giá trị nhất.} So với đồ thị ngắn hạn 60 phiên, đồ thị dài hạn nâng tỷ số Sharpe trung bình từ 0,70 lên 1,32 và giảm một nửa mức luân chuyển. So với mô hình không dùng đồ thị, nó giảm khoảng một phần ba độ biến động và một nửa mức sụt giảm tối đa, ở cả bộ mã hóa Transformer lẫn LSTM. Lợi ích này đến từ cơ chế đa dạng hóa: đồ thị dài hạn giúp mô hình nhận ra và ưu tiên các cổ phiếu ít liên kết với phần còn lại của thị trường.
+  \item \textit{Mô hình chưa vượt các mốc so sánh mạnh nhất.} Tỷ số Sharpe trung bình còn thấp hơn VN-Index (1,45) và danh mục trung bình--phương sai với hiệp phương sai co rút (1,56). Với 23 quan sát hằng tháng, sai số chuẩn của tỷ số Sharpe vào khoảng 0,75, nên các chênh lệch này -- cũng như chênh lệch so với phân bổ đều -- chưa có ý nghĩa thống kê.
+  \item \textit{Đóng góp của học tăng cường còn hạn chế.} Mạng chưa huấn luyện trên cùng kiến trúc và cùng đồ thị dài hạn đạt tỷ số Sharpe $1{,}27\pm0{,}36$, không khác biệt về trung bình so với mô hình đã huấn luyện. Với 79 bước quyết định theo tháng, tác tử chưa có đủ kinh nghiệm để học; chính sách hiện mới đóng vai trò chọn cổ phiếu, chưa phân bổ tỷ trọng.
+\end{itemize}
+
+Như vậy, câu trả lời cho câu hỏi nghiên cứu là: việc kết hợp mạng nơ-ron đồ thị trên quan hệ tương quan dài hạn với học tăng cường để phân bổ danh mục cổ phiếu Việt Nam là khả thi và có cơ sở; giá trị đã được xác nhận nằm ở cấu trúc đồ thị dài hạn, còn giá trị của thành phần học tăng cường cần thêm dữ liệu và cải tiến về thiết kế bài toán học mới có thể khẳng định.
+
+\section*{2. Hạn chế}
+
+Các kết luận trên cần được hiểu trong các giới hạn sau. Giai đoạn kiểm tra chỉ dài hai năm và không có thị trường giảm kéo dài. Danh mục của mô hình nghiêng về các cổ phiếu kém thanh khoản, trong khi mô hình chi phí chỉ gồm phí tuyến tính 10 điểm cơ bản và chưa xét tác động giá hay giới hạn khối lượng; hiệu quả thực tế khi triển khai có thể thấp hơn. Phép điều chỉnh giá chỉ xử lý được các sự kiện doanh nghiệp lớn và chưa tính cổ tức tiền mặt. Tập cổ phiếu không gồm các mã đã hủy niêm yết. Quy mô huấn luyện nhỏ và chưa có tinh chỉnh siêu tham số. Dữ liệu tin tức chưa được tích hợp, và quan hệ dài hạn mới được đo bằng tương quan Pearson.
+
+\section*{3. Hướng nghiên cứu tiếp theo}
+
+Từ các kết quả và hạn chế trên, luận văn đề xuất các hướng nghiên cứu sau.
+
+\textit{Kiểm chứng trên tập cổ phiếu có thanh khoản tốt.} Bổ sung bộ lọc thanh khoản vào điều kiện đủ điều kiện và mô hình chi phí phụ thuộc thanh khoản, để xác nhận lợi ích của đồ thị dài hạn trong điều kiện có thể giao dịch thực tế.
+
+\textit{Phát triển biểu diễn quan hệ dài hạn.} Xây dựng đồ thị từ tương quan của phần dư sau khi loại thành phần thị trường; kéo dài cửa sổ ước lượng; kết hợp đồ thị dài hạn với đồ thị ngắn hạn; và khảo sát các thước đo khác như đồng liên kết, DTW hay quan hệ dẫn--trễ.
+
+\textit{Tăng hiệu quả của học tăng cường.} Tạo thêm quỹ đạo huấn luyện bằng các ngày quyết định lệch pha và lấy mẫu tập con cổ phiếu; dùng phần thưởng tương đối so với danh mục phân bổ đều; thiết kế lại không gian hành động để tác tử học được cả lựa chọn lẫn tỷ trọng; tiền huấn luyện bộ mã hóa và mạng đồ thị bằng một nhiệm vụ có giám sát.
+
+\textit{Mở rộng dữ liệu và đánh giá.} Tích hợp đặc trưng từ tin tức tài chính như đề cương đã dự kiến; dùng chuỗi giá điều chỉnh đầy đủ kèm cổ tức; đánh giá bằng kiểm định tiến cuốn chiếu trên nhiều giai đoạn, bao gồm các năm thị trường giảm; và tăng số hạt giống để có các khoảng tin cậy hẹp hơn.

@@ -138,7 +138,38 @@ Về mặt tài chính, lựa chọn này có ý nghĩa rõ ràng: một danh m�
 
 Bảng~\ref{tab:picks} cũng cho thấy một hệ quả cần thận trọng: các cổ phiếu được chọn có độ kém thanh khoản ở phân vị 0,74 và tỷ lệ phiên giá đứng yên ở phân vị 0,70 (trung bình 26\% số phiên trong 60 phiên gần nhất không đổi giá, so với 14\% của toàn bộ tập cổ phiếu). Cổ phiếu ít giao dịch thường ít tương quan với thị trường một phần vì giá của chúng phản ứng chậm; độ biến động đo được của chúng có thể thấp hơn rủi ro thực, và việc giao dịch 5\% giá trị danh mục ở các mã này trong một phiên là khó với danh mục quy mô lớn. Quy tắc ``ít liên kết nhất trong nhóm thanh khoản tốt'' ở Bảng~\ref{tab:structural} cho thấy lợi ích của tiêu chí liên kết thấp vẫn còn khi giới hạn ở nửa cổ phiếu thanh khoản tốt hơn (Sharpe 1,24; lợi suất 33,4\%), nên hiệu ứng không hoàn toàn do thanh khoản; nhưng ảnh hưởng của thanh khoản đến kết quả của mô hình cần được kiểm chứng trực tiếp trong các nghiên cứu tiếp theo (Mục~\ref{sec:hanche}).
 
-%%ABL%%
+\section{Phép loại bỏ thành phần}
+\label{sec:ablation}
+
+Bảng~\ref{tab:ablation} và Hình~\ref{fig:ablation} trình bày kết quả của các biến thể mô hình. Vì mỗi biến thể chỉ có 3--5 hạt giống và độ lệch chuẩn giữa các hạt giống vào khoảng 0,1--0,3, chỉ những chênh lệch lớn mới nên được diễn giải.
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{Phép loại bỏ thành phần trên tập kiểm tra (trung bình $\pm$ độ lệch chuẩn trên các hạt giống)}
+\label{tab:ablation}
+\input{tables/ablation}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.98\textwidth]{ablation_sharpe.pdf}
+\caption{Tỷ số Sharpe trên tập kiểm tra của từng lần huấn luyện theo cấu hình.}
+\label{fig:ablation}
+\end{figure}
+
+\textit{Đồ thị dài hạn so với đồ thị ngắn hạn.} Đây là khác biệt lớn nhất trong bảng và đã được phân tích ở Mục~\ref{sec:graph-role}: tỷ số Sharpe 1,32 so với 0,70; mức sụt giảm tối đa $-5{,}9\%$ so với $-9{,}7\%$; mức luân chuyển 0,51 so với 1,03. Mức luân chuyển gấp đôi của đồ thị ngắn hạn là hệ quả trực tiếp của việc cấu trúc đồ thị thay đổi nhanh (Hình~\ref{fig:persist}): khi tập lân cận của mỗi cổ phiếu đổi gần một nửa sau mỗi tháng, biểu diễn và thứ hạng của cổ phiếu cũng đổi theo.
+
+\textit{Có đồ thị dài hạn so với không có đồ thị.} Khi bỏ đồ thị, tỷ số Sharpe trung bình của mô hình Transformer giảm từ 1,32 xuống 1,05, nhưng chênh lệch này nằm trong phạm vi biến động giữa các hạt giống. Khác biệt rõ ràng nằm ở \emph{rủi ro}: không có đồ thị, độ biến động quy năm tăng từ 13,3\% lên 19,7\% và mức sụt giảm tối đa từ $-5{,}9\%$ lên $-11{,}0\%$; tỷ số Calmar giảm từ 3,29 xuống 2,00. Hiện tượng tương tự xuất hiện với bộ mã hóa LSTM: LSTM + GAT trên đồ thị dài hạn có độ biến động 12,0\% và mức sụt giảm $-5{,}9\%$, trong khi LSTM thuần có độ biến động 20,0\% và mức sụt giảm $-11{,}5\%$. Như vậy ở cả hai bộ mã hóa, đồ thị tương quan dài hạn làm giảm khoảng một phần ba độ biến động và giảm một nửa mức sụt giảm tối đa. Đây là đóng góp nhất quán nhất của đồ thị: nó không nhất thiết làm tăng lợi suất, nhưng làm danh mục được đa dạng hóa tốt hơn.
+
+\textit{GAT so với GCN.} Thay GAT bằng GCN trên cùng đồ thị dài hạn làm tỷ số Sharpe giảm từ 1,32 xuống 0,81, mức sụt giảm tăng lên $-10{,}7\%$, và cả ba hạt giống của GCN đều thấp hơn mọi hạt giống của GAT. Với GCN, biểu diễn của mỗi nút là trung bình có trọng số cố định trên toàn bộ lân cận; trên một đồ thị có bậc trung bình vài chục, phép gộp này làm các nút trong cùng cụm trở nên gần như giống hệt nhau. Cơ chế chú ý của GAT cho phép mỗi nút giữ lại nhiều thông tin riêng hơn. Kết quả này ủng hộ việc dùng trọng số gộp học được trên đồ thị tương quan dày.
+
+\textit{Transformer so với LSTM.} Trên đồ thị dài hạn, bộ mã hóa LSTM cho tỷ số Sharpe $1{,}47\pm0{,}13$, không thấp hơn Transformer ($1{,}32\pm0{,}24$), với mức sụt giảm tương đương nhưng mức luân chuyển cao gần gấp đôi (0,96 so với 0,51). Với lượng dữ liệu hiện có, luận văn không tìm thấy bằng chứng rằng cơ chế tự chú ý theo thời gian tốt hơn mạng hồi quy; lựa chọn giữa hai bộ mã hóa là thứ yếu so với lựa chọn đồ thị.
+
+\textit{Các mô hình học sâu chuỗi thời gian đơn lẻ.} LSTM thuần đạt tỷ số Sharpe $1{,}27\pm0{,}29$ với lợi suất trung bình cao nhất trong các biến thể (58,2\%) nhưng rất phân tán giữa các hạt giống ($\pm30{,}7\%$) và có rủi ro cao; GRU thuần đạt $0{,}80\pm0{,}19$ với mức sụt giảm lớn nhất ($-13{,}7\%$). So với hai mô hình này, mô hình lai với đồ thị dài hạn có lợi suất điều chỉnh theo rủi ro sụt giảm tốt hơn (Calmar 3,29 so với 2,30 và 1,04) và ổn định hơn giữa các lần huấn luyện.
+
+Tóm lại, phép loại bỏ thành phần cho thấy thứ tự quan trọng của các lựa chọn thiết kế: quan trọng nhất là thang thời gian của đồ thị (dài hạn thay vì ngắn hạn), tiếp đến là cách gộp thông tin trên đồ thị (chú ý thay vì trung bình cố định); loại bộ mã hóa thời gian ít quan trọng hơn.
+
 
 \section{Phân tích quá trình huấn luyện}
 \label{sec:training-analysis}
@@ -173,7 +204,7 @@ Có ba nguyên nhân chính, đều có thể định lượng.
 \label{fig:dsr}
 \end{figure}
 
-\textit{Tập kiểm định quá ngắn để chọn mô hình.} Tỷ số Sharpe kiểm định được tính từ 11 quan sát hằng tháng, có sai số chuẩn trên 1. Hình~\ref{fig:valtest} đặt tỷ số Sharpe kiểm định đối chiếu với tỷ số Sharpe kiểm tra cho toàn bộ VTN lần huấn luyện của luận văn: hệ số tương quan giữa hai đại lượng là VTCORR. Tỷ số Sharpe trên năm 2023 vì vậy chỉ là một chỉ dẫn yếu cho hiệu quả trên 2024--2025.
+\textit{Tập kiểm định quá ngắn để chọn mô hình.} Tỷ số Sharpe kiểm định được tính từ 11 quan sát hằng tháng, có sai số chuẩn trên 1. Hình~\ref{fig:valtest} đặt tỷ số Sharpe kiểm định đối chiếu với tỷ số Sharpe kiểm tra cho toàn bộ 25 lần huấn luyện của luận văn: hệ số tương quan giữa hai đại lượng là 0,04, tức gần như bằng không. Tỷ số Sharpe trên năm 2023 vì vậy chỉ là một chỉ dẫn yếu cho hiệu quả trên 2024--2025.
 
 \begin{figure}[ht]
 \centering
@@ -202,4 +233,5 @@ Bảng~\ref{tab:behaviour} tóm tắt các đặc điểm của danh mục do m�
 
 \section{Tổng kết chương}
 
-%%SUMMARY%%
+Chương này đã đánh giá tính khả thi của mô hình lai trên dữ liệu thị trường Việt Nam. Về tính đúng đắn, mô hình vận hành đầu--cuối với tập cổ phiếu thay đổi theo thời gian và luôn tạo ra danh mục hợp lệ. Về hiệu quả, với đồ thị tương quan dài hạn, mô hình đạt tỷ số Sharpe $1{,}32\pm0{,}24$ và lợi suất 36,8\% trên giai đoạn 2024--2025, cao hơn phân bổ đều và danh mục ngẫu nhiên ở cả 5 hạt giống, với độ biến động và mức sụt giảm thấp hơn thị trường; mô hình chưa vượt VN-Index và danh mục trung bình--phương sai, và các chênh lệch so với những mốc này nằm trong sai số thống kê của giai đoạn kiểm tra hai năm. Về vai trò của các thành phần, đồ thị tương quan dài hạn là yếu tố có ảnh hưởng lớn và nhất quán nhất: nó nâng gần gấp đôi tỷ số Sharpe so với đồ thị ngắn hạn, giảm khoảng một phần ba độ biến động so với không dùng đồ thị, và tác động này đã xuất hiện ngay ở mạng chưa huấn luyện. Ngược lại, đóng góp của quá trình huấn luyện PPO còn nhỏ do lượng kinh nghiệm hạn chế, và chính sách hiện mới đóng vai trò chọn cổ phiếu chứ chưa phân bổ tỷ trọng. Chương tiếp theo thảo luận ý nghĩa của các kết quả này.
+

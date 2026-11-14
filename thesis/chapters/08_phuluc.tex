@@ -18,15 +18,17 @@ Tệp & Nội dung \\
 \texttt{adjacency.py} & Xây dựng ma trận kề từ tương quan lợi suất; lọc theo mặt nạ; chuẩn hóa cho GCN. \\
 \texttt{gnn.py} & Cài đặt GAT và GCN ở dạng ma trận đặc. \\
 \texttt{rl\_agent.py} & Tác tử actor--critic với chính sách Dirichlet; phép chiếu về tập danh mục khả thi. \\
-\texttt{train.py} & Tỷ số Sharpe vi phân, GAE, vòng lặp PPO đầu--cuối, chọn mô hình theo tập kiểm định, lưu và nạp mô hình. \\
+\texttt{train.py} & Tỷ số Sharpe vi phân, GAE, vòng lặp PPO đầu--cuối, chọn mô hình theo tập kiểm định, lưu và nạp mô hình (phiên bản dùng trong bài báo). \\
 \texttt{evaluate.py} & Kiểm thử ngược; so sánh với phân bổ đều và VN-Index; kiểm tra tỷ trọng. \\
 \midrule
-\texttt{experiments/build\_dataset.py} & Dựng lại bảng dữ liệu cuối từ các tệp đã lưu, không cần gọi API. \\
+\texttt{experiments/build\_dataset.py} & Dựng lại bảng dữ liệu cuối từ các tệp đã lưu và điều chỉnh giá theo sự kiện doanh nghiệp (Mục~\ref{sec:adjust}). \\
+\texttt{experiments/train\_v2.py} & Bản hiệu chỉnh của \texttt{train.py} dùng cho luận văn: làm nóng phần thưởng DSR và tắt dropout khi tính tỷ số Sharpe kiểm định. \\
+\texttt{experiments/analysis\_longterm.py} & Phân tích quan hệ tương quan dài hạn: độ bền của cạnh, phân nhóm, tính ổn định ngoài mẫu. \\
 \texttt{experiments/build\_cache.py} & Dựng trước ten-xơ đầu vào và ma trận kề cho mọi ngày quyết định. \\
 \texttt{experiments/run\_experiments.py} & Huấn luyện mô hình đề xuất và các biến thể trên nhiều hạt giống. \\
 \texttt{experiments/baselines.py} & Các chiến lược đối chứng: phân bổ đều, VN-Index, phương sai nhỏ nhất, trung bình--phương sai, động lượng, danh mục ngẫu nhiên. \\
 \texttt{experiments/untrained.py} & Đối chứng mạng khởi tạo ngẫu nhiên, không huấn luyện. \\
-\texttt{experiments/robustness\_clean.py} & Kiểm tra độ vững với lợi suất đã loại các sự kiện doanh nghiệp. \\
+\texttt{experiments/baselines\_structural.py} & Các quy tắc chọn cổ phiếu theo cấu trúc đồ thị; đặc điểm của cổ phiếu được chọn. \\
 \texttt{experiments/analysis\_*.py}, \texttt{make\_tables.py} & Tổng hợp kết quả, vẽ hình và sinh bảng của luận văn. \\
 \bottomrule
 \end{tabularx}
@@ -34,24 +36,49 @@ Tệp & Nội dung \\
 
 \section{Các bước tái lập}
 
-Các kết quả của Chương~\ref{ch:thucnghiem} được tái lập bằng chuỗi lệnh sau (chạy trong thư mục \texttt{experiments/}):
+Các kết quả của Chương~\ref{ch:mohinh} và Chương~\ref{ch:thucnghiem} được tái lập bằng chuỗi lệnh sau (chạy trong thư mục \texttt{experiments/}):
 
 {\small\begin{verbatim}
-python build_dataset.py      # bang du lieu cuoi (554.556 dong, 222 ma)
-python build_cache.py        # ten-xo dau vao va ma tran ke cho moi ngay quyet dinh
-python run_experiments.py    # huan luyen: 7 cau hinh, nhieu hat giong (CPU)
-python baselines.py          # cac chien luoc doi chung
-python baselines.py clean    # doi chung voi loi suat da hieu chinh
-python untrained.py          # mang chua huan luyen
-python analysis_data.py      # hinh va thong ke Chuong 3
-python analysis_results.py   # hinh va thong ke Chuong 4
-python robustness_clean.py   # kiem tra do vung
-python make_tables.py        # sinh cac bang LaTeX
+python build_dataset.py        # bang du lieu cuoi, da dieu chinh gia
+python build_cache.py          # ten-xo dau vao va ma tran ke
+python run_experiments.py      # huan luyen cac cau hinh, nhieu hat giong (CPU)
+python baselines.py            # cac chien luoc doi chung
+python untrained.py A250       # mang chua huan luyen, do thi dai han
+python untrained.py A60        # mang chua huan luyen, do thi ngan han
+python baselines_structural.py # quy tac chon theo cau truc do thi
+python analysis_data.py        # hinh va thong ke Chuong 3
+python analysis_longterm.py    # phan tich tuong quan dai han
+python analysis_results.py     # hinh va thong ke Chuong 4
+python make_tables.py          # sinh cac bang LaTeX
 \end{verbatim}}
 
-Hai phép kiểm chứng tính đúng đắn của quy trình tái lập đã được thực hiện. Thứ nhất, bảng dữ liệu dựng lại có đúng 554.556 dòng như kết quả lưu trong sổ tay gốc. Thứ hai, khi nạp mô hình đã huấn luyện ở tần suất tuần (\texttt{model\_weekly.pt}) và đánh giá trên tập kiểm tra, các chỉ số thu được trùng khớp với kết quả lưu trong sổ tay gốc đến chữ số thập phân cuối cùng được in ra (lợi suất tích lũy 18,4\%, tỷ số Sharpe 0,53, mức sụt giảm tối đa $-14{,}6\%$).
+Tính đúng đắn của quy trình dựng dữ liệu đã được kiểm chứng: khi dựng bảng dữ liệu \emph{không} điều chỉnh giá (\texttt{python build\_dataset.py raw}), bảng thu được có đúng 554.556 dòng như trong sổ tay gốc, và việc nạp mô hình đã lưu \texttt{model\_weekly.pt} rồi đánh giá trên tập kiểm tra cho các chỉ số trùng khớp với kết quả lưu trong sổ tay gốc (lợi suất tích lũy 18,4\%, tỷ số Sharpe 0,53, mức sụt giảm tối đa $-14{,}6\%$). Các thực nghiệm được chạy trên CPU; mỗi lần huấn luyện mô hình Transformer + GAT với 12 vòng lặp PPO mất khoảng 12--14 phút trên một nhân xử lý.
 
-Các thực nghiệm trong luận văn được chạy trên CPU; mỗi lần huấn luyện mô hình Transformer + GAT ở tần suất tháng với 8 vòng lặp PPO mất khoảng 25--30 phút trên một nhân xử lý. Với hạt giống 1 và 2, kết quả thu được trên CPU trùng với kết quả đã công bố trong bài báo \cite{tran2026dynamic}.
+\chapter{ĐỐI CHIẾU VỚI BÀI BÁO ĐÃ CÔNG BỐ}
+\label{app:paper}
+
+Một phần nội dung của luận văn đã được công bố trong bài báo \cite{tran2026dynamic}. Các con số trong luận văn khác với bài báo vì ba thay đổi có chủ đích, tóm tắt ở Bảng~\ref{tab:paperdiff}.
+
+\begin{table}[ht]
+\centering\small
+\caption{Khác biệt giữa thiết lập của bài báo và của luận văn}
+\label{tab:paperdiff}
+\begin{tabularx}{\textwidth}{@{}p{3.2cm}XX@{}}
+\toprule
+Nội dung & Bài báo \cite{tran2026dynamic} & Luận văn \\
+\midrule
+Đồ thị & Tương quan 60 phiên & Tương quan dài hạn 250 phiên (60 phiên là đối chứng) \\
+Dữ liệu giá & Giá đóng cửa chưa điều chỉnh & Đã điều chỉnh theo sự kiện doanh nghiệp (Mục~\ref{sec:adjust}) \\
+Phần thưởng DSR & Khởi tạo từ một quan sát & Làm nóng 12 bước \\
+Chọn mô hình & Sharpe kiểm định, dropout bật & Sharpe kiểm định, dropout tắt \\
+Số vòng lặp PPO & 8 & 12 \\
+Số hạt giống & 2 & 5 (cấu hình chính), 3 (biến thể) \\
+Đối chứng & Phân bổ đều, VN-Index, hai phép loại bỏ thành phần & Thêm Markowitz, động lượng, danh mục ngẫu nhiên, mạng chưa huấn luyện, các quy tắc cấu trúc \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Để bảo đảm tính liên tục, thiết lập của bài báo đã được chạy lại nguyên vẹn bằng mã nguồn gốc trên dữ liệu chưa điều chỉnh. Hai hạt giống đầu cho đúng kết quả đã công bố (tỷ số Sharpe 1,78 và 0,58; trung bình 1,18); hai hạt giống bổ sung cho 0,84 và 0,77. Trên dữ liệu chưa điều chỉnh, danh mục phân bổ đều đạt tỷ số Sharpe 0,72 và lợi suất 20,7\%; sau khi điều chỉnh giá, các con số tương ứng là 0,90 và 28,0\%. Chênh lệch này cho thấy mức độ ảnh hưởng của việc điều chỉnh giá và là lý do luận văn dùng dữ liệu đã điều chỉnh cho mọi kết quả chính.
 
 \chapter{THỐNG KÊ MÔ TẢ VÀ KẾT QUẢ CHI TIẾT}
 \label{app:detail}
@@ -67,7 +94,7 @@ Bảng~\ref{tab:featdesc} trình bày thống kê mô tả của 19 đặc trưn
 \input{tables/features_desc}
 \end{table}
 
-Hai điểm trong Bảng~\ref{tab:featdesc} cần được lưu ý. Thứ nhất, lợi suất logarit theo ngày có giá trị nhỏ nhất và lớn nhất vượt xa biên độ dao động giá cho phép; phần lớn các giá trị âm cực đoan là hệ quả của việc chuỗi giá chưa được điều chỉnh theo các sự kiện doanh nghiệp (Mục~\ref{sec:robust-clean}). Thứ hai, một số đặc trưng có đuôi rất dài (P/E, tăng trưởng lợi nhuận, thay đổi khối lượng); phép chuẩn hóa theo lát cắt ngang và phép cắt về $[-10,10]$ ở Mục~\ref{sec:snapshot} nhằm hạn chế ảnh hưởng của các giá trị này.
+Hai điểm trong Bảng~\ref{tab:featdesc} cần được lưu ý. Thứ nhất, sau khi điều chỉnh giá (Mục~\ref{sec:adjust}) vẫn còn một số ít lợi suất ngày vượt biên độ dao động thông thường; đó là các phiên giao dịch đầu tiên, các phiên không áp dụng biên độ hoặc các phiên thị trường sụp đổ. Thứ hai, một số đặc trưng có đuôi rất dài (P/E, tăng trưởng lợi nhuận, thay đổi khối lượng); phép chuẩn hóa theo lát cắt ngang và phép cắt về $[-10,10]$ ở Mục~\ref{sec:snapshot} nhằm hạn chế ảnh hưởng của các giá trị này.
 
 \section{Kết quả của từng lần huấn luyện}
 
