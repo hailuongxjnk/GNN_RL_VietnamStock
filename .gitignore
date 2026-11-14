@@ -18,3 +18,5 @@ thesis/*.fls
 thesis/*.fdb_latexmk
 thesis/*.xdv
 thesis/build.log
+experiments/results/*.log
+experiments/results/untrained*.pkl
