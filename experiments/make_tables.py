@@ -8,9 +8,12 @@ pm = lambda a, k, s=1, d=2: f"{f(a[k]['mean']*s, d)} $\\pm$ {f(a[k]['std']*s, d)
 def write(name, body):
     open(os.path.join(OUT, name + '.tex'), 'w').write(body); print('→', name)
 
-NAMES = {'full': 'Transformer + GAT (đề xuất)', 'lstm_gat': 'LSTM + GAT', 'tf_gcn': 'Transformer + GCN',
-         'tf_nograph': 'Transformer, không đồ thị', 'tf_gat_long': 'Transformer + GAT, đồ thị 250 phiên',
-         'lstm_nograph': 'LSTM, không đồ thị', 'gru_nograph': 'GRU, không đồ thị'}
+MAIN = 'tf_gat_long'
+NAMES = {'tf_gat_long': 'Transformer + GAT, đồ thị dài hạn (đề xuất)', 'full': 'Transformer + GAT, đồ thị ngắn hạn',
+         'tf_gcn_long': 'Transformer + GCN, đồ thị dài hạn', 'tf_nograph': 'Transformer, không đồ thị',
+         'lstm_gat_long': 'LSTM + GAT, đồ thị dài hạn', 'lstm_nograph': 'LSTM, không đồ thị',
+         'gru_nograph': 'GRU, không đồ thị'}
+ST = json.load(open(os.path.join(C.RESULTS, 'structural.json')))
 cfg = S['configs']
 def row_cfg(c, label=None):
     a = cfg[c]
@@ -25,35 +28,38 @@ def row_rand(r, label):
 HEAD = ("\\begin{tabular}{@{}lccccccc@{}}\n\\toprule\nChiến lược & Số lần & Sharpe & Lợi suất (\\%) & Biến động (\\%) & MDD (\\%) & Calmar & Luân chuyển \\\\\n\\midrule\n")
 B = S['baselines_M']
 body = HEAD
-if 'full' in cfg: body += row_cfg('full', '\\textbf{Mô hình đề xuất}') + "\n\\midrule\n"
+if MAIN in cfg: body += row_cfg(MAIN, '\\textbf{Mô hình đề xuất (đồ thị dài hạn)}') + "\n\\midrule\n"
 body += "\n".join(row_base(n, B[n], l) for n, l in [('Equal-weight', 'Phân bổ đều (1/N)'), ('VN-Index', 'VN-Index (mua và nắm giữ)'),
         ('Min-Variance', 'Phương sai nhỏ nhất'), ('Mean-Variance', 'Trung bình--phương sai'), ('Momentum top-20', 'Động lượng top-20')])
+def row_un(u, label):
+    q = lambda k, sc=1, d=2: f"{f(u[k]['mean']*sc, d)} $\\pm$ {f(u[k]['std']*sc, d)}"
+    return f"{label} & {u['n']} & {q('sharpe')} & {q('cum_return',100,1)} & {q('ann_vol',100,1)} & {q('max_drawdown',100,1)} & {q('calmar')} & {f(u['turnover'])} \\\\"
+if 'untrained_A250' in S: body += "\n\\midrule\n" + row_un(S['untrained_A250'], 'Mạng chưa huấn luyện, đồ thị dài hạn')
+if 'untrained_A60' in S: body += "\n" + row_un(S['untrained_A60'], 'Mạng chưa huấn luyện, đồ thị ngắn hạn')
 body += "\n\\midrule\n" + row_rand(S['random_random20_hold_M'], '20 mã ngẫu nhiên, giữ nguyên') + "\n" + row_rand(S['random_random20_M'], '20 mã ngẫu nhiên, đổi mỗi kỳ')
-for c in ('lstm_nograph', 'gru_nograph'):
-    if c in cfg: body += ("\n\\midrule\n" if c == 'lstm_nograph' else "\n") + row_cfg(c, NAMES[c].replace(', không đồ thị', ' thuần (không đồ thị) + PPO'))
 body += "\n\\bottomrule\n\\end{tabular}\n"
 write('overall', body)
 
 body = HEAD.replace('Chiến lược', 'Cấu hình')
-for c in ['full', 'lstm_gat', 'tf_gcn', 'tf_nograph', 'tf_gat_long']:
+for c in ['tf_gat_long', 'full', 'tf_gcn_long', 'tf_nograph', 'lstm_gat_long', 'lstm_nograph', 'gru_nograph']:
     if c in cfg: body += row_cfg(c) + "\n"
 body += "\\bottomrule\n\\end{tabular}\n"
 write('ablation', body)
 
-if 'full_per_seed' in S:
+if 'main_per_seed' in S:
     body = ("\\begin{tabular}{@{}cccccccccc@{}}\n\\toprule\nHạt giống & Vòng được chọn & Sharpe KĐ & Sharpe KT & SE (Lo) & Lợi suất (\\%) & MDD (\\%) & "
             "$t$ so với 1/N & Phân vị ngẫu nhiên \\\\\n\\midrule\n")
-    for p in S['full_per_seed']:
+    for p in S['main_per_seed']:
         body += (f"{p['seed']} & {p['best_iter']+1} & {f(p['val_sharpe'])} & {f(p['sharpe'])} & {f(p['lo_se'])} & {f(p['cum']*100,1)} & "
                  f"{f(p['mdd']*100,1)} & {f(p['t_vs_ew'])} & {f(p['pct_random_hold']*100,0)}\\% \\\\\n")
-    a = cfg['full']
+    a = cfg[MAIN]
     body += (f"\\midrule\nTrung bình & -- & {f(a['val_sharpe']['mean'])} & {f(a['sharpe']['mean'])} & -- & {f(a['cum_return']['mean']*100,1)} & "
              f"{f(a['max_drawdown']['mean']*100,1)} & -- & -- \\\\\n\\bottomrule\n\\end{{tabular}}\n")
     body = body.replace("\\begin{tabular}{@{}cccccccccc@{}}", "\\begin{tabular}{@{}ccccccccc@{}}")
     write('perseed', body)
     body = ("\\begin{tabular}{@{}cccccc@{}}\n\\toprule\nHạt giống & $\\bar\\alpha$ & Hệ số biến thiên của $\\alpha$ & Tỷ trọng nhỏ nhất--lớn nhất (\\%) & "
             "Tỷ lệ mã giữ lại & Luân chuyển \\\\\n\\midrule\n")
-    for b, p in zip(S['behaviour']['per_seed'], S['full_per_seed']):
+    for b, p in zip(S['behaviour']['per_seed'], S['main_per_seed']):
         body += (f"{b['seed']} & {f(b['alpha_mean'])} & {f(b['alpha_cv']*100,1)}\\% & {f(b['w_min']*100,1)}--{f(b['w_max']*100,1)} & "
                  f"{f(b['retention']*100,0)}\\% & {f(p['turnover'])} \\\\\n")
     body += "\\bottomrule\n\\end{tabular}\n"
@@ -85,7 +91,7 @@ write('features_desc', body)
 
 import pickle, glob
 body = ("\\begin{tabular}{@{}lccccccc@{}}\n\\toprule\nCấu hình & Hạt giống & Vòng chọn & Sharpe KĐ & Sharpe KT & Lợi suất (\\%) & MDD (\\%) & Calmar \\\\\n\\midrule\n")
-for c in ['full', 'lstm_gat', 'tf_gcn', 'tf_nograph', 'tf_gat_long', 'lstm_nograph', 'gru_nograph']:
+for c in ['tf_gat_long', 'full', 'tf_gcn_long', 'tf_nograph', 'lstm_gat_long', 'lstm_nograph', 'gru_nograph']:
     fs = sorted(glob.glob(os.path.join(C.RESULTS, f'{c}_seed*.pkl')))
     for i, fn in enumerate(fs):
         r = pickle.load(open(fn, 'rb')); m = r['test']['metrics']
@@ -98,3 +104,18 @@ body = body.rstrip().rsplit("\\midrule", 1)[0] + "\\bottomrule\n\\end{tabular}\n
 write('allruns', body)
 if 'untrained' in S:
     pass
+
+body = ("\\begin{tabular}{@{}lccccc@{}}\n\\toprule\nQuy tắc chọn 20 mã (chia đều) & Sharpe & Lợi suất (\\%) & Biến động (\\%) & MDD (\\%) & Luân chuyển \\\\\n\\midrule\n")
+for n, m in ST['baselines'].items():
+    body += f"{n} & {f(m['sharpe'])} & {f(m['cum_return']*100,1)} & {f(m['ann_vol']*100,1)} & {f(m['max_drawdown']*100,1)} & {f(m['turnover'])} \\\\\n"
+body += "\\bottomrule\n\\end{tabular}\n"
+write('structural', body)
+P = ST['picks']
+body = ("\\begin{tabular}{@{}lccccc@{}}\n\\toprule\n & \\multicolumn{5}{c}{Phân vị trung bình trong tập đủ điều kiện (0{,}50 = như thị trường)} \\\\\n\\cmidrule(l){2-6}\n"
+        "Danh mục & Bậc, đồ thị dài hạn & Bậc, đồ thị ngắn hạn & Biến động & Kém thanh khoản & Phiên giá đứng yên \\\\\n\\midrule\n")
+for k, l in [('tf_gat_long', 'Mô hình đề xuất (đồ thị dài hạn)'), ('untrained_A250', 'Mạng chưa huấn luyện, đồ thị dài hạn'),
+             ('full', 'Mô hình với đồ thị ngắn hạn'), ('untrained_A60', 'Mạng chưa huấn luyện, đồ thị ngắn hạn')]:
+    if k in P:
+        p = P[k]; body += f"{l} & {f(p['deg250_pct'])} & {f(p['deg60_pct'])} & {f(p['vol_pct'])} & {f(p['amihud_pct'])} & {f(p['zero_pct'])} \\\\\n"
+body += "\\bottomrule\n\\end{tabular}\n"
+write('picks', body)

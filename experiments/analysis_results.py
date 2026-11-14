@@ -5,9 +5,11 @@ warnings.filterwarnings('ignore')
 import common as C
 from plotstyle import *
 
-NAMES = {'full': 'Transformer + GAT (đề xuất)', 'lstm_gat': 'LSTM + GAT', 'tf_gcn': 'Transformer + GCN',
-         'tf_nograph': 'Transformer, không đồ thị', 'tf_gat_long': 'Transformer + GAT, đồ thị 250 phiên',
-         'lstm_nograph': 'LSTM, không đồ thị', 'gru_nograph': 'GRU, không đồ thị'}
+MAIN = 'tf_gat_long'      # cấu hình chính: Transformer + GAT trên đồ thị tương quan DÀI HẠN (250 phiên)
+NAMES = {'tf_gat_long': 'Transformer + GAT, đồ thị dài hạn (đề xuất)', 'full': 'Transformer + GAT, đồ thị ngắn hạn',
+         'tf_gcn_long': 'Transformer + GCN, đồ thị dài hạn', 'tf_nograph': 'Transformer, không đồ thị',
+         'lstm_gat_long': 'LSTM + GAT, đồ thị dài hạn', 'lstm_nograph': 'LSTM, không đồ thị',
+         'gru_nograph': 'GRU, không đồ thị', 'tf_gcn': 'Transformer + GCN, đồ thị ngắn hạn'}
 runs = {}
 for f in sorted(glob.glob(os.path.join(C.RESULTS, '*_seed*.pkl'))):
     r = pickle.load(open(f, 'rb')); runs.setdefault(r['config'], {})[r['seed']] = r
@@ -44,14 +46,27 @@ for f in ('M', 'W'):
 rand_sh = np.array([m['sharpe'] for m in bm['_random20_hold']['metrics']])
 rand_sh_resh = np.array([m['sharpe'] for m in bm['_random20']['metrics']])
 
+UN = {}
+for g in ('A250', 'A60'):
+    p = os.path.join(C.RESULTS, f'untrained_{g}.pkl')
+    if os.path.exists(p):
+        u = pickle.load(open(p, 'rb')); UN[g] = u
+        d = {}
+        for k in KEYS:
+            v = np.array([o['metrics'][k] for o in u])
+            d[k] = {'mean': float(v.mean()), 'std': float(v.std(ddof=1)), 'min': float(v.min()), 'max': float(v.max())}
+        d['turnover'] = float(np.mean([o['turnover'] for o in u])); d['n'] = len(u)
+        d['share_above_ew'] = float(np.mean([o['metrics']['sharpe'] > bm['Equal-weight']['metrics']['sharpe'] for o in u]))
+        S['untrained_' + g] = d
+
 # ── sai số chuẩn Sharpe (Lo 2002) và so sánh cặp với Equal-weight ──
 def lo_se(r, ppy):
     r = np.asarray(r); sr1 = r.mean() / r.std(); return float(np.sqrt((1 + 0.5 * sr1 ** 2) / len(r)) * np.sqrt(ppy))
 S['lo_se'] = {'Equal-weight': lo_se(bm['Equal-weight']['returns'], 12), 'VN-Index': lo_se(bm['VN-Index']['returns'], 12)}
-if 'full' in runs:
+if MAIN in runs:
     ew = np.array(bm['Equal-weight']['returns']); vn = np.array(bm['VN-Index']['returns'])
     per = []
-    for s, r in sorted(runs['full'].items()):
+    for s, r in sorted(runs[MAIN].items()):
         a = np.array(r['test']['returns']); d = a - ew; dv = a - vn
         per.append({'seed': s, 'sharpe': r['test']['metrics']['sharpe'], 'cum': r['test']['metrics']['cum_return'],
                     'mdd': r['test']['metrics']['max_drawdown'], 'calmar': r['test']['metrics']['calmar'],
@@ -63,10 +78,10 @@ if 'full' in runs:
                     'pct_random_hold': float((rand_sh < r['test']['metrics']['sharpe']).mean()),
                     'pct_random_reshuffle': float((rand_sh_resh < r['test']['metrics']['sharpe']).mean()),
                     'months_beat_ew': int((d > 0).sum()), 'n': len(d)})
-    S['full_per_seed'] = per
+    S['main_per_seed'] = per
     # trung bình các seed như một "quỹ" gộp
-    ens = np.mean([r['test']['returns'] for r in runs['full'].values()], axis=0)
-    S['full_ensemble'] = C.perf_metrics(ens, 12)
+    ens = np.mean([r['test']['returns'] for r in runs[MAIN].values()], axis=0)
+    S['main_ensemble'] = C.perf_metrics(ens, 12)
 
 # ── hành vi chính sách ──
 def behaviour(cfg):
@@ -82,8 +97,8 @@ def behaviour(cfg):
                     'w_std': float(np.mean([x.std() for x in nz])), 'n_held': float(np.mean([len(x) for x in nz])),
                     'retention': float(np.mean(stay)), 'held': held})
     return out
-if 'full' in runs:
-    B = behaviour('full')
+if MAIN in runs:
+    B = behaviour(MAIN)
     seeds = [b['seed'] for b in B]
     ov = []
     for i in range(len(B)):
@@ -94,9 +109,9 @@ if 'full' in runs:
                       'overlap_between_seeds': float(np.mean(ov)) if ov else None,
                       'overlap_expected_random': float(20 / n_el), 'n_eligible_test': float(n_el)}
     # thanh khoản của các mã được chọn so với toàn bộ mã eligible (phân vị Amihud; cao = kém thanh khoản)
-    cd = C.CachedData(); pct = []
+    cd = C.CachedData('A250'); pct = []
     wide = df.pivot(index='date', columns='symbol', values='log_amihud_20d')
-    for b, (s, r) in zip(B, sorted(runs['full'].items())):
+    for b, (s, r) in zip(B, sorted(runs[MAIN].items())):
         for d, held, sy in zip(r['test']['dates'], b['held'], r['test']['symbols']):
             m = cd.snap[pd.Timestamp(d)]['mask'].numpy()
             row = wide.loc[wide.index < d].iloc[-1].reindex(sy)
@@ -115,29 +130,33 @@ dates = C.quiet_split(df, 'M')['train']
 for j in range(len(dates) - 1):
     X, mask, sy = cdx.snapshot(df, dates[j]); m = mask.numpy().astype(float)
     R = C.train_mod.compute_holding_return(df, dates[j], dates[j + 1], sy); ew_tr.append(float((m / m.sum()) @ R))
-dsr = C.train_mod.DSR(); raw = [dsr.step(r) for r in ew_tr]
-raw = np.array(raw)
+dsr = C.train_orig.DSR(); raw = np.array([dsr.step(r) for r in ew_tr])          # khởi tạo từ 1 quan sát (bản gốc)
+dsr2 = C.train_mod.DSR(); raw2 = np.array([dsr2.step(r) for r in ew_tr])        # 12 bước làm nóng (v2)
 S['dsr'] = {'n_steps': len(raw), 'frac_clipped': float((np.abs(raw) > 5).mean()),
             'frac_clipped_first20': float((np.abs(raw[:20]) > 5).mean()), 'frac_clipped_after20': float((np.abs(raw[20:]) > 5).mean()),
             'median_abs_first10': float(np.median(np.abs(raw[1:11]))), 'median_abs_last10': float(np.median(np.abs(raw[-10:]))),
-            'max_abs': float(np.abs(raw).max())}
-fig, ax = plt.subplots(figsize=(7.2, 3.1))
-ax.axhspan(-5, 5, color='#f0efec', lw=0)
-ax.vlines(range(len(raw)), 0, np.clip(raw, -60, 60), color=C1, lw=1.6)
-ax.axhline(5, color=MUTED, lw=0.8, ls='--'); ax.axhline(-5, color=MUTED, lw=0.8, ls='--')
-ax.text(len(raw) - 1, 6.5, 'biên độ cắt ±5', ha='right', fontsize=9, color=MUTED)
-ax.set_xlabel('Bước quyết định trong quỹ đạo huấn luyện (tháng)'); ax.set_ylabel('$D_t$ trước khi cắt')
+            'max_abs': float(np.abs(raw).max()),
+            'v2_frac_clipped': float((np.abs(raw2) > 5).mean()), 'v2_max_abs': float(np.abs(raw2).max()),
+            'v2_median_abs': float(np.median(np.abs(raw2[12:])))}
+fig, axes = plt.subplots(1, 2, figsize=(7.4, 2.9), sharey=True)
+for ax, rr, ttl in ((axes[0], raw, 'Khởi tạo từ một quan sát'), (axes[1], raw2, 'Làm nóng 12 bước (luận văn)')):
+    ax.axhspan(-5, 5, color='#f0efec', lw=0)
+    ax.vlines(range(len(rr)), 0, np.clip(rr, -40, 40), color=C1, lw=1.5)
+    ax.set_title(ttl); ax.set_xlabel('Bước quyết định (tháng)')
+axes[0].set_ylabel('$D_t$ trước khi cắt (giới hạn hiển thị ±40)')
 fig.savefig(os.path.join(FIG, 'dsr_magnitude.pdf')); plt.close(fig)
 
 # ── HÌNH: đường giá trị tài sản (tháng) ──
 dts = bm['_dates']; xs = list(dts) + [C.quiet_split(df, 'M')['test'][-1]]
 def eq(r): return np.concatenate([[0], (np.cumprod(1 + np.asarray(r)) - 1) * 100])
-if 'full' in runs:
+if MAIN in runs:
     fig, ax = plt.subplots(figsize=(7.4, 3.9))
-    E = np.array([eq(r['test']['returns']) for r in runs['full'].values()])
+    E = np.array([eq(r['test']['returns']) for r in runs[MAIN].values()])
     ax.fill_between(xs, E.min(0), E.max(0), color=C1, alpha=0.15, lw=0)
     for e in E: ax.plot(xs, e, color=C1, lw=0.7, alpha=0.55)
-    ax.plot(xs, E.mean(0), color=C1, lw=2.2, label=f'Mô hình đề xuất (trung bình {len(E)} hạt giống; dải: min–max)')
+    ax.plot(xs, E.mean(0), color=C1, lw=2.2, label=f'Mô hình đề xuất, đồ thị dài hạn (trung bình {len(E)} hạt giống; dải: min–max)')
+    if 'full' in runs:
+        ax.plot(xs, np.mean([eq(r['test']['returns']) for r in runs['full'].values()], axis=0), color=C7, lw=1.6, ls='--', label='Đồ thị ngắn hạn (trung bình các hạt giống)')
     ax.plot(xs, eq(bm['Equal-weight']['returns']), color=C2, label='Phân bổ đều (1/N)')
     ax.plot(xs, eq(bm['VN-Index']['returns']), color=C3, label='VN-Index')
     ax.plot(xs, eq(bm['Mean-Variance']['returns']), color=C4, label='Mean–Variance (Ledoit–Wolf)')
@@ -148,7 +167,7 @@ if 'full' in runs:
     # ── HÌNH: lịch sử huấn luyện ──
     fig, axes = plt.subplots(1, 2, figsize=(7.4, 3.0))
     cols = [C1, C2, C3, C4, C5]
-    for (s, r), c in zip(sorted(runs['full'].items()), cols):
+    for (s, r), c in zip(sorted(runs[MAIN].items()), cols):
         it = range(1, len(r['history']) + 1)
         axes[0].plot(it, [h['reward'] for h in r['history']], color=c, marker='o', ms=3, lw=1.3, label=f'hạt giống {s}')
         axes[1].plot(it, [h['val_sharpe'] for h in r['history']], color=c, marker='o', ms=3, lw=1.3)
@@ -161,7 +180,7 @@ if 'full' in runs:
     fig, ax = plt.subplots(figsize=(7.2, 3.3))
     ax.hist(rand_sh, bins=40, color='#cde2fb', edgecolor='white', lw=0.8)
     top = ax.get_ylim()[1]
-    for b in S['full_per_seed']:
+    for b in S['main_per_seed']:
         ax.axvline(b['sharpe'], color=C1, lw=1.8)
         ax.text(b['sharpe'], top * 1.01, str(b['seed']), ha='center', va='bottom', fontsize=8.5, color=INK)
     ax.axvline(bm['Equal-weight']['metrics']['sharpe'], color=C2, lw=1.8, ls='--')
@@ -188,7 +207,7 @@ if len(pts) > 3:
     fig.savefig(os.path.join(FIG, 'val_vs_test.pdf')); plt.close(fig)
 
 # ── HÌNH: ablation (Sharpe từng seed) ──
-order = [c for c in ['full', 'tf_gat_long', 'tf_gcn', 'tf_nograph', 'lstm_gat', 'lstm_nograph', 'gru_nograph'] if c in runs]
+order = [c for c in ['tf_gat_long', 'full', 'tf_gcn_long', 'tf_nograph', 'lstm_gat_long', 'lstm_nograph', 'gru_nograph'] if c in runs]
 if order:
     fig, ax = plt.subplots(figsize=(7.2, 0.5 * len(order) + 1.3))
     ax.axvspan(np.percentile(rand_sh, 5), np.percentile(rand_sh, 95), color='#f0efec', lw=0)
@@ -230,10 +249,10 @@ for k in ('baselines_M', 'baselines_W'):
     for n, m in S[k].items(): print('  ', n, pr(m))
 for k in S:
     if k.startswith('random'): print(k, {a: pr(b) for a, b in S[k].items() if a in ('sharpe', 'cum_return', 'max_drawdown', 'calmar')})
-for k in ('lo_se', 'full_ensemble', 'dsr', 'val_test_corr'):
+for k in ('lo_se', 'main_ensemble', 'dsr', 'val_test_corr'):
     if k in S: print(k, pr(S[k]) if not isinstance(list(S[k].values())[0], dict) else S[k])
-if 'full_per_seed' in S:
-    for p in S['full_per_seed']: print(pr(p))
+if 'main_per_seed' in S:
+    for p in S['main_per_seed']: print(pr(p))
     print({k: v for k, v in S['behaviour'].items() if k != 'per_seed'})
     for p in S['behaviour']['per_seed']: print(pr(p))
 print('weekly', pr(S['weekly_checkpoint']['agent']), S['weekly_checkpoint']['lo_se'], S['weekly_checkpoint']['pct_random_hold'])
