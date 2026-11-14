@@ -53,7 +53,7 @@ Bảng~\ref{tab:overall} trình bày kết quả trên tập kiểm tra và Hìn
 \setlength{\tabcolsep}{3.5pt}
 \caption{Kết quả trên tập kiểm tra 01/2024--12/2025 (tái cân bằng theo tháng, 23 kỳ). Với mô hình học: trung bình $\pm$ độ lệch chuẩn trên các hạt giống. Với danh mục ngẫu nhiên: trung vị [phân vị 5\%; phân vị 95\%]. Luân chuyển: $\lVert w_t-w_{t-1}\rVert_1$ trung bình mỗi kỳ.}
 \label{tab:overall}
-\input{tables/overall}
+\begin{adjustbox}{max width=\textwidth}\input{tables/overall}\end{adjustbox}
 \end{table}
 
 \begin{figure}[ht]
@@ -87,7 +87,7 @@ Bảng~\ref{tab:perseed} trình bày kết quả của từng hạt giống. C�
 \setlength{\tabcolsep}{4pt}
 \caption{Kết quả của mô hình đề xuất theo từng hạt giống. KĐ: tập kiểm định; KT: tập kiểm tra; SE (Lo): sai số chuẩn của tỷ số Sharpe theo công thức~\eqref{eq:lo}; $t$ so với 1/N: thống kê $t$ của chênh lệch lợi suất hằng tháng so với phân bổ đều; phân vị ngẫu nhiên: tỷ lệ danh mục 20 mã ngẫu nhiên (giữ nguyên) có tỷ số Sharpe thấp hơn.}
 \label{tab:perseed}
-\input{tables/perseed}
+\begin{adjustbox}{max width=\textwidth}\input{tables/perseed}\end{adjustbox}
 \end{table}
 
 \subsection{So sánh với danh mục ngẫu nhiên}
@@ -124,7 +124,7 @@ Nói cách khác, chỉ riêng việc đưa đồ thị tương quan dài hạn 
 \setlength{\tabcolsep}{4pt}
 \caption{Đặc điểm của các cổ phiếu được chọn trên tập kiểm tra}
 \label{tab:picks}
-\input{tables/picks}
+\begin{adjustbox}{max width=\textwidth}\input{tables/picks}\end{adjustbox}
 \end{table}
 
 Về mặt tài chính, lựa chọn này có ý nghĩa rõ ràng: một danh mục gồm các cổ phiếu ít tương quan với thị trường và với nhau được đa dạng hóa tốt hơn, nên có độ biến động và mức sụt giảm thấp hơn. Bảng~\ref{tab:structural} kiểm chứng trực tiếp ý nghĩa của mức độ liên kết bằng các quy tắc chọn 20 mã không cần học. Danh mục gồm 20 mã \emph{liên kết nhiều nhất} trên đồ thị dài hạn có kết quả rất kém (Sharpe 0,16; mức sụt giảm $-26{,}9\%$; độ biến động 24,5\%), vì đó là các cổ phiếu cùng lên cùng xuống theo thị trường. Danh mục gồm 20 mã \emph{ít liên kết nhất} có độ biến động chỉ 8\% và mức sụt giảm $-6{,}4\%$, nhưng lợi suất thấp (10,2\%). Mô hình đề xuất cho kết quả tốt hơn cả hai quy tắc đơn giản này (Sharpe 1,32; lợi suất 36,8\%), tức nó không chỉ đơn thuần chọn các mã có bậc thấp nhất mà kết hợp thông tin cấu trúc với các đặc trưng khác của cổ phiếu.
@@ -133,7 +133,7 @@ Về mặt tài chính, lựa chọn này có ý nghĩa rõ ràng: một danh m�
 \centering\small
 \caption{Các quy tắc chọn 20 mã dựa trên cấu trúc đồ thị, không cần học (tập kiểm tra)}
 \label{tab:structural}
-\input{tables/structural}
+\begin{adjustbox}{max width=\textwidth}\input{tables/structural}\end{adjustbox}
 \end{table}
 
 Bảng~\ref{tab:picks} cũng cho thấy một hệ quả cần thận trọng: các cổ phiếu được chọn có độ kém thanh khoản ở phân vị 0,74 và tỷ lệ phiên giá đứng yên ở phân vị 0,70 (trung bình 26\% số phiên trong 60 phiên gần nhất không đổi giá, so với 14\% của toàn bộ tập cổ phiếu). Cổ phiếu ít giao dịch thường ít tương quan với thị trường một phần vì giá của chúng phản ứng chậm; độ biến động đo được của chúng có thể thấp hơn rủi ro thực, và việc giao dịch 5\% giá trị danh mục ở các mã này trong một phiên là khó với danh mục quy mô lớn. Quy tắc ``ít liên kết nhất trong nhóm thanh khoản tốt'' ở Bảng~\ref{tab:structural} cho thấy lợi ích của tiêu chí liên kết thấp vẫn còn khi giới hạn ở nửa cổ phiếu thanh khoản tốt hơn (Sharpe 1,24; lợi suất 33,4\%), nên hiệu ứng không hoàn toàn do thanh khoản; nhưng ảnh hưởng của thanh khoản đến kết quả của mô hình cần được kiểm chứng trực tiếp trong các nghiên cứu tiếp theo (Mục~\ref{sec:hanche}).
@@ -148,7 +148,7 @@ Bảng~\ref{tab:ablation} và Hình~\ref{fig:ablation} trình bày kết quả c
 \setlength{\tabcolsep}{3.5pt}
 \caption{Phép loại bỏ thành phần trên tập kiểm tra (trung bình $\pm$ độ lệch chuẩn trên các hạt giống)}
 \label{tab:ablation}
-\input{tables/ablation}
+\begin{adjustbox}{max width=\textwidth}\input{tables/ablation}\end{adjustbox}
 \end{table}
 
 \begin{figure}[ht]
@@ -222,7 +222,7 @@ Bảng~\ref{tab:behaviour} tóm tắt các đặc điểm của danh mục do m�
 \centering\small
 \caption{Đặc điểm của chính sách trên tập kiểm tra theo từng hạt giống. $\bar\alpha$: trung bình tham số tập trung Dirichlet trên các mã đủ điều kiện; tỷ lệ mã giữ lại: phần trong 20 mã của kỳ trước còn được giữ ở kỳ sau.}
 \label{tab:behaviour}
-\input{tables/behaviour}
+\begin{adjustbox}{max width=\textwidth}\input{tables/behaviour}\end{adjustbox}
 \end{table}
 
 \textit{Danh mục luôn hợp lệ.} Ở mọi ngày quyết định và mọi hạt giống, danh mục gồm đúng 20 mã đủ điều kiện, tổng tỷ trọng bằng 1 và không mã nào vượt trần 10\%. Về mặt kỹ thuật, cơ chế mặt nạ và phép chiếu hoạt động đúng với tập cổ phiếu thay đổi từ 147 đến 179 mã trong giai đoạn kiểm tra.

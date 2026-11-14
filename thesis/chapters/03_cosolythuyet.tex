@@ -179,9 +179,10 @@ J(\theta)=\E_{\tau\sim\pi_\theta}\Big[\sum_{t=0}^{\infty}\gamma^{t}r_t\Big].
 \end{equation}
 Hàm giá trị trạng thái, hàm giá trị hành động và hàm lợi thế lần lượt là
 \begin{equation}
-V^{\pi}(s)=\E\Big[\sum_{k\ge0}\gamma^{k}r_{t+k}\,\Big|\,s_t=s\Big],\quad
-Q^{\pi}(s,a)=\E\Big[\sum_{k\ge0}\gamma^{k}r_{t+k}\,\Big|\,s_t=s,a_t=a\Big],\quad
-A^{\pi}=Q^{\pi}-V^{\pi}.
+\begin{aligned}
+V^{\pi}(s)&=\E\Big[\sum_{k\ge0}\gamma^{k}r_{t+k}\,\Big|\,s_t=s\Big],\\
+Q^{\pi}(s,a)&=\E\Big[\sum_{k\ge0}\gamma^{k}r_{t+k}\,\Big|\,s_t=s,a_t=a\Big],\qquad A^{\pi}(s,a)=Q^{\pi}(s,a)-V^{\pi}(s).
+\end{aligned}
 \end{equation}
 Hàm lợi thế cho biết hành động $a$ tốt hơn hay kém hơn mức trung bình của chính sách tại trạng thái $s$.
 

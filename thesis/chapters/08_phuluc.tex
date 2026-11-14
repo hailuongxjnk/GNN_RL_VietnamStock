@@ -6,10 +6,10 @@
 Toàn bộ mã nguồn của luận văn được viết bằng Python với thư viện PyTorch. Bảng~\ref{tab:files} liệt kê các tệp chính và vai trò của chúng. Sáu tệp đầu là mã nguồn của mô hình; các tệp trong thư mục \texttt{experiments/} là các kịch bản thực nghiệm bổ sung cho luận văn, chỉ \emph{gọi} mã nguồn mô hình mà không sửa đổi nó.
 
 \begin{table}[ht]
-\centering\small
+\centering\footnotesize
 \caption{Các tệp mã nguồn chính}
 \label{tab:files}
-\begin{tabularx}{\textwidth}{@{}p{5.3cm}X@{}}
+\begin{tabularx}{\textwidth}{@{}p{6.6cm}X@{}}
 \toprule
 Tệp & Nội dung \\
 \midrule
@@ -91,7 +91,7 @@ Bảng~\ref{tab:featdesc} trình bày thống kê mô tả của 19 đặc trưn
 \centering\footnotesize
 \caption{Thống kê mô tả các đặc trưng trên các quan sát đủ điều kiện (trước chuẩn hóa)}
 \label{tab:featdesc}
-\input{tables/features_desc}
+\begin{adjustbox}{max width=\textwidth}\input{tables/features_desc}\end{adjustbox}
 \end{table}
 
 Hai điểm trong Bảng~\ref{tab:featdesc} cần được lưu ý. Thứ nhất, sau khi điều chỉnh giá (Mục~\ref{sec:adjust}) vẫn còn một số ít lợi suất ngày vượt biên độ dao động thông thường; đó là các phiên giao dịch đầu tiên, các phiên không áp dụng biên độ hoặc các phiên thị trường sụp đổ. Thứ hai, một số đặc trưng có đuôi rất dài (P/E, tăng trưởng lợi nhuận, thay đổi khối lượng); phép chuẩn hóa theo lát cắt ngang và phép cắt về $[-10,10]$ ở Mục~\ref{sec:snapshot} nhằm hạn chế ảnh hưởng của các giá trị này.
@@ -104,5 +104,5 @@ Bảng~\ref{tab:allruns} liệt kê kết quả của mọi lần huấn luyện
 \centering\footnotesize
 \caption{Kết quả của từng lần huấn luyện trên tập kiểm tra (tái cân bằng theo tháng)}
 \label{tab:allruns}
-\input{tables/allruns}
+\begin{adjustbox}{max width=\textwidth}\input{tables/allruns}\end{adjustbox}
 \end{table}
