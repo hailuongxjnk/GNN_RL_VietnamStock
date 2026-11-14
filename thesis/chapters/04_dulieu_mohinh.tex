@@ -1,7 +1,7 @@
 \chapter{DỮ LIỆU VÀ MÔ HÌNH ĐỀ XUẤT}
 \label{ch:mohinh}
 
-Chương này mô tả bộ dữ liệu, quy trình tiền xử lý và kiến trúc mô hình. Mục~\ref{sec:overview} trình bày tổng quan khung mô hình. Các Mục~\ref{sec:data}--\ref{sec:snapshot} mô tả dữ liệu, tập cổ phiếu đủ điều kiện và cách dựng ten-xơ đầu vào. Mục~\ref{sec:graph} trình bày đồ thị tương quan động. Các Mục~\ref{sec:encoder}--\ref{sec:training} trình bày bộ mã hóa thời gian, mạng chú ý đồ thị, tác tử và quy trình huấn luyện. Toàn bộ mô tả trong chương bám sát mã nguồn kèm theo luận văn (Phụ lục~\ref{app:code}).
+Chương này mô tả bộ dữ liệu, quy trình tiền xử lý và kiến trúc mô hình. Mục~\ref{sec:overview} trình bày tổng quan khung mô hình. Các Mục~\ref{sec:data}--\ref{sec:snapshot} mô tả dữ liệu, tập cổ phiếu đủ điều kiện và cách dựng ten-xơ đầu vào. Mục~\ref{sec:graph} trình bày đồ thị tương quan dài hạn và các bằng chứng thực nghiệm về tính bền vững của nó. Các Mục~\ref{sec:encoder}--\ref{sec:training} trình bày bộ mã hóa thời gian, mạng chú ý đồ thị, tác tử và quy trình huấn luyện. Toàn bộ mô tả trong chương bám sát mã nguồn kèm theo luận văn (Phụ lục~\ref{app:code}).
 
 \section{Tổng quan khung mô hình}
 \label{sec:overview}
@@ -10,7 +10,7 @@ Hình~\ref{fig:pipeline} minh họa luồng xử lý tại một ngày quyết �
 \begin{enumerate}[leftmargin=1.6cm]
   \item \textit{Dựng ảnh chụp thị trường.} Cắt cửa sổ $T=60$ phiên ngay trước $t$ để tạo ten-xơ đặc trưng $X_t\in\R^{N\times T\times F}$ và mặt nạ đủ điều kiện $m_t\in\{0,1\}^N$.
   \item \textit{Mã hóa thời gian.} Bộ mã hóa Transformer biến chuỗi của mỗi cổ phiếu thành một véc-tơ $h_i\in\R^{64}$, trả lời câu hỏi ``mỗi cổ phiếu gần đây trông như thế nào''.
-  \item \textit{Xây dựng đồ thị.} Ma trận kề $A_t$ được tính từ tương quan lợi suất trong cùng cửa sổ, trả lời câu hỏi ``cổ phiếu nào liên quan đến cổ phiếu nào''.
+  \item \textit{Xây dựng đồ thị.} Ma trận kề $A_t$ được tính từ tương quan lợi suất dài hạn (250 phiên trước $t$), trả lời câu hỏi ``cổ phiếu nào liên quan đến cổ phiếu nào''.
   \item \textit{Lan truyền trên đồ thị.} Mạng GAT hai tầng tổng hợp thông tin từ các cổ phiếu lân cận để tạo biểu diễn $z_i\in\R^{64}$ -- trạng thái của tác tử.
   \item \textit{Ra quyết định.} Tác tử PPO chấm điểm từng cổ phiếu, sinh véc-tơ tỷ trọng trên đơn hình; véc-tơ này được chiếu về tập danh mục khả thi (tối đa $K$ mã, mỗi mã không quá $w_{\max}$).
 \end{enumerate}
@@ -27,7 +27,7 @@ Ba khối có tham số -- bộ mã hóa, mạng đồ thị và tác tử -- đ
   \node[box]  (enc)  at (8.4,0)   {Bộ mã hóa Transformer\\$h_i\in\R^{64}$};
   \node[box]  (gat)  at (12.6,0)  {GAT hai tầng\\$z_i\in\R^{64}$};
   % hàng giữa
-  \node[box]  (adj)  at (4.2,-2.6)  {Đồ thị tương quan $A_t$\\$|\rho_{ij}|\ge 0{,}30$};
+  \node[box]  (adj)  at (4.2,-2.6)  {Đồ thị tương quan dài hạn\\$A_t$: $|\rho_{ij}|\ge 0{,}30$, 250 phiên};
   \node[box]  (agent) at (12.6,-2.6) {Tác tử PPO\\actor: $\alpha_i\rightarrow$ Dirichlet\\critic: $V(s_t)$};
   % hàng dưới
   \node[box]  (proj) at (8.4,-5.2)  {Chiếu ràng buộc\\top-$K$, trần $w_{\max}$};
@@ -51,29 +51,46 @@ Ba khối có tham số -- bộ mã hóa, mạng đồ thị và tác tử -- đ
 
 \subsection{Nguồn dữ liệu}
 
-Dữ liệu bao phủ giai đoạn từ 04/01/2016 đến 31/12/2025 (2.498 phiên giao dịch); dữ liệu năm 2015 được dùng thêm để tính các chỉ báo cần lịch sử cho những phiên đầu năm 2016. Bảng~\ref{tab:sources} tóm tắt các nguồn.
+Dữ liệu bao phủ giai đoạn từ 04/01/2016 đến 31/12/2025 (2.498 phiên giao dịch); dữ liệu năm 2015 được dùng thêm để tính các chỉ báo cần lịch sử cho những phiên đầu năm 2016. Bảng~\ref{tab:sources} tóm tắt các nguồn. Dữ liệu định giá, vốn hóa và vĩ mô được lấy từ Bloomberg Terminal -- hệ thống dữ liệu tài chính được các tổ chức tham gia thị trường sử dụng rộng rãi; dữ liệu giao dịch và báo cáo tài chính của từng doanh nghiệp được thu thập qua API dữ liệu thị trường FireAnt.
 
 \begin{table}[ht]
 \centering\small
 \caption{Các nguồn dữ liệu của luận văn}
 \label{tab:sources}
-\begin{tabularx}{\textwidth}{@{}p{3.6cm}p{2.2cm}X@{}}
+\begin{tabularx}{\textwidth}{@{}p{3.3cm}p{1.9cm}p{2.5cm}X@{}}
 \toprule
-Nhóm dữ liệu & Tần suất & Nội dung và cách thu thập \\
+Nhóm dữ liệu & Tần suất & Nguồn & Nội dung \\
 \midrule
-Giá và khối lượng & Ngày & Giá đóng cửa điều chỉnh, khối lượng và giá trị giao dịch của từng mã; thu thập qua API dữ liệu thị trường FireAnt. \\
-Báo cáo tài chính & Quý & Bảng cân đối kế toán và báo cáo kết quả kinh doanh của từng doanh nghiệp, kèm \emph{ngày công bố} báo cáo quý; thu thập qua API FireAnt. \\
-Hệ số định giá & Ngày & P/E và P/B theo ngày của từng mã \todo{bổ sung tên nguồn}. \\
-Vốn hóa thị trường & 6 tháng & Vốn hóa của từng mã tại cuối tháng 6 và cuối tháng 12 hằng năm, dùng để xác định tập cổ phiếu vốn hóa vừa và lớn \todo{bổ sung tên nguồn}. \\
-Vĩ mô & Ngày/tháng & Lạm phát (CPI so với cùng kỳ, theo tháng), lợi suất trái phiếu Chính phủ, lãi suất liên ngân hàng qua đêm, tỷ giá USD/VND và lợi suất hằng ngày của VN-Index \todo{bổ sung tên nguồn}. \\
+Giá và khối lượng & Ngày & FireAnt & Giá đóng cửa, khối lượng và giá trị giao dịch của từng mã. \\
+Báo cáo tài chính & Quý & FireAnt & Bảng cân đối kế toán, báo cáo kết quả kinh doanh và \emph{ngày công bố} báo cáo quý. \\
+Hệ số định giá & Ngày & Bloomberg & P/E và P/B theo ngày của từng mã. \\
+Vốn hóa thị trường & 6 tháng & Bloomberg & Vốn hóa tại cuối tháng 6 và cuối tháng 12 hằng năm, dùng để xác định nhóm vốn hóa vừa và lớn. \\
+Vĩ mô & Ngày/tháng & Bloomberg & Lạm phát (CPI so với cùng kỳ, theo tháng), lợi suất trái phiếu Chính phủ, lãi suất liên ngân hàng qua đêm, tỷ giá USD/VND, chỉ số VN-Index. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
+\subsection{Điều chỉnh giá theo sự kiện doanh nghiệp}
+\label{sec:adjust}
+
+Chuỗi giá đóng cửa thu thập được là giá \emph{chưa điều chỉnh}. Tại thị trường Việt Nam, việc trả cổ tức bằng cổ phiếu, phát hành cổ phiếu thưởng và chia tách diễn ra rất thường xuyên, đặc biệt ở nhóm ngân hàng. Vào ngày giao dịch không hưởng quyền, giá tham chiếu được điều chỉnh giảm tương ứng với tỷ lệ phát hành; nếu tính lợi suất trực tiếp từ giá chưa điều chỉnh, ngày đó sẽ xuất hiện một mức ``giảm'' rất lớn không phản ánh thua lỗ thật của người nắm giữ. Chẳng hạn, lợi suất tính từ giá thô của TCB ngày 20/06/2024 là $-49\%$ (phát hành cổ phiếu thưởng tỷ lệ 1:1) và của VIC ngày 05/12/2025 là $-47\%$. Nếu không xử lý, các quan sát này làm sai lệch đồng thời đặc trưng đầu vào, ma trận tương quan, phần thưởng khi huấn luyện và lãi lỗ khi kiểm thử.
+
+Luận văn nhận diện và loại bỏ các sự kiện này bằng một quy tắc đối chiếu chéo giữa hai nguồn dữ liệu. Một quan sát (ngày, cổ phiếu) được coi là ngày giao dịch không hưởng quyền nếu thỏa mãn đồng thời ba điều kiện:
+\begin{enumerate}[leftmargin=1.6cm]
+  \item lợi suất logarit trong ngày nhỏ hơn $-0{,}17$, tức vượt quá cả biên độ giảm tối đa 15\% của thị trường UPCoM (biên độ của HOSE là 7\%, của HNX là 10\%);
+  \item VN-Index trong ngày không giảm quá 4\%, để loại trừ các phiên toàn thị trường sụp đổ thật, như ngày 08/04/2025;
+  \item hệ số P/B của cổ phiếu \emph{không} giảm tương ứng: thay đổi logarit của P/B lớn hơn lợi suất logarit ít nhất $0{,}10$. Hệ số P/B từ Bloomberg đã được điều chỉnh nhất quán giữa giá và giá trị sổ sách trên mỗi cổ phiếu, nên không đổi qua một đợt chia tách; ngược lại, khi giá giảm thật thì P/B giảm theo. Nếu thiếu P/B, chỉ hai điều kiện đầu được dùng.
+\end{enumerate}
+Tại các quan sát này, lợi suất được đặt bằng không. Sau đó chuỗi giá điều chỉnh được dựng lại từ lợi suất tích lũy và các chỉ báo phụ thuộc giá (độ biến động, RSI, động lượng, tỷ số trung bình động) được tính lại.
+
+Quy tắc trên nhận diện 305 sự kiện trong giai đoạn 2015--2025, trung bình khoảng 28 sự kiện mỗi năm. Điều kiện thứ ba là một phép kiểm chứng độc lập: trong các ngày thỏa hai điều kiện đầu, trung vị thay đổi logarit của P/B xấp xỉ bằng không, trong khi ở các phiên thị trường sụp đổ thật P/B giảm đúng bằng mức giảm giá. Trên các ngày thông thường, hệ số tương quan giữa lợi suất và thay đổi logarit của P/B là 0,89, cho thấy hai nguồn dữ liệu nhất quán với nhau.
+
+Phép điều chỉnh có ảnh hưởng đáng kể: trên giai đoạn kiểm tra 2024--2025, lợi suất tích lũy của danh mục phân bổ đều tăng từ 20,7\% (giá thô) lên 28,0\% (giá đã điều chỉnh). Cần lưu ý rằng quy tắc chỉ bắt được các sự kiện có tỷ lệ pha loãng lớn (từ khoảng 16\% trở lên); các đợt phát hành tỷ lệ nhỏ và cổ tức tiền mặt chưa được xử lý, nên lợi suất của các chiến lược dựa trên cổ phiếu trong luận văn vẫn thấp hơn một chút so với lợi suất toàn phần thực tế (Mục~\ref{sec:hanche}).
+
 \subsection{Tập cổ phiếu và điều kiện đủ điều kiện đầu tư}
 \label{sec:universe}
 
-Tập cổ phiếu ban đầu gồm các mã từng có vốn hóa trên 5.000 tỷ đồng tại ít nhất một mốc xét trong giai đoạn 2015--2025. Sau khi loại hai chứng chỉ quỹ ETF và chín mã không còn dữ liệu giao dịch (do hủy niêm yết hoặc sáp nhập), tập dữ liệu còn $N=222$ mã, gồm cả cổ phiếu niêm yết trên HOSE, HNX và một số cổ phiếu vốn hóa lớn đăng ký giao dịch trên UPCoM. Việc loại các mã đã hủy niêm yết tạo ra thiên lệch kẻ sống sót (survivorship bias) \cite{brown1992}; hạn chế này được thảo luận ở Mục~\ref{sec:hanche}.
+Tập cổ phiếu ban đầu gồm các mã từng có vốn hóa trên 5.000 tỷ đồng tại ít nhất một mốc xét trong giai đoạn 2015--2025. Sau khi loại hai chứng chỉ quỹ ETF và chín mã không còn dữ liệu giao dịch (do hủy niêm yết hoặc sáp nhập), tập dữ liệu còn $N=222$ mã, gồm cổ phiếu niêm yết trên HOSE, HNX và một số cổ phiếu vốn hóa lớn đăng ký giao dịch trên UPCoM. Việc loại các mã đã hủy niêm yết tạo ra thiên lệch kẻ sống sót (survivorship bias) \cite{brown1992}; hạn chế này được thảo luận ở Mục~\ref{sec:hanche}.
 
 Không phải mã nào cũng được phép đầu tư tại mọi thời điểm. Tại mỗi phiên $s$, cổ phiếu $i$ được gắn nhãn đủ điều kiện $m_i(s)=1$ nếu thỏa mãn đồng thời:
 \begin{itemize}
@@ -143,7 +160,7 @@ Rò rỉ thông tin tương lai (look-ahead bias) là sai lầm phổ biến và
 \begin{itemize}
   \item \textit{Gắn dữ liệu tài chính theo ngày công bố.} Các chỉ số của quý $q$ chỉ được đưa vào dữ liệu từ ngày doanh nghiệp công bố báo cáo quý $q$, không phải từ ngày kết thúc quý; sau đó giá trị được giữ nguyên (điền tiến) đến lần công bố kế tiếp.
   \item \textit{Xét vốn hóa bằng thông tin quá khứ.} Nhãn đủ điều kiện tại phiên $s$ chỉ dùng mốc xét vốn hóa gần nhất không muộn hơn $s$.
-  \item \textit{Cửa sổ chỉ gồm các phiên trước ngày quyết định.} Tại ngày quyết định $t$, cả ten-xơ đặc trưng và ma trận tương quan đều được tính từ $T$ phiên có ngày \emph{nhỏ hơn hẳn} $t$.
+  \item \textit{Cửa sổ chỉ gồm các phiên trước ngày quyết định.} Tại ngày quyết định $t$, cả ten-xơ đặc trưng và ma trận tương quan đều chỉ được tính từ các phiên có ngày \emph{nhỏ hơn hẳn} $t$.
   \item \textit{Chuẩn hóa trong cửa sổ.} Trung bình và độ lệch chuẩn dùng để chuẩn hóa được tính lại trong từng cửa sổ, không dùng thống kê của toàn bộ mẫu.
   \item \textit{Lợi suất nắm giữ bắt đầu sau ngày quyết định.} Lợi suất của kỳ $t$ được tính trên các phiên thuộc $(t,t^{+}]$, với $t^{+}$ là ngày quyết định kế tiếp (công thức~\eqref{eq:holdret}). Quy ước này tương ứng với việc quan sát dữ liệu đến hết phiên $t-1$, đặt lệnh trong phiên $t$ và được khớp tại giá đóng cửa phiên $t$.
   \item \textit{Chia dữ liệu theo thời gian, không xáo trộn.}
@@ -196,12 +213,14 @@ với $\mu_f,\sigma_f$ tính trên 60 phiên của cửa sổ. Giá trị sau ch
 
 Cuối cùng, mọi giá trị được cắt về đoạn $[-10,10]$ để hạn chế ảnh hưởng của ngoại lệ. Khi độ lệch chuẩn nhỏ hơn $10^{-8}$, nó được thay bằng $1$ để tránh chia cho số gần không.
 
-\section{Đồ thị tương quan động}
+\section{Đồ thị tương quan dài hạn}
 \label{sec:graph}
+
+Trọng tâm của đề tài là khai thác \emph{quan hệ tương quan dài hạn} giữa các cổ phiếu. Mục này trình bày cách xây dựng đồ thị, sau đó dùng dữ liệu để trả lời ba câu hỏi: quan hệ tương quan dài hạn có tồn tại và có cấu trúc không; nó có bền vững theo thời gian không; và đồ thị ước lượng trên cửa sổ dài khác gì đồ thị ước lượng trên cửa sổ ngắn.
 
 \subsection{Xây dựng ma trận kề}
 
-Đồ thị tại ngày quyết định $t$ được xây dựng chỉ từ lợi suất, tách biệt với các đặc trưng khác: mục đích của đồ thị là mô tả sự đồng biến động về giá, không phải sự tương đồng về chỉ số tài chính. Với hai cổ phiếu $i,j$, hệ số tương quan Pearson của lợi suất logarit trong cửa sổ $T_c$ phiên trước $t$ là
+Đồ thị tại ngày quyết định $t$ được xây dựng chỉ từ lợi suất, tách biệt với các đặc trưng khác: mục đích của đồ thị là mô tả sự đồng biến động về giá. Với hai cổ phiếu $i,j$, hệ số tương quan Pearson của lợi suất logarit trong cửa sổ $T_c$ phiên ngay trước $t$ là
 \begin{equation}
 \rho_{ij}(t)=\corr\big(\ell_{i,s_1:s_{T_c}},\;\ell_{j,s_1:s_{T_c}}\big),
 \label{eq:corr}
@@ -216,40 +235,95 @@ A_{ij}(t)=
 \end{cases}
 \label{eq:adj}
 \end{equation}
-với ngưỡng $\tau=0{,}30$. Giá trị tuyệt đối được dùng vì cả tương quan dương lẫn âm mạnh đều chứa thông tin về quan hệ giữa hai mã; ngưỡng $\tau$ loại các tương quan yếu vốn chủ yếu là nhiễu ước lượng. Sau đó, các cạnh nối tới cổ phiếu không đủ điều kiện bị loại bỏ:
+với ngưỡng $\tau=0{,}30$. Ngưỡng $\tau$ loại các tương quan yếu vốn chủ yếu là nhiễu ước lượng. Các cạnh nối tới cổ phiếu không đủ điều kiện bị loại bỏ:
 \begin{equation}
 \bar A_{ij}(t)=A_{ij}(t)\,m_{t,i}\,m_{t,j},
 \label{eq:maskadj}
 \end{equation}
-nên các nút này bị cô lập hoàn toàn và không tham gia truyền thông điệp.
+nên các nút này bị cô lập và không tham gia truyền thông điệp.
 
-Trong thiết lập chính, cửa sổ ước lượng trùng với cửa sổ đặc trưng, $T_c=60$ phiên. Để khảo sát quan hệ tương quan \emph{dài hạn} nêu trong tên đề tài, luận văn xét thêm biến thể $T_c=250$ phiên (khoảng một năm giao dịch). Hai lựa chọn thể hiện hai quan niệm khác nhau: cửa sổ ngắn bám sát chế độ thị trường hiện tại nhưng nhiễu hơn; cửa sổ dài cho ước lượng ổn định hơn, phản ánh quan hệ bền vững giữa các doanh nghiệp, nhưng phản ứng chậm khi cấu trúc thị trường thay đổi.
+Độ dài cửa sổ $T_c$ quyết định đồ thị phản ánh quan hệ ở thang thời gian nào. \textbf{Cấu hình chính của luận văn dùng $T_c=250$ phiên}, tương đương một năm giao dịch, và gọi đồ thị thu được là \emph{đồ thị tương quan dài hạn}. Trong những tháng đầu của mẫu, khi lịch sử chưa đủ 250 phiên, toàn bộ số phiên sẵn có được sử dụng. Đồ thị vẫn được ước lượng lại tại mỗi ngày quyết định, nhưng vì hai cửa sổ liên tiếp trùng nhau hơn 90\% số phiên nên cấu trúc của nó thay đổi chậm. Để đối chứng, luận văn xét \emph{đồ thị ngắn hạn} với $T_c=60$ phiên, trùng với cửa sổ đặc trưng.
 
-\subsection{Đặc điểm của đồ thị qua các giai đoạn thị trường}
+\subsection{Quan hệ tương quan dài hạn có cấu trúc theo nhóm}
+\label{sec:groups}
 
-Hình~\ref{fig:density} trình bày mật độ đồ thị -- tỷ lệ cặp cổ phiếu đủ điều kiện có cạnh nối -- theo thời gian cho hai cửa sổ. Có ba quan sát đáng chú ý.
+Để kiểm tra xem tương quan dài hạn có cấu trúc hay không, luận văn tính ma trận tương quan lợi suất trên toàn bộ giai đoạn huấn luyện 2016--2022 cho 185 cổ phiếu có ít nhất ba năm dữ liệu trong giai đoạn này. Tương quan thô giữa hai cổ phiếu bất kỳ có trung bình 0,19, phần lớn do thành phần thị trường chung: hầu hết cổ phiếu cùng tăng giảm theo VN-Index. Để tách quan hệ riêng giữa các cổ phiếu khỏi thành phần chung này, lợi suất của mỗi mã được hồi quy theo lợi suất VN-Index và ma trận tương quan được tính lại trên phần dư. Phân cụm phân cấp theo phương pháp Ward trên ma trận tương quan phần dư cho các nhóm ở Bảng~\ref{tab:groups}; Hình~\ref{fig:lt-heat} trình bày ma trận tương quan thô với các cổ phiếu được sắp theo kết quả phân cụm.
+
+\begin{table}[ht]
+\centering\small
+\caption{Một số nhóm cổ phiếu có quan hệ tương quan dài hạn, tìm được bằng phân cụm trên giai đoạn 2016--2022, và mức tương quan nội nhóm trên giai đoạn kiểm tra 2024--2025. ``Phần dư'' là tương quan sau khi loại ảnh hưởng của VN-Index.}
+\label{tab:groups}
+\begin{tabularx}{\textwidth}{@{}p{2.6cm}Xcccc@{}}
+\toprule
+ & & \multicolumn{2}{c}{Tương quan thô} & \multicolumn{2}{c}{Tương quan phần dư} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Nhóm & Thành viên & 16--22 & 24--25 & 16--22 & 24--25 \\
+\midrule
+Thép & HPG, HSG, NKG & 0,61 & 0,73 & 0,42 & 0,53 \\
+Chứng khoán & AGR, BSI, CTS, FTS, HCM, MBS, SHS, SSI, VCI, VND & 0,57 & 0,71 & 0,36 & 0,46 \\
+Dầu khí & BSR, GAS, OIL, PLX, PVD, PVS, PVT & 0,59 & 0,57 & 0,35 & 0,39 \\
+Ngân hàng & ACB, BID, CTG, HDB, LPB, MBB, SHB, STB, TCB, TPB, VCB, VIB, VPB & 0,54 & 0,51 & 0,19 & 0,14 \\
+Bất động sản, xây dựng & CEO, CII, DIG, DXG, HBC, HDC, SCR, VCG và 14 mã khác & 0,33 & 0,36 & 0,17 & 0,15 \\
+Nhóm Vingroup & VHM, VIC, VRE & 0,48 & 0,60 & 0,16 & 0,44 \\
+Ít liên kết & CHP, DNH, DTK, SBH, VCF, VIF, VNM và 32 mã khác & 0,06 & 0,11 & 0,01 & 0,04 \\
+\midrule
+\multicolumn{2}{@{}l}{Mọi cặp cổ phiếu} & 0,19 & 0,24 & 0,04 & 0,05 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Kết quả cho thấy ba điều. Thứ nhất, các nhóm tìm được \emph{hoàn toàn từ dữ liệu giá} trùng khớp với các ngành kinh tế: thép, chứng khoán, dầu khí, ngân hàng, bất động sản và xây dựng. Điều này nhất quán với quan sát của Mantegna \cite{mantegna1999} trên thị trường Mỹ và khẳng định rằng đồ thị tương quan dài hạn mang thông tin có ý nghĩa kinh tế, dù luận văn không dùng dữ liệu phân ngành. Thứ hai, mức độ liên kết rất khác nhau giữa các nhóm: nhóm thép, chứng khoán và dầu khí có tương quan phần dư từ 0,35 đến 0,42, cao gấp khoảng mười lần mức trung bình của mọi cặp (0,04). Thứ ba, tồn tại một nhóm lớn các cổ phiếu hầu như không tương quan với phần còn lại của thị trường; nhóm này gồm nhiều mã có thanh khoản thấp, giá ít biến động theo ngày.
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[b]{0.52\textwidth}
+\includegraphics[width=\textwidth]{longterm_corr_heatmap.pdf}
+\caption{Ma trận tương quan 2016--2022}
+\label{fig:lt-heat}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.45\textwidth}
+\includegraphics[width=\textwidth]{longterm_oos.pdf}
+\caption{Tương quan theo cặp: huấn luyện và kiểm tra}
+\label{fig:lt-oos}
+\end{subfigure}
+\caption{Cấu trúc và tính bền vững của tương quan dài hạn. (a) Các khối sáng màu dọc đường chéo là các nhóm cổ phiếu tương quan mạnh với nhau. (b) Mỗi điểm là một cặp cổ phiếu (4.000 cặp lấy mẫu ngẫu nhiên); đường đứt nét là đường chéo.}
+\label{fig:longterm}
+\end{figure}
+
+\subsection{Quan hệ tương quan dài hạn bền vững ngoài mẫu}
+
+Một quan hệ chỉ đáng gọi là dài hạn nếu nó tiếp tục đúng trong tương lai. Hai cột ``24--25'' của Bảng~\ref{tab:groups} cho thấy các nhóm tìm được trên giai đoạn 2016--2022 vẫn giữ nguyên mức liên kết trên giai đoạn kiểm tra 2024--2025, cách đó hơn một năm: nhóm thép, chứng khoán và dầu khí thậm chí liên kết chặt hơn. Xét trên toàn bộ 17.020 cặp cổ phiếu (Hình~\ref{fig:lt-oos}), hệ số tương quan giữa mức tương quan của một cặp trong giai đoạn huấn luyện và mức tương quan của chính cặp đó trong giai đoạn kiểm tra là 0,68 (0,56 nếu tính trên phần dư). Trong số các cặp có tương quan từ 0,30 trở lên ở giai đoạn huấn luyện, 76\% tiếp tục có tương quan từ 0,30 trở lên ở giai đoạn kiểm tra; tỷ lệ này ở các cặp còn lại chỉ là 26\%. Như vậy, quan hệ tương quan dài hạn giữa các cổ phiếu Việt Nam có tính dự báo ngoài mẫu rõ rệt, và việc dùng nó làm cấu trúc đồ thị cho mô hình là có cơ sở thực nghiệm.
+
+\subsection{So sánh đồ thị dài hạn và đồ thị ngắn hạn}
+
+Hình~\ref{fig:density} trình bày mật độ đồ thị -- tỷ lệ cặp cổ phiếu đủ điều kiện có cạnh nối -- theo thời gian cho hai cửa sổ, và Hình~\ref{fig:persist} trình bày độ bền của tập cạnh: chỉ số Jaccard giữa tập cạnh của hai tháng liên tiếp.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.9\textwidth]{graph_density.pdf}
-\caption{Mật độ của đồ thị tương quan (ngưỡng $\tau=0{,}30$) theo thời gian với cửa sổ ước lượng 60 phiên và 250 phiên.}
+\caption{Mật độ của đồ thị tương quan (ngưỡng $\tau=0{,}30$) theo thời gian với cửa sổ ước lượng 250 phiên (dài hạn) và 60 phiên (ngắn hạn). KĐ: giai đoạn kiểm định.}
 \label{fig:density}
 \end{figure}
 
-Thứ nhất, cấu trúc đồ thị thay đổi rất mạnh. Với cửa sổ 60 phiên, mật độ trung bình là 30\% nhưng dao động từ 6\% (tháng 11/2019) đến 76\% (tháng 5/2025). Hình~\ref{fig:adjsnap} minh họa hai thái cực này: ở trạng thái thưa, đồ thị chỉ gồm một nhóm nhỏ cổ phiếu liên kết với nhau; ở trạng thái dày, gần như mọi cổ phiếu đều nối với nhau.
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{edge_persistence.pdf}
+\caption{Độ bền của cấu trúc đồ thị: mức giống nhau (chỉ số Jaccard) giữa tập cạnh tại hai ngày quyết định liên tiếp, tính trên các cổ phiếu đủ điều kiện ở cả hai ngày.}
+\label{fig:persist}
+\end{figure}
 
-Thứ hai, mật độ tăng vọt trong các giai đoạn thị trường căng thẳng: quý I/2020 (COVID-19), các đợt điều chỉnh năm 2021 và 2022, và tháng 4--5/2025. Điều này nhất quán với hiện tượng tương quan tăng khi thị trường giảm mạnh đã được ghi nhận trong tài liệu \cite{longin2001}. Hệ quả đối với mô hình là trong khủng hoảng, đồ thị gần như đầy đủ và ít mang thông tin phân biệt: phép gộp trên lân cận tiến gần tới phép lấy trung bình toàn thị trường.
+Đồ thị ngắn hạn rất bất ổn. Mật độ trung bình của nó là 31\% nhưng dao động từ 6\% (tháng 11/2019) đến 78\% (tháng 7/2025), và tăng vọt trong các giai đoạn thị trường căng thẳng như quý I/2020, năm 2022 và quý II/2025 -- nhất quán với hiện tượng tương quan tăng khi thị trường giảm mạnh \cite{longin2001}. Giữa hai tháng liên tiếp, trung bình chỉ 52\% tập cạnh được giữ nguyên theo chỉ số Jaccard, có thời điểm xuống tới 17\%. Hình~\ref{fig:adjsnap} minh họa hai thái cực của đồ thị ngắn hạn. Với một đồ thị thay đổi nhanh như vậy, mạng đồ thị phải học cách sử dụng một cấu trúc mà chính nó phần lớn là nhiễu ước lượng: với 60 quan sát, sai số chuẩn của một hệ số tương quan gần không vào khoảng $1/\sqrt{60}\approx0{,}13$, không nhỏ so với ngưỡng 0,30.
 
-Thứ ba, đồ thị cửa sổ 250 phiên mượt hơn và phản ứng trễ hơn, đúng như dự đoán. Mật độ của nó duy trì ở mức cao trong khoảng một năm sau mỗi cú sốc, vì các phiên biến động mạnh còn nằm trong cửa sổ ước lượng.
+Đồ thị dài hạn ổn định hơn nhiều: trung bình 81\% tập cạnh được giữ nguyên giữa hai tháng liên tiếp (90\% số cạnh của tháng trước còn tồn tại ở tháng sau), mật độ trung bình 29\% và biến thiên êm hơn. Với 250 quan sát, sai số chuẩn của hệ số tương quan giảm còn khoảng 0,06. Đổi lại, đồ thị dài hạn phản ứng trễ: sau mỗi cú sốc, mật độ của nó duy trì ở mức cao trong khoảng một năm vì các phiên biến động mạnh còn nằm trong cửa sổ ước lượng.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.95\textwidth]{adjacency_snapshots.pdf}
-\caption{Ma trận kề (cửa sổ 60 phiên) tại ngày có mật độ thấp nhất và cao nhất trong giai đoạn 2019--2025. Các cổ phiếu được sắp theo bậc giảm dần; đường chéo được bỏ để dễ quan sát.}
+\caption{Ma trận kề của đồ thị ngắn hạn (60 phiên) tại ngày có mật độ thấp nhất và cao nhất trong giai đoạn 2019--2025. Các cổ phiếu được sắp theo bậc giảm dần; đường chéo được bỏ để dễ quan sát.}
 \label{fig:adjsnap}
 \end{figure}
 
-Các quan sát này cho thấy giả định đồ thị cố định là không phù hợp với thị trường Việt Nam, và củng cố lý do dùng đồ thị được ước lượng lại theo thời gian. Đồng thời, chúng cũng chỉ ra một hạn chế của việc dùng ngưỡng cố định: số lân cận trung bình của một nút biến thiên từ dưới 3 đến hơn 120, khiến ``tầm nhìn'' của mạng đồ thị rất không đồng đều giữa các thời điểm.
+Tóm lại, ba phân tích trên cung cấp cơ sở dữ liệu cho lựa chọn thiết kế của luận văn: quan hệ tương quan dài hạn giữa các cổ phiếu Việt Nam tồn tại, có cấu trúc theo nhóm ngành, bền vững ngoài mẫu, và được ước lượng tin cậy hơn hẳn so với tương quan ngắn hạn. Vai trò của đồ thị này đối với hiệu quả phân bổ được đánh giá ở Chương~\ref{ch:thucnghiem}.
 
 \section{Bộ mã hóa thời gian}
 \label{sec:encoder}
@@ -281,7 +355,7 @@ z_i=\LN\Big(\sum_{j\in\mathcal{N}(i)}\alpha_{ij}'\,W'h_j^{(1)}\Big).
 \end{equation}
 Hệ số dốc của LeakyReLU là $0{,}2$ và dropout $0{,}1$ được áp dụng lên các hệ số chú ý. Với hai tầng, biểu diễn của mỗi cổ phiếu tích hợp thông tin từ các cổ phiếu cách nó tối đa hai bước trên đồ thị. Biểu diễn của các nút không đủ điều kiện được đặt bằng không ở đầu ra.
 
-Như đã lưu ý ở Chương~\ref{ch:lythuyet}, trong cài đặt này ma trận kề chỉ xác định tập lân cận $\mathcal{N}(i)=\{j:\bar A_{ij}\ne0\}$; độ lớn $|\rho_{ij}|$ không tham gia trực tiếp vào hệ số chú ý. Mạng GAT có 8.576 tham số.
+Như đã lưu ý ở Chương~\ref{ch:lythuyet}, trong cài đặt này ma trận kề dài hạn chỉ xác định tập lân cận $\mathcal{N}(i)=\{j:\bar A_{ij}\ne0\}$; độ lớn $|\rho_{ij}|$ không tham gia trực tiếp vào hệ số chú ý. Mạng GAT có 8.576 tham số.
 
 \textit{Biến thể đối chứng.} Để đánh giá vai trò của cơ chế chú ý và của bản thân đồ thị, luận văn dùng hai biến thể: (i) GCN hai tầng theo công thức~\eqref{eq:gcn}, trong đó trọng số gộp được xác định cố định bởi $\bar A_t$ đã chuẩn hóa đối xứng (8.448 tham số) -- biến thể này \emph{có} dùng độ lớn của tương quan; và (ii) biến thể ``không đồ thị'', giữ nguyên kiến trúc GAT nhưng thay $\bar A_t$ bằng ma trận chỉ có khuyên, nên mỗi cổ phiếu không nhận thông tin từ cổ phiếu khác.
 
@@ -328,7 +402,7 @@ Lợi suất ròng của bước $t$ được tính theo~\eqref{eq:netret} với
 \begin{equation}
 r_t=\tilde w_t\T R_t-c\,\lVert\tilde w_t-\tilde w_{t-1}\rVert_1,\qquad c=10\ \text{điểm cơ bản},
 \end{equation}
-trong đó $R_t$ là véc-tơ lợi suất nắm giữ trong kỳ; cổ phiếu không có dữ liệu giá trong kỳ được gán lợi suất bằng không. Phần thưởng là tỷ số Sharpe vi phân~\eqref{eq:dsr} của chuỗi $r_t$ với $\eta=0{,}01$. Ở bước đầu tiên của mỗi quỹ đạo, các mô-men được khởi tạo $A_1=r_1$, $B_1=r_1^2$ và phần thưởng bằng không; khi phương sai trượt nhỏ hơn ngưỡng số học, phần thưởng cũng được đặt bằng không. Cuối cùng, phần thưởng được cắt về đoạn $[-5,5]$:
+trong đó $R_t$ là véc-tơ lợi suất nắm giữ trong kỳ; cổ phiếu không có dữ liệu giá trong kỳ được gán lợi suất bằng không. Phần thưởng là tỷ số Sharpe vi phân~\eqref{eq:dsr} của chuỗi $r_t$ với $\eta=0{,}01$. Công thức~\eqref{eq:dsr} có mẫu số là lũy thừa $3/2$ của phương sai trượt, nên nếu các mô-men $A$, $B$ được khởi tạo từ quá ít quan sát thì $D_t$ nhận giá trị rất lớn ở đầu quỹ đạo và lấn át tín hiệu học của cả quỹ đạo. Vì vậy luận văn dùng một giai đoạn \emph{làm nóng} gồm 12 bước đầu của mỗi quỹ đạo (một năm): trong giai đoạn này $A$ và $B$ được cập nhật bằng trung bình cộng thông thường và phần thưởng bằng không; từ bước thứ 13, $A$, $B$ được cập nhật theo~\eqref{eq:dsr-ab} và phần thưởng là $D_t$. Khi phương sai trượt nhỏ hơn ngưỡng số học, phần thưởng được đặt bằng không. Cuối cùng, phần thưởng được cắt về đoạn $[-5,5]$:
 \begin{equation}
 \text{phần thưởng}_t=\clip(D_t,-5,5).
 \label{eq:reward}
@@ -343,7 +417,7 @@ Thuật toán~\ref{alg:train} tóm tắt quy trình huấn luyện. Mỗi vòng 
 
 \textit{Pha cập nhật.} Lợi thế được tính bằng GAE~\eqref{eq:gae} với $\gamma=0{,}99$, $\lambda=0{,}95$ rồi chuẩn hóa về trung bình không và phương sai đơn vị. Trong mỗi epoch, phép tính xuôi qua bộ mã hóa và mạng đồ thị được \emph{thực hiện lại} cho từng bước để gradient của hàm mất mát~\eqref{eq:ppo-loss} truyền ngược qua cả ba khối; gradient được cộng dồn trên toàn bộ quỹ đạo, cắt chuẩn về 1 rồi cập nhật một lần bằng Adam \cite{kingma2015}. Như vậy mỗi vòng lặp gồm $E_{\mathrm{ppo}}=4$ bước gradient trên toàn lô.
 
-\textit{Chọn mô hình.} Sau mỗi vòng lặp, chính sách tất định được chạy trên tập kiểm định và tỷ số Sharpe quy năm được ghi lại; bộ tham số có tỷ số Sharpe kiểm định cao nhất được giữ làm mô hình cuối cùng.
+\textit{Chọn mô hình.} Sau mỗi vòng lặp, chính sách tất định được chạy trên tập kiểm định ở chế độ đánh giá (tắt dropout) và tỷ số Sharpe quy năm được ghi lại; bộ tham số có tỷ số Sharpe kiểm định cao nhất được giữ làm mô hình cuối cùng.
 
 \begin{algorithm}[ht]
 \caption{Huấn luyện đầu--cuối mô hình Transformer--GAT--PPO}
@@ -354,7 +428,7 @@ Thuật toán~\ref{alg:train} tóm tắt quy trình huấn luyện. Mỗi vòng 
 \Ensure Tham số $\theta^{*}$ của bộ mã hóa $f_{\mathrm{enc}}$, mạng đồ thị $f_{\mathrm{gat}}$ và tác tử $(\pi,V)$
 \State Dựng trước $(X_t,m_t,\bar A_t,R_t)$ cho mọi ngày quyết định $t$
 \For{vòng lặp $=1,\dots,N_{\mathrm{iter}}$}
-  \State Khởi tạo lại bộ ước lượng DSR; $\tilde w_{0}\gets 0$
+  \State Khởi tạo lại bộ ước lượng DSR (12 bước làm nóng); $\tilde w_{0}\gets 0$
   \For{mỗi ngày quyết định $t$ của tập huấn luyện} \Comment{pha thu thập, không gradient}
     \State $Z_t\gets f_{\mathrm{gat}}\big(m_t\odot f_{\mathrm{enc}}(X_t),\bar A_t\big)$
     \State Lấy mẫu $w_t\sim\Dir(\alpha(Z_t))$; lưu $\log\pi(w_t\mid Z_t)$ và $V(Z_t)$
@@ -366,7 +440,7 @@ Thuật toán~\ref{alg:train} tóm tắt quy trình huấn luyện. Mỗi vòng 
     \State Tính lại $Z_t$ có gradient cho mọi $t$; cộng dồn gradient của hàm mất mát~\eqref{eq:ppo-loss}
     \State Cắt chuẩn gradient về 1; cập nhật $\theta$ bằng Adam
   \EndFor
-  \State Tính tỷ số Sharpe của chính sách tất định trên tập kiểm định; lưu $\theta$ nếu tốt nhất
+  \State Tính tỷ số Sharpe của chính sách tất định trên tập kiểm định (tắt dropout); lưu $\theta$ nếu tốt nhất
 \EndFor
 \State \Return bộ tham số có tỷ số Sharpe kiểm định cao nhất
 \end{algorithmic}
@@ -385,7 +459,7 @@ Thành phần & Tham số & Giá trị \\
 Dữ liệu & Cửa sổ đặc trưng $T$; số đặc trưng $F$ & 60 phiên; 19 \\
  & Ràng buộc danh mục & $K=20$ mã, $w_{\max}=10\%$ \\
  & Phí giao dịch $c$ & 10 điểm cơ bản trên giá trị luân chuyển \\
-Đồ thị & Thước đo; cửa sổ; ngưỡng & $|\rho|$ Pearson; 60 phiên (biến thể: 250); $\tau=0{,}30$ \\
+Đồ thị & Thước đo; cửa sổ; ngưỡng & $|\rho|$ Pearson; 250 phiên (đối chứng: 60); $\tau=0{,}30$ \\
  & Số quan sát chung tối thiểu & 30 phiên \\
 Bộ mã hóa & Kiến trúc & Transformer pre-norm, 2 tầng, 4 đầu, $d=64$, FFN 256 \\
  & Gộp; dropout & trung bình theo thời gian; $0{,}1$ \\
@@ -395,7 +469,8 @@ Tác tử & Actor / critic & MLP 64--64--1 (theo từng mã) / MLP 64--64--1 (sa
 PPO & $\epsilon$; epoch mỗi vòng; $\gamma$; $\lambda$ & $0{,}2$; 4; $0{,}99$; $0{,}95$ \\
  & $c_v$; $c_e$; cắt gradient & $0{,}5$; $0{,}01$; chuẩn $\le 1$ \\
  & Bộ tối ưu; tốc độ học & Adam; $3\times10^{-4}$ \\
-Phần thưởng & DSR: $\eta$; biên độ cắt & $0{,}01$; $\pm5$ \\
+Phần thưởng & DSR: $\eta$; làm nóng; biên độ cắt & $0{,}01$; 12 bước; $\pm5$ \\
+Huấn luyện & Số vòng lặp PPO & 12 (48 bước gradient) \\
 Chọn mô hình & Tiêu chí & Tỷ số Sharpe cao nhất trên tập kiểm định \\
 \bottomrule
 \end{tabular}
@@ -403,4 +478,4 @@ Chọn mô hình & Tiêu chí & Tỷ số Sharpe cao nhất trên tập kiểm �
 
 \section{Tổng kết chương}
 
-Chương này đã mô tả bộ dữ liệu 222 mã cổ phiếu Việt Nam giai đoạn 2016--2025 với 19 đặc trưng thuộc ba nhóm, cùng các nguyên tắc xử lý nhằm tránh rò rỉ thông tin tương lai. Tập cổ phiếu đủ điều kiện thay đổi theo thời gian, từ 35 đến 179 mã. Đồ thị tương quan được ước lượng lại tại mỗi ngày quyết định; khảo sát cho thấy mật độ của nó biến thiên từ 6\% đến 76\% và tăng vọt trong các giai đoạn thị trường căng thẳng. Mô hình đề xuất ghép ba khối -- bộ mã hóa Transformer, mạng GAT hai tầng và tác tử PPO với chính sách Dirichlet -- thành một hệ thống khoảng 122,6 nghìn tham số, huấn luyện đầu--cuối với phần thưởng là tỷ số Sharpe vi phân sau phí giao dịch. Chương tiếp theo trình bày thực nghiệm và kết quả.
+Chương này đã mô tả bộ dữ liệu 222 mã cổ phiếu Việt Nam giai đoạn 2016--2025 với 19 đặc trưng thuộc ba nhóm, phép điều chỉnh giá theo sự kiện doanh nghiệp và các nguyên tắc xử lý nhằm tránh rò rỉ thông tin tương lai. Tập cổ phiếu đủ điều kiện thay đổi theo thời gian, từ 35 đến 179 mã. Phân tích dữ liệu cho thấy quan hệ tương quan dài hạn giữa các cổ phiếu có cấu trúc theo nhóm ngành, bền vững ngoài mẫu, và đồ thị ước lượng trên cửa sổ 250 phiên ổn định hơn hẳn đồ thị 60 phiên (81\% so với 52\% tập cạnh được giữ nguyên qua mỗi tháng). Mô hình đề xuất ghép ba khối -- bộ mã hóa Transformer, mạng GAT hai tầng trên đồ thị tương quan dài hạn và tác tử PPO với chính sách Dirichlet -- thành một hệ thống khoảng 122,6 nghìn tham số, huấn luyện đầu--cuối với phần thưởng là tỷ số Sharpe vi phân sau phí giao dịch. Chương tiếp theo đánh giá tính khả thi của mô hình bằng thực nghiệm.

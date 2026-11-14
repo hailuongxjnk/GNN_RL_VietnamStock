@@ -1,0 +1,8 @@
+== M
+Equal-weight       cum   28.0%  sharpe  0.90  mdd   -8.9%  calmar  1.54  turn 0.03
+VN-Index           cum   50.4%  sharpe  1.45  mdd   -5.9%  calmar  4.04  turn 0.00
+Min-Variance       cum   11.2%  sharpe  0.77  mdd   -6.8%  calmar  0.84  turn 0.20
+Mean-Variance      cum   50.4%  sharpe  1.56  mdd   -6.9%  calmar  3.43  turn 0.49
+Momentum top-20    cum   69.0%  sharpe  1.31  mdd  -11.8%  calmar  2.67  turn 0.93
+random-20 Sharpe: mean 0.69  p5 0.22  p50 0.68  p95 1.17
+random-20 (hold) Sharpe: mean 0.85  p5 0.37  p50 0.82  p95 1.38

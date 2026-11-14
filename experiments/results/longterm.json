@@ -1,0 +1,331 @@
+{
+ "persistence": {
+  "A60_jaccard": 0.5195713842127053,
+  "A60_kept": 0.6935173329996902,
+  "A250_jaccard": 0.8101832866314371,
+  "A250_kept": 0.9016554469824596
+ },
+ "persistence_min": {
+  "A60_jaccard": 0.16776738213171896,
+  "A60_kept": 0.22731239092495636,
+  "A250_jaccard": 0.3525698827772768,
+  "A250_kept": 0.4126984126984127
+ },
+ "n_stocks_longterm": 185,
+ "oos_stability": {
+  "pearson": 0.6839616302247716,
+  "n_pairs": 17020,
+  "mean_corr_train": 0.1908986476319013,
+  "mean_corr_test": 0.24490783248696535,
+  "share_strong_pairs_train": 0.20423031727379554,
+  "strong_pairs_still_ge_0.30_in_test": 0.757192174913694,
+  "weak_pairs_ge_0.30_in_test": 0.26085351447135263
+ },
+ "groups": [
+  {
+   "size": 3,
+   "members": [
+    "HPG",
+    "HSG",
+    "NKG"
+   ],
+   "raw_corr_train": 0.6063494143272181,
+   "raw_corr_test": 0.7267017650849633,
+   "resid_corr_train": 0.4228905835726024,
+   "resid_corr_test": 0.5293707825458228
+  },
+  {
+   "size": 10,
+   "members": [
+    "AGR",
+    "BSI",
+    "CTS",
+    "FTS",
+    "HCM",
+    "MBS",
+    "SHS",
+    "SSI",
+    "VCI",
+    "VND"
+   ],
+   "raw_corr_train": 0.5718216120335372,
+   "raw_corr_test": 0.7077524895170739,
+   "resid_corr_train": 0.3628544680562298,
+   "resid_corr_test": 0.4571526928005355
+  },
+  {
+   "size": 7,
+   "members": [
+    "BSR",
+    "GAS",
+    "OIL",
+    "PLX",
+    "PVD",
+    "PVS",
+    "PVT"
+   ],
+   "raw_corr_train": 0.5894301639224037,
+   "raw_corr_test": 0.5657200756161658,
+   "resid_corr_train": 0.35319312929425756,
+   "resid_corr_test": 0.38840522925961013
+  },
+  {
+   "size": 13,
+   "members": [
+    "ACB",
+    "BID",
+    "CTG",
+    "HDB",
+    "LPB",
+    "MBB",
+    "SHB",
+    "STB",
+    "TCB",
+    "TPB",
+    "VCB",
+    "VIB",
+    "VPB"
+   ],
+   "raw_corr_train": 0.5396915834264474,
+   "raw_corr_test": 0.5086538941957601,
+   "resid_corr_train": 0.18512485576422688,
+   "resid_corr_test": 0.14416783505517328
+  },
+  {
+   "size": 22,
+   "members": [
+    "CEO",
+    "CII",
+    "CRE",
+    "CTD",
+    "DIG",
+    "DXG",
+    "EVF",
+    "HBC",
+    "HDC",
+    "HHS",
+    "HUT",
+    "ITA",
+    "L14",
+    "LDG",
+    "QCG",
+    "SAM",
+    "SCR",
+    "SJS",
+    "TCH",
+    "TTF",
+    "VCG",
+    "VIX"
+   ],
+   "raw_corr_train": 0.3271298457533012,
+   "raw_corr_test": 0.3563850722429048,
+   "resid_corr_train": 0.17051836738389362,
+   "resid_corr_test": 0.15422060643262314
+  },
+  {
+   "size": 8,
+   "members": [
+    "BWE",
+    "CTR",
+    "NTC",
+    "SAS",
+    "SIP",
+    "TDM",
+    "VGI",
+    "VTP"
+   ],
+   "raw_corr_train": 0.30497465142399227,
+   "raw_corr_test": 0.26108409184188963,
+   "resid_corr_train": 0.16633879127307175,
+   "resid_corr_test": 0.1471883749461486
+  },
+  {
+   "size": 3,
+   "members": [
+    "VHM",
+    "VIC",
+    "VRE"
+   ],
+   "raw_corr_train": 0.4829617012294884,
+   "raw_corr_test": 0.6021398479229427,
+   "resid_corr_train": 0.15824141430740155,
+   "resid_corr_test": 0.43803513946354683
+  },
+  {
+   "size": 17,
+   "members": [
+    "ANV",
+    "CSV",
+    "DCM",
+    "DGC",
+    "DGW",
+    "DPM",
+    "FRT",
+    "GEG",
+    "GMD",
+    "HAH",
+    "MPC",
+    "NT2",
+    "PC1",
+    "POW",
+    "VHC",
+    "VSC",
+    "VSH"
+   ],
+   "raw_corr_train": 0.3114616149160311,
+   "raw_corr_test": 0.35357862442175164,
+   "resid_corr_train": 0.14910510582161035,
+   "resid_corr_test": 0.13804472608390164
+  },
+  {
+   "size": 24,
+   "members": [
+    "AAA",
+    "ASM",
+    "BCG",
+    "DBC",
+    "GEX",
+    "GVR",
+    "HDG",
+    "HT1",
+    "IDC",
+    "IJC",
+    "KBC",
+    "KDH",
+    "MSR",
+    "NLG",
+    "PAN",
+    "PHR",
+    "SBT",
+    "SJG",
+    "SNZ",
+    "SZC",
+    "TVN",
+    "VEF",
+    "VGC",
+    "VGT"
+   ],
+   "raw_corr_train": 0.29369996309919105,
+   "raw_corr_test": 0.34886836953561473,
+   "resid_corr_train": 0.12530444177690536,
+   "resid_corr_test": 0.12221442276086339
+  },
+  {
+   "size": 5,
+   "members": [
+    "ACV",
+    "BHN",
+    "HVN",
+    "SAB",
+    "VJC"
+   ],
+   "raw_corr_train": 0.2586872351527346,
+   "raw_corr_test": 0.18265743159049924,
+   "resid_corr_train": 0.11775429400277279,
+   "resid_corr_test": 0.0499377857775827
+  },
+  {
+   "size": 10,
+   "members": [
+    "BMP",
+    "BVH",
+    "FPT",
+    "MWG",
+    "NTP",
+    "PNJ",
+    "PVI",
+    "REE",
+    "TCM",
+    "VCS"
+   ],
+   "raw_corr_train": 0.3238827457193354,
+   "raw_corr_test": 0.2981676863839225,
+   "resid_corr_train": 0.08556955151650834,
+   "resid_corr_test": 0.08359010452873558
+  },
+  {
+   "size": 22,
+   "members": [
+    "BAB",
+    "BCM",
+    "CC1",
+    "DL1",
+    "EIB",
+    "HHV",
+    "HPX",
+    "IPA",
+    "KLB",
+    "KOS",
+    "LIC",
+    "MVN",
+    "NVB",
+    "NVL",
+    "ORS",
+    "PDR",
+    "PHP",
+    "PRT",
+    "SGP",
+    "TID",
+    "TMS",
+    "VBB"
+   ],
+   "raw_corr_train": 0.08298424948775449,
+   "raw_corr_test": 0.2068622507107379,
+   "resid_corr_train": 0.03647733310868639,
+   "resid_corr_test": 0.054134236271804394
+  },
+  {
+   "size": 39,
+   "members": [
+    "CHP",
+    "CMG",
+    "DBD",
+    "DHC",
+    "DHG",
+    "DHT",
+    "DNH",
+    "DSC",
+    "DTK",
+    "DVN",
+    "FOX",
+    "HNA",
+    "HND",
+    "IMP",
+    "KDC",
+    "KSV",
+    "LGC",
+    "MCH",
+    "MSN",
+    "PDN",
+    "PGV",
+    "PPC",
+    "PTI",
+    "QNS",
+    "QTP",
+    "SBH",
+    "SCS",
+    "SEA",
+    "TLG",
+    "TRA",
+    "TVS",
+    "VCF",
+    "VCR",
+    "VEA",
+    "VGR",
+    "VIF",
+    "VNM",
+    "VPI",
+    "VSF"
+   ],
+   "raw_corr_train": 0.058656652965664684,
+   "raw_corr_test": 0.10972486224950981,
+   "resid_corr_train": 0.014498099290480628,
+   "resid_corr_test": 0.03654109871241332
+  }
+ ],
+ "resid_oos_pearson": 0.5610350735167475,
+ "resid_mean_all_pairs": {
+  "train": 0.037191102264668034,
+  "test": 0.04554473940325363
+ }
+}

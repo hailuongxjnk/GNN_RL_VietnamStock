@@ -18,6 +18,8 @@ SEEDS = [1, 2, 3, 4, 5]
 #            tên               encoder        graph   ma trận kề
 CONFIGS = [('full',           'transformer', 'gat',  'A60'),
            ('tf_gat_long',    'transformer', 'gat',  'A250'),
+           ('tf_gcn_long',    'transformer', 'gcn',  'A250'),
+           ('lstm_gat_long',  'lstm',        'gat',  'A250'),
            ('tf_gcn',         'transformer', 'gcn',  'A60'),
            ('tf_nograph',     'transformer', 'none', 'A60'),
            ('lstm_gat',       'lstm',        'gat',  'A60'),

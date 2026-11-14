@@ -10,33 +10,36 @@ Thị trường chứng khoán Việt Nam là một bối cảnh mà những kh�
 
 Sự phát triển của học sâu mở ra hai hướng tiếp cận bổ sung cho nhau. Thứ nhất, các mô hình chuỗi thời gian như LSTM \cite{hochreiter1997} và Transformer \cite{vaswani2017} có thể học các mẫu hình phi tuyến từ lịch sử giá và các biến giải thích. Tuy nhiên, phần lớn các mô hình này xử lý từng cổ phiếu như một chuỗi độc lập, trong khi giá trị của đa dạng hóa -- lý do tồn tại của bài toán danh mục -- lại nằm chính ở quan hệ giữa các cổ phiếu. Mạng nơ-ron đồ thị (Graph Neural Network -- GNN) \cite{kipf2017,velickovic2018} cung cấp một công cụ tự nhiên để đưa cấu trúc quan hệ này vào mô hình: mỗi cổ phiếu là một nút, mỗi cạnh biểu diễn mức độ liên quan giữa hai cổ phiếu, và biểu diễn của một cổ phiếu được cập nhật bằng cách tổng hợp thông tin từ các cổ phiếu lân cận. Thứ hai, học tăng cường (Reinforcement Learning -- RL) \cite{sutton2018} cho phép coi việc tái cân bằng danh mục là một chuỗi quyết định tuần tự và tối ưu trực tiếp một tiêu chí hiệu quả đầu tư có tính đến chi phí giao dịch, thay vì đi đường vòng qua bài toán dự báo giá.
 
-Việc kết hợp GNN với RL cho quản lý danh mục đã được nghiên cứu trên một số thị trường lớn \cite{soleymani2021,sun2024graphsage,sun2024cikm,ma2024,li2025alphagat}, nhưng các nghiên cứu tương ứng cho thị trường Việt Nam còn rất ít. Quan trọng hơn, tài liệu về học tăng cường sâu đã chỉ ra rằng kết quả của các thuật toán gradient chính sách biến động mạnh theo hạt giống ngẫu nhiên và chi tiết cài đặt \cite{henderson2018,engstrom2020}; trong tài chính, vấn đề này càng nghiêm trọng vì giai đoạn kiểm tra thường ngắn và tỷ số Sharpe ước lượng được có sai số chuẩn lớn \cite{lo2002,bailey2014}. Do đó, bên cạnh việc xây dựng mô hình, một câu hỏi có ý nghĩa khoa học không kém là: \emph{với lượng dữ liệu thực tế có được ở thị trường Việt Nam, có thể kết luận gì -- và chưa thể kết luận gì -- về hiệu quả của một mô hình lai GNN + RL?}
+Một câu hỏi thiết kế trung tâm của các mô hình dựa trên đồ thị là \emph{dùng quan hệ nào để nối các cổ phiếu}. Tương quan lợi suất ước lượng trên cửa sổ ngắn bám sát trạng thái hiện tại của thị trường nhưng rất nhiễu và thay đổi liên tục; trong khi đó, kinh nghiệm thị trường cho thấy tồn tại những nhóm cổ phiếu -- ngân hàng, chứng khoán, thép, dầu khí, bất động sản -- đồng biến động với nhau một cách bền vững qua nhiều năm. Quan hệ tương quan \emph{dài hạn} này phản ánh các mối liên hệ kinh tế nền tảng giữa các doanh nghiệp, được ước lượng tin cậy hơn và ổn định hơn theo thời gian, do đó là ứng viên tự nhiên cho cấu trúc đồ thị của một mô hình phân bổ danh mục.
 
-Xuất phát từ các lý do trên, luận văn lựa chọn đề tài \textbf{``\tendetaithuong''}. Luận văn xây dựng một khung mô hình lai kết hợp bộ mã hóa chuỗi thời gian, mạng chú ý đồ thị trên đồ thị tương quan lợi suất và tác tử học tăng cường PPO; đồng thời đánh giá khung mô hình này một cách có kiểm soát trên dữ liệu 222 mã cổ phiếu Việt Nam giai đoạn 2016--2025, với nhiều hạt giống ngẫu nhiên, các phép loại bỏ thành phần và các chiến lược đối chứng.
+Việc kết hợp GNN với RL cho quản lý danh mục đã được nghiên cứu trên một số thị trường lớn \cite{soleymani2021,sun2024graphsage,sun2024cikm,ma2024,li2025alphagat}, nhưng các nghiên cứu tương ứng cho thị trường Việt Nam còn rất ít. Với một thị trường có lịch sử dữ liệu ngắn, thanh khoản phân hóa và tập cổ phiếu thay đổi nhanh, câu hỏi cần trả lời trước tiên không phải là mô hình lai có ``thắng thị trường'' hay không, mà là: \emph{có thể xây dựng và vận hành được một mô hình như vậy trên dữ liệu Việt Nam hay không, nó hoạt động ra sao so với các mốc so sánh quen thuộc, và những điều kiện nào cần có để nó phát huy tác dụng?} Tài liệu về học tăng cường sâu cũng cảnh báo rằng kết quả của các thuật toán gradient chính sách biến động mạnh theo hạt giống ngẫu nhiên \cite{henderson2018,engstrom2020}, và tỷ số Sharpe ước lượng trên giai đoạn ngắn có sai số chuẩn lớn \cite{lo2002,bailey2014}; vì vậy đánh giá tính khả thi cần một quy trình thực nghiệm có kiểm soát.
+
+Xuất phát từ các lý do trên, luận văn lựa chọn đề tài \textbf{``\tendetaithuong''}. Luận văn xây dựng một khung mô hình lai kết hợp bộ mã hóa chuỗi thời gian, mạng chú ý đồ thị trên đồ thị tương quan dài hạn và tác tử học tăng cường PPO; và đánh giá tính khả thi của khung mô hình này trên dữ liệu 222 mã cổ phiếu Việt Nam giai đoạn 2016--2025.
 
 \section*{Mục tiêu nghiên cứu}
 
-Mục tiêu tổng quát của luận văn là xây dựng và đánh giá một mô hình học sâu lai (GNN + RL) có khả năng khai thác cấu trúc tương quan giữa các cổ phiếu để phân bổ danh mục đầu tư tại thị trường chứng khoán Việt Nam, và làm rõ mức độ mà mô hình này cải thiện -- hoặc chưa cải thiện -- hiệu quả đầu tư so với các phương pháp đối chứng.
+Mục tiêu tổng quát của luận văn là nghiên cứu \emph{tính khả thi} của một mô hình học sâu lai (GNN + RL) khai thác quan hệ tương quan dài hạn giữa các cổ phiếu để phân bổ danh mục đầu tư tại thị trường chứng khoán Việt Nam. Luận văn không đặt mục tiêu tạo ra một hệ thống giao dịch vượt trội thị trường; mục tiêu là chứng minh rằng phương pháp có thể được xây dựng và vận hành đúng đắn trên dữ liệu thực, đánh giá khách quan hành vi của nó, và xác định các điều kiện cần cho việc phát triển tiếp theo.
 
 Từ mục tiêu tổng quát, luận văn đặt ra các mục tiêu cụ thể sau:
 \begin{itemize}
   \item Tổng quan có hệ thống các hướng nghiên cứu về tối ưu hóa danh mục: lý thuyết danh mục truyền thống, học sâu cho chuỗi thời gian tài chính, mạng nơ-ron đồ thị trong tài chính và học tăng cường trong quản lý danh mục.
   \item Xây dựng bộ dữ liệu tích hợp cho thị trường Việt Nam giai đoạn 2016--2025, gồm dữ liệu giá và chỉ báo kỹ thuật, chỉ số tài chính doanh nghiệp và biến vĩ mô, với quy trình xử lý tránh rò rỉ thông tin tương lai.
-  \item Xây dựng đồ thị tương quan động giữa các cổ phiếu, được ước lượng lại tại mỗi thời điểm tái cân bằng, và khảo sát đặc điểm của đồ thị này qua các giai đoạn thị trường, với cả cửa sổ ước lượng ngắn (60 phiên) và dài (250 phiên).
-  \item Thiết kế kiến trúc huấn luyện đầu--cuối gồm bộ mã hóa thời gian Transformer, mạng chú ý đồ thị GAT và tác tử PPO với phần thưởng là tỷ số Sharpe vi phân tính trên lợi suất ròng sau phí giao dịch.
-  \item Thực nghiệm so sánh mô hình đề xuất với các chiến lược đối chứng (phân bổ đều, VN-Index, Markowitz với hiệp phương sai co rút, động lượng, danh mục ngẫu nhiên) và các biến thể loại bỏ thành phần (thay Transformer bằng LSTM/GRU, thay GAT bằng GCN, bỏ đồ thị), theo các chỉ số tỷ số Sharpe, lợi suất tích lũy, mức sụt giảm tối đa và tỷ số Calmar.
-  \item Phân tích kết quả, chỉ ra các hạn chế của mô hình và của quy trình đánh giá, từ đó đề xuất hướng cải tiến.
+  \item Phân tích quan hệ tương quan dài hạn giữa các cổ phiếu: kiểm tra sự tồn tại của các nhóm cổ phiếu tương quan, tính bền vững ngoài mẫu của quan hệ này, và so sánh đồ thị ước lượng trên cửa sổ dài với đồ thị ước lượng trên cửa sổ ngắn.
+  \item Thiết kế kiến trúc huấn luyện đầu--cuối gồm bộ mã hóa thời gian Transformer, mạng chú ý đồ thị GAT trên đồ thị tương quan dài hạn và tác tử PPO với phần thưởng là tỷ số Sharpe vi phân tính trên lợi suất ròng sau phí giao dịch.
+  \item Đánh giá tính khả thi của mô hình theo ba khía cạnh: (i) tính đúng đắn -- mô hình tạo ra danh mục hợp lệ, thỏa mãn ràng buộc, không dùng thông tin tương lai; (ii) hiệu quả -- so sánh với các chiến lược đối chứng theo tỷ số Sharpe, lợi suất tích lũy, mức sụt giảm tối đa và tỷ số Calmar; (iii) độ tin cậy -- mức ổn định của kết quả qua các hạt giống ngẫu nhiên, so với danh mục ngẫu nhiên và mạng chưa huấn luyện.
+  \item Phân tích vai trò của từng thành phần (bộ mã hóa, đồ thị, cửa sổ tương quan), chỉ ra các hạn chế và đề xuất hướng phát triển.
 \end{itemize}
 
 \section*{Đối tượng và phạm vi nghiên cứu}
 
-Đối tượng nghiên cứu của luận văn gồm: (i) bài toán phân bổ danh mục cổ phiếu theo tiếp cận học tăng cường; (ii) kiến trúc mạng nơ-ron đồ thị dùng để mô hình hóa quan hệ giữa các cổ phiếu; (iii) dữ liệu giá, chỉ số tài chính doanh nghiệp và biến vĩ mô của thị trường Việt Nam; và (iv) nhóm cổ phiếu vốn hóa vừa và lớn có quan hệ tương quan lợi suất với nhau.
+Đối tượng nghiên cứu của luận văn gồm: (i) bài toán phân bổ danh mục cổ phiếu theo tiếp cận học tăng cường; (ii) kiến trúc mạng nơ-ron đồ thị dùng để mô hình hóa quan hệ giữa các cổ phiếu; (iii) dữ liệu giá, chỉ số tài chính doanh nghiệp và biến vĩ mô của thị trường Việt Nam; và (iv) nhóm cổ phiếu vốn hóa vừa và lớn có quan hệ tương quan lợi suất dài hạn với nhau.
 
 Phạm vi nghiên cứu được giới hạn như sau:
 \begin{itemize}
   \item \textit{Thị trường và tập cổ phiếu:} 222 mã cổ phiếu Việt Nam từng đạt ngưỡng vốn hóa trên 5.000 tỷ đồng trong giai đoạn nghiên cứu. Tiêu chí vốn hóa được xét lại sáu tháng một lần và chỉ dùng thông tin đã có tại thời điểm xét; một cổ phiếu chỉ được đưa vào tập đủ điều kiện sau khi có ít nhất 126 phiên giao dịch.
   \item \textit{Giai đoạn dữ liệu:} từ 04/01/2016 đến 31/12/2025, chia theo thời gian thành tập huấn luyện (2016--2022), tập kiểm định (2023) và tập kiểm tra (2024--2025).
   \item \textit{Bài toán:} danh mục chỉ gồm vị thế mua (không bán khống, không dùng đòn bẩy), đầu tư toàn bộ vốn vào cổ phiếu, tái cân bằng định kỳ theo tháng (thiết lập chính) hoặc theo tuần (thiết lập bổ sung), tối đa 20 mã và mỗi mã không quá 10\% giá trị danh mục. Phí giao dịch được mô hình hóa tuyến tính theo giá trị luân chuyển với mức 10 điểm cơ bản.
+  \item \textit{Quan hệ tương quan dài hạn:} trong luận văn, quan hệ tương quan dài hạn được định lượng bằng hệ số tương quan Pearson của lợi suất ngày trên cửa sổ trượt 250 phiên (một năm giao dịch), và được kiểm chứng bằng tương quan trên toàn bộ giai đoạn 2016--2022; cửa sổ 60 phiên được dùng làm đối chứng ngắn hạn.
   \item \textit{Chỉ số đánh giá:} tỷ số Sharpe quy năm, lợi suất tích lũy, mức sụt giảm tối đa, tỷ số Calmar, độ biến động và mức luân chuyển danh mục.
   \item \textit{Ngoài phạm vi:} luận văn không xét giao dịch tần suất cao, tác động giá của lệnh, giới hạn thanh khoản theo từng mã, quy định về biên độ và chu kỳ thanh toán, cũng như dữ liệu văn bản (tin tức, mạng xã hội).
 \end{itemize}
@@ -47,7 +50,7 @@ Luận văn kết hợp nghiên cứu lý thuyết với thực nghiệm trên d
 
 Về lý thuyết, luận văn hệ thống hóa các nền tảng cần thiết: lý thuyết danh mục hiện đại và các thước đo hiệu quả đầu tư; mô hình chuỗi thời gian LSTM, GRU và Transformer; mạng tích chập đồ thị và mạng chú ý đồ thị; quá trình quyết định Markov, phương pháp gradient chính sách, thuật toán PPO, ước lượng lợi thế tổng quát và tỷ số Sharpe vi phân.
 
-Về dữ liệu, luận văn thu thập dữ liệu giao dịch hằng ngày, báo cáo tài chính quý kèm ngày công bố, các hệ số định giá và các chuỗi vĩ mô; sau đó căn chỉnh theo lịch giao dịch, gắn dữ liệu tài chính theo ngày công bố thay vì ngày kết thúc quý, và chuẩn hóa đặc trưng trong từng cửa sổ quan sát chỉ bằng dữ liệu quá khứ.
+Về dữ liệu, luận văn thu thập dữ liệu giao dịch hằng ngày, báo cáo tài chính quý kèm ngày công bố, các hệ số định giá và các chuỗi vĩ mô; điều chỉnh chuỗi giá theo các sự kiện doanh nghiệp; sau đó căn chỉnh theo lịch giao dịch, gắn dữ liệu tài chính theo ngày công bố thay vì ngày kết thúc quý, và chuẩn hóa đặc trưng trong từng cửa sổ quan sát chỉ bằng dữ liệu quá khứ.
 
 Về mô hình, luận văn cài đặt toàn bộ kiến trúc bằng PyTorch, trong đó mạng đồ thị và vòng lặp PPO được tự cài đặt để kiểm soát đầy đủ luồng gradient từ hàm mục tiêu của tác tử ngược về mạng đồ thị và bộ mã hóa thời gian.
 
@@ -55,19 +58,20 @@ Về đánh giá, luận văn áp dụng quy trình kiểm thử ngược (backt
 
 \section*{Nội dung nghiên cứu}
 
-Nội dung của luận văn gồm bốn phần chính. Thứ nhất, tổng quan và cơ sở lý thuyết về tối ưu hóa danh mục, mạng nơ-ron đồ thị và học tăng cường. Thứ hai, xây dựng bộ dữ liệu, tập cổ phiếu đủ điều kiện theo thời gian và đồ thị tương quan động. Thứ ba, thiết kế mô hình lai Transformer--GAT--PPO và quy trình huấn luyện đầu--cuối. Thứ tư, thực nghiệm, phân tích kết quả, đối chiếu với đề cương ban đầu và thảo luận các hạn chế.
+Nội dung của luận văn gồm bốn phần chính. Thứ nhất, tổng quan và cơ sở lý thuyết về tối ưu hóa danh mục, mạng nơ-ron đồ thị và học tăng cường. Thứ hai, xây dựng bộ dữ liệu, tập cổ phiếu đủ điều kiện theo thời gian và đồ thị tương quan dài hạn. Thứ ba, thiết kế mô hình lai Transformer--GAT--PPO và quy trình huấn luyện đầu--cuối. Thứ tư, thực nghiệm, phân tích kết quả, đối chiếu với đề cương ban đầu và thảo luận các hạn chế.
 
 \section*{Đóng góp của đề tài}
 
 Các đóng góp chính của luận văn gồm:
 \begin{itemize}
-  \item \textit{Một khung mô hình lai huấn luyện đầu--cuối cho thị trường Việt Nam.} Mô hình kết hợp bộ mã hóa Transformer có mặt nạ nhân quả, mạng chú ý đồ thị trên đồ thị tương quan được ước lượng lại tại mỗi ngày tái cân bằng, và tác tử PPO với chính sách Dirichlet trên đơn hình tỷ trọng, phần thưởng là tỷ số Sharpe vi phân sau phí giao dịch. Tập cổ phiếu được phép thay đổi theo thời gian thông qua mặt nạ đủ điều kiện.
-  \item \textit{Một bộ dữ liệu và quy trình xử lý tránh rò rỉ thông tin.} Dữ liệu gồm 19 đặc trưng thuộc ba nhóm cho 222 mã trong mười năm; chỉ số tài chính được gắn theo ngày công bố báo cáo; tiêu chí vốn hóa được xét lại định kỳ bằng thông tin quá khứ; mọi phép chuẩn hóa và ước lượng tương quan chỉ dùng các phiên trước ngày quyết định.
-  \item \textit{Một quy trình đánh giá có kiểm soát.} Ngoài hai mốc so sánh thông dụng là danh mục phân bổ đều và VN-Index, luận văn bổ sung danh mục Markowitz với hiệp phương sai co rút Ledoit--Wolf, chiến lược động lượng, phân phối của 1.000 danh mục ngẫu nhiên, các phép loại bỏ thành phần và báo cáo trên nhiều hạt giống ngẫu nhiên.
-  \item \textit{Các phát hiện thực nghiệm được báo cáo trung thực.} Luận văn chỉ ra những gì dữ liệu ủng hộ và những gì chưa thể kết luận: mức biến động rất lớn của kết quả theo hạt giống, sai số chuẩn lớn của tỷ số Sharpe trên giai đoạn kiểm tra hai năm, hiện tượng chính sách học được gần với ``chọn 20 mã rồi chia đều'', và ảnh hưởng của giai đoạn thị trường tập trung 2024--2025 đến mọi chiến lược đa dạng hóa.
+  \item \textit{Bằng chứng thực nghiệm về quan hệ tương quan dài hạn trên thị trường Việt Nam.} Luận văn chỉ ra rằng các nhóm cổ phiếu tìm được hoàn toàn từ dữ liệu giá trùng với các nhóm ngành (thép, chứng khoán, dầu khí, ngân hàng, bất động sản); quan hệ ước lượng trên 2016--2022 tiếp tục đúng trên 2024--2025; và đồ thị tương quan 250 phiên ổn định hơn hẳn đồ thị 60 phiên.
+  \item \textit{Một khung mô hình lai huấn luyện đầu--cuối cho thị trường Việt Nam.} Mô hình kết hợp bộ mã hóa Transformer có mặt nạ nhân quả, mạng chú ý đồ thị trên đồ thị tương quan dài hạn và tác tử PPO với chính sách Dirichlet trên đơn hình tỷ trọng, phần thưởng là tỷ số Sharpe vi phân sau phí giao dịch. Tập cổ phiếu được phép thay đổi theo thời gian thông qua mặt nạ đủ điều kiện.
+  \item \textit{Một bộ dữ liệu và quy trình xử lý đáng tin cậy.} Dữ liệu gồm 19 đặc trưng thuộc ba nhóm cho 222 mã trong mười năm; chuỗi giá được điều chỉnh theo sự kiện doanh nghiệp bằng phép đối chiếu chéo với hệ số P/B; chỉ số tài chính được gắn theo ngày công bố báo cáo; mọi phép chuẩn hóa và ước lượng tương quan chỉ dùng các phiên trước ngày quyết định.
+  \item \textit{Một quy trình đánh giá tính khả thi có kiểm soát.} Ngoài danh mục phân bổ đều và VN-Index, luận văn so sánh với danh mục Markowitz dùng hiệp phương sai co rút Ledoit--Wolf, chiến lược động lượng, phân phối của 1.000 danh mục ngẫu nhiên, mạng chưa huấn luyện, các phép loại bỏ thành phần, và báo cáo trên nhiều hạt giống ngẫu nhiên.
+  \item \textit{Các kết luận trung thực về khả năng và giới hạn của phương pháp,} cùng một danh sách cụ thể các điều kiện cần cải thiện để phương pháp có thể được triển khai trong thực tế.
 \end{itemize}
 
-Một phần kết quả của luận văn đã được công bố trong bài báo \cite{tran2026dynamic}. So với bài báo, luận văn mở rộng số hạt giống ngẫu nhiên, bổ sung các chiến lược đối chứng và phép loại bỏ thành phần, phân tích đồ thị với cửa sổ dài và trình bày chi tiết hơn về dữ liệu, cài đặt cũng như hạn chế.
+Một phần nội dung của luận văn đã được công bố trong bài báo \cite{tran2026dynamic}. So với bài báo, luận văn chuyển trọng tâm sang đồ thị tương quan dài hạn, sửa dữ liệu giá theo sự kiện doanh nghiệp, hiệu chỉnh phần thưởng và cách chọn mô hình, mở rộng số hạt giống cùng các chiến lược đối chứng; vì vậy các con số trong luận văn không trùng với bài báo (xem Phụ lục~\ref{app:paper}).
 
 \section*{Bố cục của luận văn}
 
@@ -75,7 +79,7 @@ Ngoài phần Mở đầu, Kết luận, Tài liệu tham khảo và Phụ lục
 \begin{itemize}
   \item \textbf{Chương 1 -- Tổng quan nghiên cứu} trình bày bài toán tối ưu hóa danh mục và các hướng tiếp cận: truyền thống, học sâu chuỗi thời gian, mạng nơ-ron đồ thị, học tăng cường và các mô hình lai; từ đó xác định khoảng trống nghiên cứu.
   \item \textbf{Chương 2 -- Cơ sở lý thuyết} trình bày các nền tảng toán học được sử dụng: lý thuyết danh mục và thước đo hiệu quả, mô hình chuỗi thời gian, mạng nơ-ron đồ thị, học tăng cường với PPO và tỷ số Sharpe vi phân.
-  \item \textbf{Chương 3 -- Dữ liệu và mô hình đề xuất} mô tả bộ dữ liệu, quy trình tiền xử lý, cách xây dựng đồ thị tương quan động và kiến trúc mô hình Transformer--GAT--PPO.
-  \item \textbf{Chương 4 -- Thực nghiệm và đánh giá kết quả} trình bày thiết lập thực nghiệm, kết quả tổng thể, phép loại bỏ thành phần, phân tích quá trình huấn luyện và hành vi của chính sách.
+  \item \textbf{Chương 3 -- Dữ liệu và mô hình đề xuất} mô tả bộ dữ liệu, quy trình tiền xử lý, phân tích quan hệ tương quan dài hạn và kiến trúc mô hình Transformer--GAT--PPO.
+  \item \textbf{Chương 4 -- Thực nghiệm và đánh giá kết quả} trình bày thiết lập thực nghiệm và đánh giá tính khả thi của mô hình: kết quả tổng thể, độ tin cậy, phép loại bỏ thành phần, quá trình huấn luyện và hành vi của chính sách.
   \item \textbf{Chương 5 -- Thảo luận} diễn giải kết quả, đối chiếu với đề cương, nêu ý nghĩa thực tiễn và các hạn chế của nghiên cứu.
 \end{itemize}
