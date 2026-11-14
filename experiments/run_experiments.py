@@ -1,5 +1,6 @@
 """
-Chạy bộ thí nghiệm của luận văn (tái cân bằng THÁNG, 8 vòng PPO — đúng thiết lập bài báo).
+Chạy bộ thí nghiệm của luận văn: dữ liệu ĐÃ ĐIỀU CHỈNH sự kiện doanh nghiệp, vòng huấn luyện train_v2,
+tái cân bằng THÁNG, 12 vòng PPO.
 
   python run_experiments.py            # chạy tất cả cấu hình × seed còn thiếu, 4 tiến trình
 Kết quả mỗi lần chạy: results/<config>_seed<k>.pkl
@@ -12,14 +13,14 @@ import torch
 warnings.filterwarnings('ignore')
 import common as C
 
-FREQ, TOP_K, W_MAX, N_ITERS, COST = 'M', 20, 0.10, 8, 0.001
+FREQ, TOP_K, W_MAX, N_ITERS, COST = 'M', 20, 0.10, 12, 0.001
 SEEDS = [1, 2, 3, 4, 5]
 #            tên               encoder        graph   ma trận kề
 CONFIGS = [('full',           'transformer', 'gat',  'A60'),
-           ('lstm_gat',       'lstm',        'gat',  'A60'),
+           ('tf_gat_long',    'transformer', 'gat',  'A250'),
            ('tf_gcn',         'transformer', 'gcn',  'A60'),
            ('tf_nograph',     'transformer', 'none', 'A60'),
-           ('tf_gat_long',    'transformer', 'gat',  'A250'),
+           ('lstm_gat',       'lstm',        'gat',  'A60'),
            ('lstm_nograph',   'lstm',        'none', 'A60'),
            ('gru_nograph',    'gru',         'none', 'A60')]
 
@@ -79,7 +80,7 @@ def run_one(job):
 if __name__ == '__main__':
     only = sys.argv[1:]
     # 5 hạt giống cho mô hình chính và ba phép loại bỏ thành phần cốt lõi; 3 hạt giống cho các biến thể phụ
-    n_seeds = {'full': 5, 'lstm_gat': 5, 'tf_gcn': 5, 'tf_nograph': 5}
+    n_seeds = {'full': 5, 'tf_gat_long': 5}
     jobs = [(n, e, g, a, s) for (n, e, g, a) in CONFIGS for s in SEEDS[:n_seeds.get(n, 3)]
             if not only or n in only]
     with Pool(4) as p:

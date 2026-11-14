@@ -43,7 +43,7 @@ def optimise(mu, S, kind):
 def run(freq, clean=False):
     df = C.load_df(); cd = C.CachedData(freq=freq)
     # clean=True: quyết định vẫn dựa trên dữ liệu gốc, chỉ lãi/lỗ thực hiện được tính trên lợi suất đã hiệu chỉnh
-    df_eval = C.clean_corporate_actions(df)[0] if clean else df
+    df_eval = df
     dates = C.quiet_split(df, freq)['test']
     ppy = 52 if freq == 'W' else 12
     wide = df.pivot(index='date', columns='symbol', values='log_return')
@@ -104,7 +104,7 @@ def run(freq, clean=False):
 
 if __name__ == '__main__':
     import sys
-    clean = 'clean' in sys.argv
+    clean = False
     res = {}
     for f in (('M',) if clean else ('M', 'W')):
         res[f] = run(f, clean=clean)

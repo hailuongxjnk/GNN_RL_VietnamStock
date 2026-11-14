@@ -26,7 +26,8 @@ os.makedirs(RESULTS, exist_ok=True)
 import temporal_encoder as te          # noqa: E402
 import adjacency as adj                # noqa: E402
 import gnn as gnn_mod                  # noqa: E402
-import train as train_mod              # noqa: E402
+import train as train_orig             # noqa: E402  (bản gốc, giữ để đối chiếu)
+import train_v2 as train_mod           # noqa: E402  (bản sửa dùng cho thí nghiệm luận văn)
 import evaluate as eval_mod            # noqa: E402
 from temporal_encoder import FEATURE_COLS, D_MODEL, LOOKBACK  # noqa: E402
 
@@ -34,8 +35,9 @@ _ORIG_SNAPSHOT = te.build_snapshot_tensor
 _ORIG_ADJ = adj.build_adjacency
 
 
-def load_df():
-    df = pd.read_pickle(os.path.join(CACHE, "final_df.pkl"))
+def load_df(raw=False):
+    """raw=False: dữ liệu đã điều chỉnh sự kiện doanh nghiệp (mặc định); raw=True: dữ liệu gốc như notebook."""
+    df = pd.read_pickle(os.path.join(CACHE, "final_df_raw.pkl" if raw else "final_df.pkl"))
     df['date'] = pd.to_datetime(df['date'])
     return df
 
@@ -81,15 +83,18 @@ class CachedData:
         self.snap = CachedData._mem[key]
         self.graph = graph
 
+    # Hàng của mã KHÔNG đủ điều kiện được đặt về 0: embedding của chúng vốn bị zero-out ngay sau encoder
+    # nên kết quả không đổi, nhưng cho phép SkipEmpty bỏ qua chúng để chạy nhanh hơn.
     def snapshot(self, df, decision_date, *a, **k):
         s = self.snap[pd.Timestamp(decision_date)]
-        return s['X'].clone(), s['mask'].clone(), list(s['symbols'])
+        X = s['X'].clone(); X[~s['mask']] = 0.0
+        return X, s['mask'].clone(), list(s['symbols'])
 
     def adjacency(self, df, decision_date, symbols, *a, **k):
         return self.snap[pd.Timestamp(decision_date)][self.graph].clone()
 
     def install(self):
-        for mod in (train_mod, eval_mod):
+        for mod in (train_mod, train_orig, eval_mod):
             mod.build_snapshot_tensor = self.snapshot
             mod.build_adjacency = self.adjacency
         return self
@@ -124,9 +129,23 @@ class NoGraph(gnn_mod.GAT):
         return super().forward(H, torch.diag(active))
 
 
+class SkipEmpty(nn.Module):
+    """Bọc một encoder: chỉ chạy trên các hàng (cổ phiếu) có dữ liệu khác 0, hàng còn lại trả về 0."""
+
+    def __init__(self, enc):
+        super().__init__(); self.enc = enc
+
+    def forward(self, X):
+        keep = X.abs().sum(dim=(1, 2)) > 0
+        H = X.new_zeros(X.size(0), D_MODEL)
+        if keep.any():
+            H[keep] = self.enc(X[keep])
+        return H
+
+
 def make_models(encoder='transformer', graph='gat'):
     from rl_agent import PortfolioAgent
-    enc = {'transformer': te.TransformerEncoder, 'lstm': te.LSTMEncoder, 'gru': GRUEncoder}[encoder]()
+    enc = SkipEmpty({'transformer': te.TransformerEncoder, 'lstm': te.LSTMEncoder, 'gru': GRUEncoder}[encoder]())
     g = {'gat': gnn_mod.GAT, 'gcn': gnn_mod.GCN, 'none': NoGraph}[graph]()
     return {'encoder': enc, 'gnn': g, 'agent': PortfolioAgent()}
 
@@ -148,7 +167,7 @@ def perf_metrics(returns, ppy):
 
 
 # ───────────────────────── hiệu chỉnh sự kiện doanh nghiệp (kiểm tra độ vững) ─────────────────────────
-def clean_corporate_actions(df, thr=-0.17, market_floor=-4.0, pb_gap=0.10):
+def _legacy_clean_corporate_actions(df, thr=-0.17, market_floor=-4.0, pb_gap=0.10):
     """
     Giá trong stock_value CHƯA điều chỉnh theo cổ tức cổ phiếu / cổ phiếu thưởng / chia tách, nên tại ngày
     giao dịch không hưởng quyền xuất hiện các lợi suất âm rất lớn (vd. TCB 20/06/2024: -49%) không phải

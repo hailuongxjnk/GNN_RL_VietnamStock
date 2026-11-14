@@ -17,7 +17,48 @@ OUT = os.path.join(ROOT, "experiments", "cache", "final_df.pkl")
 EXCLUDED = ['E1VFVN30', 'FUEVFVND', 'GE2', 'FLC', 'SQC', 'TBH', 'ROS', 'CAB', 'GTN', 'PME', 'BHS']
 
 
-def build_final_df(verbose=True):
+def _rsi(prices, n=14):
+    delta = prices.diff(); gain = delta.clip(lower=0); loss = -delta.clip(upper=0)
+    ag = gain.ewm(alpha=1 / n, adjust=False).mean(); al = loss.ewm(alpha=1 / n, adjust=False).mean()
+    return 100 - 100 / (1 + ag / al)
+
+
+def adjust_for_corporate_actions(df, thr=-0.17, market_floor=-4.0, pb_gap=0.10):
+    """
+    SỬA LỖI DỮ LIỆU: giá trong stock_value chưa điều chỉnh theo cổ tức cổ phiếu / cổ phiếu thưởng / chia tách.
+    Nhận diện ngày giao dịch không hưởng quyền (lợi suất < thr, VN-Index không sụp, P/B không giảm tương ứng),
+    đặt lợi suất ngày đó về 0, dựng lại chuỗi giá điều chỉnh từ lợi suất tích luỹ và TÍNH LẠI các chỉ báo
+    phụ thuộc giá (biến động, RSI, động lượng, tỷ số MA) đúng công thức trong notebook.
+    df: bảng dài có cột date, symbol, log_return, PX_TO_BOOK_RATIO, vnindex_return (kể cả năm 2015).
+    """
+    out = df.sort_values(['symbol', 'date']).reset_index(drop=True)
+    pb = out['PX_TO_BOOK_RATIO'].where(out['PX_TO_BOOK_RATIO'] > 0)
+    dlpb = np.log(pb).groupby(out['symbol']).diff()
+    ev = (out['log_return'] < thr) & (out['vnindex_return'] > market_floor) & \
+         (dlpb.isna() | ((dlpb - out['log_return']) > pb_gap))
+    events = out.loc[ev, ['date', 'symbol', 'log_return']].assign(dlog_pb=dlpb[ev])
+    out.loc[ev, 'log_return'] = 0.0
+    parts = []
+    for sym, g in out.groupby('symbol', sort=False):
+        t = g[g['log_return'].notna()]
+        lr = t['log_return']; px = np.exp(lr.cumsum())
+        new = pd.DataFrame({
+            'volatility_20d': lr.rolling(20).std() * np.sqrt(252),
+            'volatility_60d': lr.rolling(60).std() * np.sqrt(252),
+            'rsi_14': _rsi(px, 14),
+            'momentum_20d': np.log(px / px.shift(20)),
+            'momentum_60d': np.log(px / px.shift(60)),
+            'ma_ratio': px.rolling(20).mean() / px.rolling(50).mean()}, index=t.index)
+        parts.append(new)
+    new = pd.concat(parts)
+    for c in new.columns:
+        keep_nan = out[c].isna()                    # giữ NaN ở những chỗ bản gốc vốn NaN (giai đoạn khởi tạo)
+        out.loc[new.index, c] = new[c]
+        out.loc[keep_nan, c] = np.nan
+    return out, events
+
+
+def build_final_df(verbose=True, adjust=False):
     start_date = datetime.datetime(2015, 1, 1)
     end_date = datetime.datetime(2025, 12, 31)
 
@@ -45,6 +86,17 @@ def build_final_df(verbose=True):
     # ── cell 7: P/E, P/B ──
     pe = pd.read_csv(os.path.join(RAW, 'pe_pb_result.csv'), parse_dates=['date'])
     merged_df = merged_df.merge(pe, on=['date', 'symbol'], how='left')
+
+    events = None
+    if adjust:
+        vni0 = pd.read_excel(os.path.join(RAW, "vnindex_daily_returns.xlsx"))
+        vni0['date'] = pd.to_datetime(vni0['date']).astype('datetime64[ns]')
+        merged_df['date'] = merged_df['date'].astype('datetime64[ns]')
+        tmp = merged_df.merge(vni0[['date', 'return_pct']].rename(columns={'return_pct': 'vnindex_return'}),
+                              on='date', how='left')
+        tmp['vnindex_return'] = tmp['vnindex_return'].fillna(0.0)
+        tmp, events = adjust_for_corporate_actions(tmp)
+        merged_df = tmp.drop(columns=['vnindex_return'])
 
     # ── cell 8: mask eligible ──
     unique_dates = sorted(list_stock['date'].unique())
@@ -101,10 +153,17 @@ def build_final_df(verbose=True):
         print(final_df.shape, final_df['date'].min().date(), final_df['date'].max().date(),
               final_df['symbol'].nunique(), 'mã')
         print(final_df.columns.tolist())
+    if adjust:
+        return final_df, events
     return final_df
 
 
 if __name__ == '__main__':
-    df = build_final_df()
-    df.to_pickle(OUT)
-    print('→', OUT)
+    import sys
+    if 'raw' in sys.argv:                 # dữ liệu gốc như notebook (chưa điều chỉnh) — để đối chiếu bài báo
+        build_final_df().to_pickle(OUT.replace('final_df', 'final_df_raw'))
+    else:                                 # mặc định: dữ liệu đã điều chỉnh sự kiện doanh nghiệp
+        df, events = build_final_df(adjust=True)
+        df.to_pickle(OUT)
+        events.to_csv(os.path.join(ROOT, 'experiments', 'results', 'corporate_action_events.csv'), index=False)
+        print(len(events), 'sự kiện doanh nghiệp đã điều chỉnh →', OUT)
