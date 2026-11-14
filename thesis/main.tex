@@ -1,0 +1,127 @@
+% !TEX program = xelatex
+% Biên dịch:  latexmk -xelatex main.tex   (hoặc: xelatex → biber → xelatex → xelatex)
+\documentclass[12pt,a4paper,oneside]{report}
+\usepackage[fontsize=13pt]{scrextend}
+
+% ───────── Phông chữ & ngôn ngữ ─────────
+\usepackage{fontspec}
+\usepackage{amsmath,amssymb,mathtools,bm}
+\usepackage{unicode-math}
+\setmainfont{TeX Gyre Termes}
+\setmathfont{TeX Gyre Termes Math}
+\setmonofont[Scale=0.85]{DejaVu Sans Mono}
+
+% ───────── Bố cục trang ─────────
+\usepackage[left=3.5cm,right=2cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{setspace}\onehalfspacing
+\usepackage{indentfirst}\setlength{\parindent}{1cm}
+\usepackage{microtype}
+\emergencystretch=2em
+\raggedbottom
+
+% ───────── Gói tiện ích ─────────
+\usepackage{graphicx}\graphicspath{{figures/}}
+\usepackage{booktabs,multirow,array,tabularx,longtable}
+\usepackage[table]{xcolor}
+\usepackage{enumitem}\setlist{nosep,leftmargin=1.6cm}
+\usepackage{tikz}\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds}
+\usepackage[font=small,labelfont=bf,labelsep=period,skip=6pt]{caption}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{csquotes}
+\usepackage[backend=biber,style=numeric-comp,sorting=nyt,maxbibnames=6,minbibnames=3,giveninits=true,doi=true,url=false,isbn=false,eprint=true]{biblatex}
+\addbibresource{references.bib}
+\usepackage[hidelinks,unicode]{hyperref}
+
+% ───────── Tên gọi tiếng Việt ─────────
+\renewcommand{\contentsname}{MỤC LỤC}
+\renewcommand{\listfigurename}{DANH MỤC HÌNH VẼ}
+\renewcommand{\listtablename}{DANH MỤC BẢNG BIỂU}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\chaptername}{CHƯƠNG}
+\renewcommand{\appendixname}{PHỤ LỤC}
+\floatname{algorithm}{Thuật toán}
+\renewcommand{\algorithmicrequire}{\textbf{Đầu vào:}}
+\renewcommand{\algorithmicensure}{\textbf{Đầu ra:}}
+\DefineBibliographyStrings{english}{andothers={và cộng sự},and={và},pages={tr\adddot},page={tr\adddot},in={Trong},techreport={Báo cáo kỹ thuật},phdthesis={Luận án tiến sĩ},edition={ấn bản},volume={tập},number={số}}
+\defbibheading{bibliography}[TÀI LIỆU THAM KHẢO]{\chapter*{#1}\addcontentsline{toc}{chapter}{#1}}
+
+% ───────── Định dạng tiêu đề ─────────
+\usepackage{titlesec}
+\titleformat{\chapter}[display]{\normalfont\bfseries\centering\large}{\MakeUppercase{\chaptertitlename} \thechapter}{4pt}{\Large\MakeUppercase}
+\titleformat{name=\chapter,numberless}[block]{\normalfont\bfseries\centering\Large}{}{0pt}{}
+\titlespacing*{\chapter}{0pt}{-10pt}{24pt}
+\renewcommand{\thesection}{\thechapter.\arabic{section}}
+\titleformat{\section}{\normalfont\bfseries\large}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalfont\bfseries\itshape}{\thesubsection.}{0.5em}{}
+\titleformat{\subsubsection}{\normalfont\itshape}{}{0em}{}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+\setcounter{secnumdepth}{2}\setcounter{tocdepth}{2}
+
+\usepackage{tocloft}
+\renewcommand{\cfttoctitlefont}{\hfill\bfseries\Large}\renewcommand{\cftaftertoctitle}{\hfill}
+\renewcommand{\cftloftitlefont}{\hfill\bfseries\Large}\renewcommand{\cftafterloftitle}{\hfill}
+\renewcommand{\cftlottitlefont}{\hfill\bfseries\Large}\renewcommand{\cftafterlottitle}{\hfill}
+\renewcommand{\cftchapfont}{\normalfont}\renewcommand{\cftchappagefont}{\normalfont}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftchappresnum}{CHƯƠNG }\renewcommand{\cftchapaftersnum}{.}
+\setlength{\cftchapnumwidth}{2.6cm}\setlength{\cftbeforechapskip}{2pt}
+\setlength{\cftsecindent}{0.8cm}\setlength{\cftsubsecindent}{1.9cm}
+\renewcommand{\cftfigpresnum}{Hình }\setlength{\cftfignumwidth}{1.9cm}\setlength{\cftfigindent}{0pt}
+\renewcommand{\cfttabpresnum}{Bảng }\setlength{\cfttabnumwidth}{1.9cm}\setlength{\cfttabindent}{0pt}
+
+% ───────── Ký hiệu toán ─────────
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\T}{^{\top}}
+\DeclareMathOperator{\softmax}{softmax}
+\DeclareMathOperator{\softplus}{softplus}
+\DeclareMathOperator{\corr}{corr}
+\DeclareMathOperator{\Dir}{Dir}
+\DeclareMathOperator{\LeakyReLU}{LeakyReLU}
+\DeclareMathOperator{\ELU}{ELU}
+\DeclareMathOperator{\ReLU}{ReLU}
+\DeclareMathOperator{\LN}{LayerNorm}
+\DeclareMathOperator{\clip}{clip}
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[#1]}}}
+
+% ───────── Thông tin luận văn (SỬA TẠI ĐÂY) ─────────
+\newcommand{\tacgia}{ĐINH HẢI LƯƠNG}
+\newcommand{\tacgiathuong}{Đinh Hải Lương}
+\newcommand{\tendetai}{NGHIÊN CỨU MÔ HÌNH HỌC SÂU LAI TRONG TỐI ƯU HÓA DANH MỤC ĐẦU TƯ CHO NHÓM CỔ PHIẾU CÓ MỐI QUAN HỆ TƯƠNG QUAN DÀI HẠN TẠI THỊ TRƯỜNG VIỆT NAM}
+\newcommand{\tendetaithuong}{Nghiên cứu mô hình học sâu lai trong tối ưu hóa danh mục đầu tư cho nhóm cổ phiếu có mối quan hệ tương quan dài hạn tại thị trường Việt Nam}
+\newcommand{\huongdanmot}{\todo{học hàm/học vị} Trần Trọng Hiếu}
+\newcommand{\huongdanhai}{\todo{học hàm/học vị} Nguyễn Thị Hồng Khánh}
+\newcommand{\nam}{2026}
+
+\providecommand{\RESULTSUMMARY}{[TÓM TẮT KẾT QUẢ]}
+\begin{document}
+\pagenumbering{gobble}
+\input{chapters/00_frontmatter}
+
+\pagenumbering{roman}
+\tableofcontents
+\addcontentsline{toc}{chapter}{Mục lục}
+\listoffigures\addcontentsline{toc}{chapter}{Danh mục hình vẽ}
+\listoftables\addcontentsline{toc}{chapter}{Danh mục bảng biểu}
+\input{chapters/00_kyhieu}
+
+\clearpage\pagenumbering{arabic}
+\input{chapters/01_modau}
+\input{chapters/02_tongquan}
+\input{chapters/03_cosolythuyet}
+\input{chapters/04_dulieu_mohinh}
+\input{chapters/05_thucnghiem}
+\input{chapters/06_thaoluan}
+\input{chapters/07_ketluan}
+
+\printbibliography
+
+\appendix
+\titleformat{\chapter}[display]{\normalfont\bfseries\centering\large}{PHỤ LỤC \thechapter}{4pt}{\Large\MakeUppercase}
+\renewcommand{\cftchappresnum}{PHỤ LỤC }
+\input{chapters/08_phuluc}
+\end{document}

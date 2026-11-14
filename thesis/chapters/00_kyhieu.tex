@@ -1,0 +1,50 @@
+\chapter*{DANH MỤC KÝ HIỆU VÀ CHỮ VIẾT TẮT}
+\addcontentsline{toc}{chapter}{Danh mục ký hiệu và chữ viết tắt}
+{\small
+\begin{longtable}{@{}p{3.1cm}p{11.6cm}@{}}
+\toprule
+\textbf{Ký hiệu / viết tắt} & \textbf{Ý nghĩa} \\
+\midrule
+\endhead
+$N$, $N_t$ & Số cổ phiếu trong tập dữ liệu; số cổ phiếu đủ điều kiện tại ngày quyết định $t$ \\
+$T$ & Độ dài cửa sổ quan sát (60 phiên giao dịch) \\
+$F$ & Số đặc trưng của mỗi cổ phiếu tại mỗi phiên ($F=19$) \\
+$D$ & Số chiều của véc-tơ biểu diễn ($D=64$) \\
+$X_t \in \R^{N\times T\times F}$ & Ten-xơ đặc trưng tại ngày quyết định $t$ \\
+$m_t \in \{0,1\}^{N}$ & Mặt nạ đủ điều kiện (eligibility mask) \\
+$A_t \in \R^{N\times N}$ & Ma trận kề của đồ thị tương quan tại ngày $t$ \\
+$\rho_{ij}(t)$ & Hệ số tương quan Pearson giữa lợi suất của cổ phiếu $i$ và $j$ \\
+$h_i$, $z_i$ & Biểu diễn của cổ phiếu $i$ sau bộ mã hóa thời gian và sau mạng đồ thị \\
+$w_t \in \Delta^{N-1}$ & Véc-tơ tỷ trọng danh mục tại ngày $t$ ($w_{t,i}\ge 0$, $\sum_i w_{t,i}=1$) \\
+$R_t$ & Véc-tơ lợi suất nắm giữ của các cổ phiếu trong kỳ $(t, t+1]$ \\
+$r_t$ & Lợi suất ròng của danh mục trong kỳ $t$ (sau phí giao dịch) \\
+$c$ & Tỷ lệ phí giao dịch (10 điểm cơ bản trên giá trị luân chuyển) \\
+$K$, $w_{\max}$ & Số mã tối đa trong danh mục ($K=20$); trần tỷ trọng mỗi mã ($10\%$) \\
+$\pi_\theta$, $V_\phi$ & Chính sách (actor) và hàm giá trị (critic) \\
+$\alpha_i$ & Tham số tập trung của phân phối Dirichlet ứng với cổ phiếu $i$ \\
+$\gamma$, $\lambda$ & Hệ số chiết khấu; tham số của GAE \\
+$\eta$ & Tốc độ cập nhật trung bình trượt mũ trong tỷ số Sharpe vi phân \\
+$D_t$ & Tỷ số Sharpe vi phân tại bước $t$ (phần thưởng) \\
+\midrule
+CAGR & Compound Annual Growth Rate -- tốc độ tăng trưởng kép hằng năm \\
+DSR & Differential Sharpe Ratio -- tỷ số Sharpe vi phân \\
+DTW & Dynamic Time Warping -- xoắn thời gian động \\
+EW (1/N) & Equal-weight -- danh mục phân bổ đều \\
+GAE & Generalized Advantage Estimation -- ước lượng lợi thế tổng quát \\
+GAT & Graph Attention Network -- mạng chú ý đồ thị \\
+GCN & Graph Convolutional Network -- mạng tích chập đồ thị \\
+GNN & Graph Neural Network -- mạng nơ-ron đồ thị \\
+GRU & Gated Recurrent Unit \\
+HOSE, HNX, UPCoM & Sở Giao dịch Chứng khoán TP. Hồ Chí Minh; Sở Giao dịch Chứng khoán Hà Nội; thị trường giao dịch của công ty đại chúng chưa niêm yết \\
+LSTM & Long Short-Term Memory -- bộ nhớ dài--ngắn hạn \\
+MDD & Maximum Drawdown -- mức sụt giảm tối đa \\
+MDP & Markov Decision Process -- quá trình quyết định Markov \\
+MV & Mean--Variance -- mô hình trung bình--phương sai \\
+P/E, P/B & Hệ số giá trên thu nhập; hệ số giá trên giá trị sổ sách \\
+PPO & Proximal Policy Optimization \\
+RL & Reinforcement Learning -- học tăng cường \\
+ROE & Return on Equity -- tỷ suất lợi nhuận trên vốn chủ sở hữu \\
+RSI & Relative Strength Index -- chỉ số sức mạnh tương đối \\
+VN-Index & Chỉ số giá cổ phiếu của Sở Giao dịch Chứng khoán TP. Hồ Chí Minh \\
+\bottomrule
+\end{longtable}}

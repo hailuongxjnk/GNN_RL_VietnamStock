@@ -1,0 +1,81 @@
+\chapter{MÃ NGUỒN VÀ HƯỚNG DẪN TÁI LẬP KẾT QUẢ}
+\label{app:code}
+
+\section{Cấu trúc mã nguồn}
+
+Toàn bộ mã nguồn của luận văn được viết bằng Python với thư viện PyTorch. Bảng~\ref{tab:files} liệt kê các tệp chính và vai trò của chúng. Sáu tệp đầu là mã nguồn của mô hình; các tệp trong thư mục \texttt{experiments/} là các kịch bản thực nghiệm bổ sung cho luận văn, chỉ \emph{gọi} mã nguồn mô hình mà không sửa đổi nó.
+
+\begin{table}[ht]
+\centering\small
+\caption{Các tệp mã nguồn chính}
+\label{tab:files}
+\begin{tabularx}{\textwidth}{@{}p{5.3cm}X@{}}
+\toprule
+Tệp & Nội dung \\
+\midrule
+\texttt{Full\_code\_model.ipynb} & Thu thập dữ liệu, tính chỉ báo kỹ thuật và chỉ số tài chính, gắn nhãn đủ điều kiện, ghép thành bảng dữ liệu cuối; gọi huấn luyện và đánh giá. \\
+\texttt{temporal\_encoder.py} & Chia dữ liệu theo thời gian; dựng ten-xơ đầu vào và chuẩn hóa; bộ mã hóa Transformer và LSTM. \\
+\texttt{adjacency.py} & Xây dựng ma trận kề từ tương quan lợi suất; lọc theo mặt nạ; chuẩn hóa cho GCN. \\
+\texttt{gnn.py} & Cài đặt GAT và GCN ở dạng ma trận đặc. \\
+\texttt{rl\_agent.py} & Tác tử actor--critic với chính sách Dirichlet; phép chiếu về tập danh mục khả thi. \\
+\texttt{train.py} & Tỷ số Sharpe vi phân, GAE, vòng lặp PPO đầu--cuối, chọn mô hình theo tập kiểm định, lưu và nạp mô hình. \\
+\texttt{evaluate.py} & Kiểm thử ngược; so sánh với phân bổ đều và VN-Index; kiểm tra tỷ trọng. \\
+\midrule
+\texttt{experiments/build\_dataset.py} & Dựng lại bảng dữ liệu cuối từ các tệp đã lưu, không cần gọi API. \\
+\texttt{experiments/build\_cache.py} & Dựng trước ten-xơ đầu vào và ma trận kề cho mọi ngày quyết định. \\
+\texttt{experiments/run\_experiments.py} & Huấn luyện mô hình đề xuất và các biến thể trên nhiều hạt giống. \\
+\texttt{experiments/baselines.py} & Các chiến lược đối chứng: phân bổ đều, VN-Index, phương sai nhỏ nhất, trung bình--phương sai, động lượng, danh mục ngẫu nhiên. \\
+\texttt{experiments/untrained.py} & Đối chứng mạng khởi tạo ngẫu nhiên, không huấn luyện. \\
+\texttt{experiments/robustness\_clean.py} & Kiểm tra độ vững với lợi suất đã loại các sự kiện doanh nghiệp. \\
+\texttt{experiments/analysis\_*.py}, \texttt{make\_tables.py} & Tổng hợp kết quả, vẽ hình và sinh bảng của luận văn. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Các bước tái lập}
+
+Các kết quả của Chương~\ref{ch:thucnghiem} được tái lập bằng chuỗi lệnh sau (chạy trong thư mục \texttt{experiments/}):
+
+{\small\begin{verbatim}
+python build_dataset.py      # bang du lieu cuoi (554.556 dong, 222 ma)
+python build_cache.py        # ten-xo dau vao va ma tran ke cho moi ngay quyet dinh
+python run_experiments.py    # huan luyen: 7 cau hinh, nhieu hat giong (CPU)
+python baselines.py          # cac chien luoc doi chung
+python baselines.py clean    # doi chung voi loi suat da hieu chinh
+python untrained.py          # mang chua huan luyen
+python analysis_data.py      # hinh va thong ke Chuong 3
+python analysis_results.py   # hinh va thong ke Chuong 4
+python robustness_clean.py   # kiem tra do vung
+python make_tables.py        # sinh cac bang LaTeX
+\end{verbatim}}
+
+Hai phép kiểm chứng tính đúng đắn của quy trình tái lập đã được thực hiện. Thứ nhất, bảng dữ liệu dựng lại có đúng 554.556 dòng như kết quả lưu trong sổ tay gốc. Thứ hai, khi nạp mô hình đã huấn luyện ở tần suất tuần (\texttt{model\_weekly.pt}) và đánh giá trên tập kiểm tra, các chỉ số thu được trùng khớp với kết quả lưu trong sổ tay gốc đến chữ số thập phân cuối cùng được in ra (lợi suất tích lũy 18,4\%, tỷ số Sharpe 0,53, mức sụt giảm tối đa $-14{,}6\%$).
+
+Các thực nghiệm trong luận văn được chạy trên CPU; mỗi lần huấn luyện mô hình Transformer + GAT ở tần suất tháng với 8 vòng lặp PPO mất khoảng 25--30 phút trên một nhân xử lý. Với hạt giống 1 và 2, kết quả thu được trên CPU trùng với kết quả đã công bố trong bài báo \cite{tran2026dynamic}.
+
+\chapter{THỐNG KÊ MÔ TẢ VÀ KẾT QUẢ CHI TIẾT}
+\label{app:detail}
+
+\section{Thống kê mô tả các đặc trưng}
+
+Bảng~\ref{tab:featdesc} trình bày thống kê mô tả của 19 đặc trưng \emph{trước khi chuẩn hóa}, tính trên các quan sát (ngày--cổ phiếu) đủ điều kiện trong toàn bộ giai đoạn 2016--2025. Cột cuối cho biết tỷ lệ giá trị thiếu.
+
+\begin{table}[ht]
+\centering\footnotesize
+\caption{Thống kê mô tả các đặc trưng trên các quan sát đủ điều kiện (trước chuẩn hóa)}
+\label{tab:featdesc}
+\input{tables/features_desc}
+\end{table}
+
+Hai điểm trong Bảng~\ref{tab:featdesc} cần được lưu ý. Thứ nhất, lợi suất logarit theo ngày có giá trị nhỏ nhất và lớn nhất vượt xa biên độ dao động giá cho phép; phần lớn các giá trị âm cực đoan là hệ quả của việc chuỗi giá chưa được điều chỉnh theo các sự kiện doanh nghiệp (Mục~\ref{sec:robust-clean}). Thứ hai, một số đặc trưng có đuôi rất dài (P/E, tăng trưởng lợi nhuận, thay đổi khối lượng); phép chuẩn hóa theo lát cắt ngang và phép cắt về $[-10,10]$ ở Mục~\ref{sec:snapshot} nhằm hạn chế ảnh hưởng của các giá trị này.
+
+\section{Kết quả của từng lần huấn luyện}
+
+Bảng~\ref{tab:allruns} liệt kê kết quả của mọi lần huấn luyện được dùng trong luận văn. ``Vòng chọn'' là vòng lặp PPO có tỷ số Sharpe kiểm định cao nhất trong quá trình huấn luyện; ``Sharpe KĐ'' và ``Sharpe KT'' là tỷ số Sharpe của mô hình được chọn trên tập kiểm định và tập kiểm tra, tính ở chế độ đánh giá (tắt dropout).
+
+\begin{table}[ht]
+\centering\footnotesize
+\caption{Kết quả của từng lần huấn luyện trên tập kiểm tra (tái cân bằng theo tháng)}
+\label{tab:allruns}
+\input{tables/allruns}
+\end{table}

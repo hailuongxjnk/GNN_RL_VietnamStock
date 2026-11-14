@@ -1,0 +1,102 @@
+\chapter{TỔNG QUAN NGHIÊN CỨU}
+\label{ch:tongquan}
+
+Chương này trình bày bối cảnh của bài toán tối ưu hóa danh mục đầu tư và các hướng tiếp cận chính trong tài liệu: phương pháp tối ưu truyền thống, học sâu cho chuỗi thời gian tài chính, mạng nơ-ron đồ thị, học tăng cường và các mô hình lai kết hợp đồ thị với học tăng cường. Trên cơ sở đó, chương xác định các khoảng trống nghiên cứu và định hướng của luận văn.
+
+\section{Bài toán tối ưu hóa danh mục đầu tư}
+
+Xét một nhà đầu tư có thể phân bổ vốn vào $N$ tài sản rủi ro. Một danh mục được mô tả bằng véc-tơ tỷ trọng $w=(w_1,\dots,w_N)\T$, trong đó $w_i$ là phần vốn đầu tư vào tài sản $i$. Với danh mục chỉ gồm vị thế mua và đầu tư toàn bộ vốn, $w$ thuộc đơn hình
+\begin{equation}
+\Delta^{N-1}=\Big\{w\in\R^N:\; w_i\ge 0,\; \sum_{i=1}^{N} w_i=1\Big\}.
+\end{equation}
+Nếu $R=(R_1,\dots,R_N)\T$ là véc-tơ lợi suất của các tài sản trong một kỳ thì lợi suất của danh mục trong kỳ đó là $w\T R$. Bài toán tối ưu hóa danh mục là chọn $w$ sao cho phân phối của $w\T R$ ``tốt'' theo một tiêu chí cân bằng giữa lợi nhuận và rủi ro.
+
+Tùy theo cách đặt vấn đề, có thể phân các hướng tiếp cận thành hai nhóm lớn. Nhóm thứ nhất coi việc phân bổ là một bài toán tối ưu \emph{tĩnh}: tại mỗi thời điểm, ước lượng các tham số của phân phối lợi suất từ dữ liệu quá khứ rồi giải một bài toán tối ưu để tìm $w$. Nhóm thứ hai coi việc phân bổ là một bài toán \emph{ra quyết định tuần tự} dưới điều kiện bất định: quyết định hôm nay ảnh hưởng đến chi phí giao dịch và trạng thái danh mục ngày mai, và mục tiêu là tối ưu một tiêu chí tích lũy trên cả quá trình đầu tư. Nhóm thứ hai là đối tượng tự nhiên của học tăng cường.
+
+Trong thực hành, bài toán còn chịu nhiều ràng buộc: số lượng mã nắm giữ tối đa, trần tỷ trọng cho mỗi mã, chi phí giao dịch, yêu cầu về thanh khoản, và tập cổ phiếu được phép đầu tư thay đổi theo thời gian do niêm yết mới, hủy niêm yết hoặc thay đổi vốn hóa. Một mô hình có giá trị ứng dụng cần xử lý được các ràng buộc này ngay trong thiết kế.
+
+\section{Hướng tiếp cận truyền thống}
+
+Markowitz \cite{markowitz1952} đặt nền móng cho lý thuyết danh mục hiện đại bằng khung trung bình--phương sai (Mean--Variance -- MV): trong các danh mục có cùng lợi suất kỳ vọng, nhà đầu tư chọn danh mục có phương sai nhỏ nhất. Tập các danh mục tối ưu theo nghĩa này tạo thành đường biên hiệu quả. Đóng góp quan trọng nhất của khung MV là lượng hóa lợi ích của đa dạng hóa: rủi ro của danh mục không chỉ phụ thuộc vào rủi ro của từng tài sản mà còn phụ thuộc vào hiệp phương sai giữa chúng.
+
+Tuy nhiên, hiệu quả ngoài mẫu của danh mục MV phụ thuộc rất mạnh vào chất lượng ước lượng véc-tơ lợi suất kỳ vọng và ma trận hiệp phương sai. Michaud \cite{michaud1989} chỉ ra rằng bộ tối ưu MV có xu hướng khuếch đại sai số ước lượng: nó dồn tỷ trọng vào những tài sản có lợi suất bị ước lượng quá cao và phương sai bị ước lượng quá thấp. DeMiguel, Garlappi và Uppal \cite{demiguel2009} so sánh mười bốn mô hình phân bổ tối ưu với chiến lược phân bổ đều $1/N$ trên nhiều bộ dữ liệu và kết luận rằng không mô hình nào vượt trội $1/N$ một cách nhất quán về tỷ số Sharpe ngoài mẫu; phần lợi ích từ tối ưu hóa bị triệt tiêu bởi sai số ước lượng. Kết quả này khiến danh mục phân bổ đều trở thành một mốc so sánh bắt buộc cho mọi phương pháp phân bổ mới, và cũng là mốc so sánh chính trong luận văn.
+
+Để giảm sai số ước lượng, Ledoit và Wolf \cite{ledoit2004} đề xuất ước lượng co rút (shrinkage) cho ma trận hiệp phương sai: tổ hợp lồi giữa ma trận hiệp phương sai mẫu và một ma trận đích có cấu trúc đơn giản, với hệ số co rút được chọn tối ưu theo một tiêu chí sai số bình phương. Ước lượng này có điều kiện số tốt ngay cả khi số tài sản lớn so với số quan sát. Black và Litterman \cite{black1992} đi theo hướng khác: kết hợp lợi suất cân bằng suy ra từ thị trường với quan điểm chủ quan của nhà đầu tư để có ước lượng lợi suất kỳ vọng ổn định hơn.
+
+Một nhánh nghiên cứu liên quan khảo sát chính cấu trúc tương quan của thị trường. Mantegna \cite{mantegna1999} biểu diễn ma trận tương quan lợi suất dưới dạng đồ thị (cây khung nhỏ nhất) và cho thấy các cổ phiếu tự nhóm lại theo ngành kinh tế -- một quan sát đặt nền móng cho việc dùng đồ thị tương quan trong tài chính. Các nghiên cứu về tương quan có điều kiện \cite{engle2002} và tương quan trong các giai đoạn cực đoan \cite{longin2001} cho thấy tương quan giữa các tài sản không cố định: nó thay đổi theo thời gian và có xu hướng tăng mạnh khi thị trường suy giảm, đúng lúc nhà đầu tư cần lợi ích đa dạng hóa nhất.
+
+Điểm chung của các phương pháp truyền thống là giả định quan hệ tuyến tính giữa các tài sản và coi các tham số là ổn định trong cửa sổ ước lượng. Chúng cũng không trực tiếp tính đến tính tuần tự của quyết định và chi phí giao dịch. Đây là những hạn chế mà các phương pháp dựa trên học máy tìm cách khắc phục.
+
+\section{Học sâu trong dự báo và phân bổ tài chính}
+
+Các mô hình học sâu cho chuỗi thời gian được áp dụng rộng rãi trong tài chính nhờ khả năng học các quan hệ phi tuyến mà không cần chỉ định trước dạng hàm. Mạng LSTM \cite{hochreiter1997} và biến thể gọn hơn là GRU \cite{cho2014} dùng các cổng để điều khiển dòng thông tin qua thời gian, nhờ đó nắm bắt được các phụ thuộc dài. Fischer và Krauss \cite{fischer2018} áp dụng LSTM để dự báo hướng biến động của các cổ phiếu thuộc S\&P~500 và báo cáo kết quả tốt hơn rừng ngẫu nhiên, mạng nơ-ron sâu thông thường và hồi quy logistic; đáng chú ý, các tác giả cũng ghi nhận rằng lợi thế này suy giảm rõ rệt trong giai đoạn gần cuối mẫu. Ding và cộng sự \cite{ding2015} đưa thêm thông tin sự kiện trích xuất từ tin tức vào mạng nơ-ron sâu, cho thấy tiềm năng của dữ liệu đa phương thức. Kiến trúc Transformer \cite{vaswani2017}, dựa hoàn toàn trên cơ chế tự chú ý, cho phép mỗi thời điểm trong chuỗi truy cập trực tiếp mọi thời điểm khác và ngày càng được dùng thay cho mạng hồi quy.
+
+Trong bài toán danh mục, có hai cách dùng mô hình học sâu. Cách thứ nhất là \emph{dự báo rồi tối ưu}: dùng mô hình để dự báo lợi suất, sau đó đưa dự báo vào một bộ tối ưu danh mục \cite{ma2023}. Cách thứ hai là \emph{tối ưu trực tiếp}: mạng nơ-ron xuất thẳng tỷ trọng danh mục và được huấn luyện bằng một tiêu chí hiệu quả đầu tư, chẳng hạn tỷ số Sharpe \cite{zhang2020}. Cách thứ hai tránh được việc sai số dự báo bị bộ tối ưu khuếch đại, và là cách tiếp cận của luận văn.
+
+Hạn chế chung của nhóm mô hình chuỗi thời gian là mỗi cổ phiếu thường được xử lý như một chuỗi riêng với trọng số mạng dùng chung; quan hệ giữa các cổ phiếu -- yếu tố quyết định rủi ro của danh mục -- không được mô hình hóa tường minh.
+
+\section{Mạng nơ-ron đồ thị trong tài chính}
+
+Mạng nơ-ron đồ thị \cite{scarselli2009,gilmer2017} mở rộng học sâu sang dữ liệu có cấu trúc quan hệ. Trong tài chính, thị trường được biểu diễn bằng một đồ thị mà mỗi nút là một cổ phiếu và mỗi cạnh thể hiện một quan hệ: cùng ngành, quan hệ sở hữu, quan hệ chuỗi cung ứng, cùng xuất hiện trong tin tức, hoặc tương quan lợi suất. Qua cơ chế truyền thông điệp, biểu diễn của một cổ phiếu được làm giàu bằng thông tin của các cổ phiếu liên quan.
+
+Chen, Wei và Huang \cite{chen2018} xây dựng đồ thị từ quan hệ sở hữu giữa các doanh nghiệp và dùng mạng tích chập đồ thị để cải thiện dự báo giá cổ phiếu. Feng và cộng sự \cite{feng2019} đề xuất mô hình xếp hạng cổ phiếu kết hợp mạng hồi quy với một tầng tích chập đồ thị nhạy theo thời gian trên các quan hệ ngành và quan hệ doanh nghiệp. Kim và cộng sự \cite{kim2019} đề xuất HATS, một mạng chú ý đồ thị phân cấp chọn lọc thông tin trên nhiều loại quan hệ khác nhau để dự báo biến động cổ phiếu. Matsunaga, Suzumura và Takahashi \cite{matsunaga2019} đánh giá các mô hình GNN trên thị trường Nhật Bản bằng phân tích cửa sổ trượt qua nhiều giai đoạn, nhấn mạnh rằng kết luận rút ra từ một giai đoạn kiểm tra duy nhất có thể không bền vững.
+
+Xét theo nguồn gốc của đồ thị, có thể chia các nghiên cứu thành hai nhóm. Nhóm dùng \emph{quan hệ định sẵn} (ngành, sở hữu, chuỗi cung ứng) có đồ thị ổn định và dễ diễn giải nhưng đòi hỏi dữ liệu quan hệ được chuẩn hóa -- điều không phải lúc nào cũng sẵn có ở thị trường mới nổi -- và không phản ánh thay đổi của thị trường. Nhóm dùng \emph{quan hệ thống kê} (tương quan lợi suất và các biến thể) chỉ cần dữ liệu giá, có thể cập nhật theo thời gian, nhưng chịu sai số ước lượng và phụ thuộc vào lựa chọn cửa sổ cũng như ngưỡng. Luận văn thuộc nhóm thứ hai.
+
+Phần lớn các công trình nêu trên dừng ở bài toán dự báo hoặc xếp hạng cổ phiếu; việc chuyển từ dự báo sang quyết định phân bổ có tính đến chi phí giao dịch không được giải quyết trực tiếp.
+
+\section{Học tăng cường trong quản lý danh mục}
+
+Học tăng cường mô hình hóa việc quản lý danh mục như một quá trình quyết định Markov: tại mỗi bước, tác tử quan sát trạng thái thị trường, chọn một véc-tơ tỷ trọng, nhận phần thưởng phản ánh kết quả đầu tư và chuyển sang trạng thái mới. Ý tưởng huấn luyện trực tiếp một hệ thống giao dịch theo tiêu chí hiệu quả đầu tư, thay vì theo sai số dự báo, đã được Moody và cộng sự đề xuất từ cuối thập niên 1990 \cite{moody1998,moody2001}. Các tác giả cũng giới thiệu tỷ số Sharpe vi phân -- một xấp xỉ trực tuyến của đóng góp biên vào tỷ số Sharpe -- cho phép dùng một thước đo vốn được định nghĩa trên cả chuỗi làm tín hiệu thưởng tại từng bước.
+
+Jiang, Xu và Liang \cite{jiang2017} đề xuất một khung học tăng cường sâu cho quản lý danh mục với kiến trúc ``tập hợp các bộ đánh giá độc lập giống nhau'' (EIIE), trong đó cùng một mạng được áp dụng cho từng tài sản rồi các điểm số được chuẩn hóa thành tỷ trọng, kèm cơ chế ghi nhớ véc-tơ tỷ trọng kỳ trước để tính đến chi phí giao dịch. Thiết kế ``một mạng chấm điểm dùng chung cho mọi tài sản'' giúp mô hình không phụ thuộc vào số lượng và thứ tự tài sản; luận văn kế thừa ý tưởng này ở tầng actor. Liu và cộng sự \cite{liu2020finrl} xây dựng thư viện FinRL nhằm chuẩn hóa môi trường và thuật toán cho các bài toán giao dịch. Các công trình gần đây tiếp tục mở rộng theo hướng đưa bối cảnh thị trường vào trạng thái \cite{yang2023}, áp dụng cho quản lý danh mục định lượng \cite{wei2023}, và thiết kế phần thưởng điều chỉnh theo rủi ro \cite{choudhary2025}. Hambly, Xu và Yang \cite{hambly2023} cung cấp một tổng quan rộng về học tăng cường trong tài chính.
+
+Đối với các thị trường cận biên và mới nổi, Ngo, Nguyen và Van Nguyen \cite{ngo2023} so sánh học tăng cường với học sâu và các mô hình danh mục truyền thống trên cả thị trường cận biên lẫn phát triển; đây là một trong số ít nghiên cứu đặt câu hỏi về hiệu quả của học tăng cường ngoài các thị trường lớn.
+
+Một vấn đề phương pháp luận quan trọng của hướng này là độ tin cậy của kết quả. Henderson và cộng sự \cite{henderson2018} cho thấy kết quả của các thuật toán gradient chính sách thay đổi đáng kể theo hạt giống ngẫu nhiên, đến mức hai nhóm lần chạy của cùng một thuật toán với cùng siêu tham số có thể cho phân phối kết quả khác nhau có ý nghĩa thống kê. Engstrom và cộng sự \cite{engstrom2020} chỉ ra rằng nhiều chi tiết cài đặt tưởng như thứ yếu của PPO lại ảnh hưởng lớn đến hiệu năng. Trong tài chính, khó khăn này cộng hưởng với sai số ước lượng của chính thước đo: Lo \cite{lo2002} dẫn ra phân phối tiệm cận của tỷ số Sharpe và cho thấy sai số chuẩn của nó rất lớn khi số quan sát nhỏ; Bailey và López de Prado \cite{bailey2014} cảnh báo về việc tỷ số Sharpe bị thổi phồng khi kết quả tốt nhất được chọn ra từ nhiều lần thử. Các cảnh báo này định hướng trực tiếp cho quy trình đánh giá của luận văn.
+
+\section{Mô hình lai giữa mạng đồ thị và học tăng cường}
+
+Việc kết hợp GNN với RL nhằm tận dụng đồng thời hai ưu điểm: GNN cung cấp biểu diễn trạng thái có chứa cấu trúc quan hệ giữa các tài sản, còn RL tối ưu trực tiếp quyết định phân bổ.
+
+Soleymani và Paquet \cite{soleymani2021} đề xuất DeepPocket, trong đó một bộ tự mã hóa trích xuất đặc trưng, một mạng tích chập đồ thị khai thác quan hệ giữa các tài sản và một tác tử actor--critic ra quyết định phân bổ. Ekmekcioğlu và Pınar \cite{ekmekcioglu2023} dùng mạng nơ-ron đồ thị cho tối ưu hóa danh mục sâu. Sun, Wei và Yang \cite{sun2024graphsage} kết hợp GraphSAGE với học tăng cường sâu. Salamai \cite{salamai2024} bổ sung học theo chương trình (curriculum learning) cho bài toán quản lý danh mục dựa trên đồ thị.
+
+Các công trình gần đây chú trọng tính \emph{động} của đồ thị. Sun và cộng sự \cite{sun2024cikm} mô hình hóa đồng thời quan hệ dài hạn và ngắn hạn giữa các cổ phiếu trong một khung học tăng cường trên đồ thị động. Ma và Nan \cite{ma2024} xây dựng đồ thị từ tương quan trong miền thời gian--tần số. Bian và cộng sự \cite{bian2024} dùng đồ thị động xây dựng từ tin tức. Li, Zhang và Wang \cite{li2025alphagat} đề xuất AlphaGAT, một phương pháp học hai giai đoạn dựa trên mạng chú ý đồ thị cho lựa chọn danh mục thích nghi.
+
+Bảng~\ref{tab:related} tóm tắt đặc điểm của các nhóm phương pháp. Có thể thấy mô hình lai đồ thị--học tăng cường là nhóm duy nhất đồng thời mô hình hóa quan hệ giữa các tài sản, tối ưu trực tiếp quyết định và tính đến chi phí giao dịch; đổi lại, nhóm này phức tạp nhất và nhạy nhất với lượng dữ liệu cũng như tính ngẫu nhiên trong huấn luyện.
+
+\begin{table}[ht]
+\centering\small
+\caption{So sánh định tính các nhóm phương pháp phân bổ danh mục}
+\label{tab:related}
+\begin{tabularx}{\textwidth}{@{}p{3.7cm}>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X@{}}
+\toprule
+Nhóm phương pháp & Quan hệ giữa tài sản & Phi tuyến, đa đặc trưng & Quyết định tuần tự, chi phí & Nhu cầu dữ liệu \\
+\midrule
+Trung bình--phương sai \cite{markowitz1952,ledoit2004} & Tuyến tính, tĩnh & Không & Không & Thấp \\
+Phân bổ đều $1/N$ \cite{demiguel2009} & Không & Không & Không & Không \\
+Học sâu chuỗi thời gian \cite{fischer2018,ma2023} & Không tường minh & Có & Gián tiếp & Cao \\
+GNN dự báo/xếp hạng \cite{chen2018,feng2019,kim2019} & Có & Có & Không & Cao \\
+RL không đồ thị \cite{jiang2017,liu2020finrl} & Không tường minh & Có & Có & Rất cao \\
+GNN + RL \cite{soleymani2021,sun2024cikm,li2025alphagat} & Có, có thể động & Có & Có & Rất cao \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Khoảng trống nghiên cứu và định hướng của luận văn}
+
+Từ tổng quan trên, có thể rút ra ba khoảng trống liên quan trực tiếp đến đề tài.
+
+\textit{Thứ nhất, về bối cảnh thị trường.} Các mô hình lai GNN + RL chủ yếu được thử nghiệm trên thị trường Mỹ, Trung Quốc hoặc tiền mã hóa. Thị trường Việt Nam khác các thị trường này ở quy mô, thanh khoản, cơ cấu nhà đầu tư và mức độ tập trung vốn hóa; do đó kết quả từ các thị trường lớn không thể mặc nhiên chuyển sang. Số nghiên cứu áp dụng kiến trúc lai này cho cổ phiếu Việt Nam còn rất hạn chế.
+
+\textit{Thứ hai, về cấu trúc quan hệ.} Nhiều phương pháp dùng đồ thị cố định hoặc đồ thị xây dựng từ quan hệ định sẵn. Với thị trường Việt Nam, nơi cấu trúc đồng biến động thay đổi mạnh qua các giai đoạn như 2020 và 2022, câu hỏi nên ước lượng quan hệ trên cửa sổ ngắn (bám sát trạng thái hiện tại) hay cửa sổ dài (ổn định hơn) chưa được khảo sát một cách có hệ thống.
+
+\textit{Thứ ba, về độ tin cậy của đánh giá.} Nhiều nghiên cứu báo cáo kết quả của một lần huấn luyện trên một giai đoạn kiểm tra, không kèm độ biến động theo hạt giống và không so với mốc ``không có kỹ năng''. Với tập kiểm tra chỉ gồm vài chục kỳ tái cân bằng, chênh lệch tỷ số Sharpe giữa hai chiến lược có thể hoàn toàn nằm trong phạm vi nhiễu.
+
+Luận văn hướng tới các khoảng trống trên theo cách sau. Về mô hình, luận văn xây dựng một kiến trúc lai huấn luyện đầu--cuối, trong đó đồ thị tương quan được ước lượng lại tại mỗi ngày tái cân bằng và tập cổ phiếu được phép thay đổi theo thời gian. Về dữ liệu, luận văn tích hợp ba nhóm đặc trưng -- giá và kỹ thuật, tài chính doanh nghiệp, vĩ mô -- cho thị trường Việt Nam trong mười năm. Về đánh giá, luận văn ưu tiên tính kiểm soát và tính trung thực: nhiều hạt giống ngẫu nhiên, phép loại bỏ thành phần, các chiến lược đối chứng truyền thống và phân phối của danh mục ngẫu nhiên.
+
+So với đề cương ban đầu, phạm vi thực hiện có một số điều chỉnh: dữ liệu tin tức chưa được tích hợp; đồ thị được xây dựng từ tương quan Pearson thay vì DTW hay quan hệ nhân quả Granger; tập cổ phiếu là toàn bộ nhóm vốn hóa vừa và lớn thay vì một rổ 20--30 mã cố định. Các điều chỉnh này và lý do tương ứng được trình bày chi tiết ở Mục~\ref{sec:doichieu}.
+
+\section{Tổng kết chương}
+
+Chương này đã trình bày bài toán tối ưu hóa danh mục và năm hướng tiếp cận chính. Các phương pháp truyền thống có nền tảng lý thuyết vững nhưng nhạy với sai số ước lượng và giả định cấu trúc tương quan tĩnh. Các mô hình học sâu chuỗi thời gian học được quan hệ phi tuyến nhưng bỏ qua cấu trúc giữa các cổ phiếu. Mạng nơ-ron đồ thị bổ sung cấu trúc này nhưng chủ yếu dừng ở dự báo. Học tăng cường tối ưu trực tiếp quyết định tuần tự nhưng kết quả biến động mạnh theo hạt giống ngẫu nhiên. Mô hình lai GNN + RL kết hợp các ưu điểm trên, song còn ít được kiểm chứng ở thị trường Việt Nam và thường thiếu quy trình đánh giá chặt chẽ. Chương tiếp theo trình bày cơ sở lý thuyết của các thành phần được sử dụng trong luận văn.

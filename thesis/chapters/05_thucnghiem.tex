@@ -1,0 +1,45 @@
+\chapter{THỰC NGHIỆM VÀ ĐÁNH GIÁ KẾT QUẢ}
+\label{ch:thucnghiem}
+
+Chương này trình bày thiết lập thực nghiệm và kết quả. Mục~\ref{sec:setup} mô tả giao thức đánh giá, các chiến lược đối chứng và các biến thể của mô hình. Mục~\ref{sec:overall} trình bày kết quả tổng thể trên tập kiểm tra. Các mục tiếp theo phân tích độ biến động theo hạt giống, so sánh với danh mục ngẫu nhiên và mạng chưa huấn luyện, phép loại bỏ thành phần, quá trình huấn luyện, hành vi của chính sách, thiết lập tái cân bằng theo tuần và độ vững của kết quả trước lỗi dữ liệu giá.
+
+\section{Thiết lập thực nghiệm}
+\label{sec:setup}
+
+\subsection{Giao thức đánh giá}
+
+Mọi chiến lược được đánh giá bằng cùng một quy trình kiểm thử ngược trên tập kiểm tra từ tháng 01/2024 đến tháng 12/2025. Tại mỗi ngày quyết định $t$, chiến lược chọn véc-tơ tỷ trọng chỉ dựa trên dữ liệu trước $t$; danh mục được nắm giữ đến ngày quyết định kế tiếp; lợi suất ròng được tính theo công thức~\eqref{eq:netret} với phí 10 điểm cơ bản trên giá trị luân chuyển. Từ chuỗi lợi suất ròng, luận văn tính các chỉ số ở Mục~\ref{sec:metrics}: tỷ số Sharpe quy năm, lợi suất tích lũy, độ biến động quy năm, mức sụt giảm tối đa (MDD), tỷ số Calmar và mức luân chuyển trung bình mỗi kỳ.
+
+Thiết lập chính dùng tái cân bằng theo tháng, cho 23 kỳ nắm giữ trên tập kiểm tra. Đây cũng là thiết lập của bài báo đã công bố \cite{tran2026dynamic}. Thiết lập tái cân bằng theo tuần (103 kỳ) được trình bày riêng ở Mục~\ref{sec:weekly}.
+
+Với mô hình học tăng cường, mỗi cấu hình được huấn luyện độc lập với nhiều hạt giống ngẫu nhiên; hạt giống quyết định cả giá trị khởi tạo của mạng lẫn các hành động được lấy mẫu trong pha thu thập. Kết quả được báo cáo dưới dạng trung bình $\pm$ độ lệch chuẩn mẫu trên các hạt giống. Mỗi lần huấn luyện gồm $N_{\mathrm{iter}}=8$ vòng lặp PPO, tức 32 bước cập nhật gradient; mô hình được chọn là mô hình có tỷ số Sharpe kiểm định cao nhất trong 8 vòng. Các siêu tham số khác theo Bảng~\ref{tab:hyper}.
+
+\subsection{Các chiến lược đối chứng}
+\label{sec:baselines}
+
+Luận văn so sánh mô hình đề xuất với ba nhóm đối chứng.
+
+\textit{Nhóm 1 -- chiến lược thụ động và truyền thống:}
+\begin{itemize}
+  \item \textbf{Phân bổ đều (1/N):} chia đều vốn cho mọi cổ phiếu đủ điều kiện tại mỗi ngày quyết định. Đây là mốc so sánh quan trọng nhất vì nó dùng đúng tập cổ phiếu và đúng dữ liệu giá của mô hình, chỉ khác ở chỗ không lựa chọn.
+  \item \textbf{VN-Index:} mua và nắm giữ chỉ số, không chịu phí. Cần lưu ý ba điểm khi so sánh với VN-Index: chỉ số được tính theo tỷ trọng vốn hóa nên không chịu giới hạn 10\% mỗi mã; chỉ số chỉ gồm cổ phiếu HOSE trong khi tập cổ phiếu của luận văn rộng hơn; và chỉ số đã được điều chỉnh theo các sự kiện doanh nghiệp trong khi dữ liệu giá từng mã thì chưa (Mục~\ref{sec:robust-clean}).
+  \item \textbf{Phương sai nhỏ nhất} và \textbf{trung bình--phương sai (danh mục tiếp tuyến)} của Markowitz: lợi suất kỳ vọng là trung bình mẫu và ma trận hiệp phương sai là ước lượng co rút Ledoit--Wolf~\eqref{eq:lw}, cùng tính trên 250 phiên trước ngày quyết định; ràng buộc chỉ mua, trần 10\% mỗi mã; bài toán tối ưu được giải bằng quy hoạch toàn phương tuần tự.
+  \item \textbf{Động lượng top-20:} chia đều vốn cho 20 mã đủ điều kiện có động lượng 60 phiên cao nhất.
+\end{itemize}
+
+\textit{Nhóm 2 -- đối chứng ``không có kỹ năng'':} Một mô hình chọn 20 mã trong khoảng 160 mã luôn cho một kết quả nào đó; câu hỏi là kết quả ấy có khác với việc chọn mò hay không. Luận văn dùng hai đối chứng:
+\begin{itemize}
+  \item \textbf{Danh mục 20 mã ngẫu nhiên:} 1.000 danh mục, mỗi danh mục chia đều vốn cho 20 mã đủ điều kiện được chọn ngẫu nhiên. Ở biến thể ``giữ nguyên'', 20 mã được chọn một lần và chỉ thay khi một mã không còn đủ điều kiện, nên chi phí giao dịch thấp; ở biến thể ``đổi mỗi kỳ'', 20 mã được chọn lại hoàn toàn tại mỗi ngày quyết định, nên chi phí giao dịch cao. Hai biến thể kẹp hai đầu mức luân chuyển có thể có của một chiến lược chọn 20 mã.
+  \item \textbf{Mạng chưa huấn luyện:} 30 bộ tham số Transformer + GAT + tác tử được khởi tạo ngẫu nhiên và dùng ngay để ra quyết định trên tập kiểm tra, không qua bước huấn luyện nào. Đối chứng này trả lời trực tiếp câu hỏi: quá trình huấn luyện PPO có cải thiện chính sách so với điểm xuất phát hay không.
+\end{itemize}
+
+\textit{Nhóm 3 -- các biến thể của mô hình (phép loại bỏ thành phần):}
+\begin{itemize}
+  \item \textbf{LSTM + GAT:} thay bộ mã hóa Transformer bằng LSTM, nhằm đánh giá vai trò của cơ chế tự chú ý theo thời gian.
+  \item \textbf{Transformer + GCN:} thay GAT bằng GCN, nhằm đánh giá vai trò của trọng số chú ý học được so với trọng số gộp cố định.
+  \item \textbf{Transformer, không đồ thị:} chỉ giữ khuyên trong ma trận kề, nhằm đánh giá vai trò của thông tin liên cổ phiếu.
+  \item \textbf{Transformer + GAT với đồ thị 250 phiên:} thay cửa sổ ước lượng tương quan 60 phiên bằng 250 phiên, nhằm so sánh quan hệ tương quan ngắn hạn và dài hạn.
+  \item \textbf{LSTM thuần} và \textbf{GRU thuần:} bộ mã hóa hồi quy không dùng đồ thị, với cùng tác tử PPO -- tương ứng với các mô hình học sâu chuỗi thời gian đơn lẻ nêu trong đề cương.
+\end{itemize}
+Mô hình đề xuất và ba biến thể đầu được huấn luyện với 5 hạt giống; ba biến thể còn lại với 3 hạt giống. Mọi biến thể dùng chung siêu tham số, tập dữ liệu và ràng buộc danh mục.
+

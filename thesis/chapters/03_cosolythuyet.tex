@@ -1,0 +1,269 @@
+\chapter{CƠ SỞ LÝ THUYẾT}
+\label{ch:lythuyet}
+
+Chương này trình bày các nền tảng lý thuyết được dùng để xây dựng và đánh giá mô hình: lý thuyết danh mục và các thước đo hiệu quả đầu tư (Mục~\ref{sec:lt-danhmuc}), các mô hình chuỗi thời gian (Mục~\ref{sec:lt-chuoi}), mạng nơ-ron đồ thị (Mục~\ref{sec:lt-gnn}), học tăng cường với thuật toán PPO (Mục~\ref{sec:lt-rl}) và tỷ số Sharpe vi phân (Mục~\ref{sec:lt-dsr}).
+
+\section{Lý thuyết danh mục và thước đo hiệu quả đầu tư}
+\label{sec:lt-danhmuc}
+
+\subsection{Lợi suất và danh mục}
+
+Gọi $P_{i,s}$ là giá đóng cửa đã điều chỉnh của cổ phiếu $i$ tại phiên $s$. Lợi suất logarit theo ngày được định nghĩa là
+\begin{equation}
+\ell_{i,s}=\ln\frac{P_{i,s}}{P_{i,s-1}}.
+\label{eq:logret}
+\end{equation}
+Lợi suất logarit có tính cộng theo thời gian: lợi suất đơn của cổ phiếu $i$ khi nắm giữ từ sau phiên $a$ đến hết phiên $b$ là
+\begin{equation}
+R_i(a,b)=\exp\Big(\sum_{s=a+1}^{b}\ell_{i,s}\Big)-1 .
+\label{eq:holdret}
+\end{equation}
+Ngược lại, lợi suất đơn có tính cộng theo tài sản: nếu danh mục có tỷ trọng $w$ ở đầu kỳ thì lợi suất của danh mục trong kỳ là $w\T R$. Vì vậy, luận văn dùng lợi suất logarit khi cộng dồn theo thời gian và lợi suất đơn khi tổng hợp theo danh mục.
+
+\subsection{Mô hình trung bình--phương sai}
+
+Giả sử véc-tơ lợi suất $R$ có kỳ vọng $\mu$ và ma trận hiệp phương sai $\Sigma$. Danh mục $w$ có lợi suất kỳ vọng $w\T\mu$ và phương sai $w\T\Sigma w$. Bài toán trung bình--phương sai của Markowitz \cite{markowitz1952} có thể viết dưới dạng
+\begin{equation}
+\max_{w\in\mathcal{W}}\; w\T\mu-\frac{\kappa}{2}\,w\T\Sigma w,
+\label{eq:mv}
+\end{equation}
+trong đó $\kappa>0$ là hệ số e ngại rủi ro và $\mathcal{W}$ là tập ràng buộc. Hai trường hợp riêng được dùng làm đối chứng trong luận văn. Danh mục \emph{phương sai nhỏ nhất} bỏ qua $\mu$ và chỉ cực tiểu $w\T\Sigma w$; danh mục này không cần ước lượng lợi suất kỳ vọng -- đại lượng khó ước lượng nhất. Danh mục \emph{tiếp tuyến} cực đại tỷ số $w\T\mu/\sqrt{w\T\Sigma w}$, tức tỷ số Sharpe tiên nghiệm. Trong cả hai trường hợp, tập ràng buộc được lấy là
+\begin{equation}
+\mathcal{W}=\{w:\; \textstyle\sum_i w_i=1,\; 0\le w_i\le w_{\max}\}.
+\end{equation}
+
+Trong thực hành, $\Sigma$ được thay bằng một ước lượng. Ma trận hiệp phương sai mẫu $S$ kém ổn định khi số tài sản $N$ không nhỏ so với số quan sát. Ước lượng co rút của Ledoit và Wolf \cite{ledoit2004} có dạng
+\begin{equation}
+\hat\Sigma=(1-\delta)\,S+\delta\,\bar{\sigma}^2 I,\qquad \bar{\sigma}^2=\frac{1}{N}\operatorname{tr}(S),
+\label{eq:lw}
+\end{equation}
+với cường độ co rút $\delta\in[0,1]$ được chọn để cực tiểu sai số bình phương kỳ vọng theo chuẩn Frobenius. Khi $\delta>0$, $\hat\Sigma$ luôn xác định dương và có số điều kiện tốt hơn $S$.
+
+\subsection{Chi phí giao dịch và lợi suất ròng}
+
+Mỗi lần tái cân bằng làm phát sinh chi phí. Với mô hình chi phí tuyến tính, nếu danh mục chuyển từ tỷ trọng $w_{t-1}$ sang $w_t$ thì mức luân chuyển (turnover) là $\lVert w_t-w_{t-1}\rVert_1$ và lợi suất ròng của kỳ $t$ là
+\begin{equation}
+r_t=w_t\T R_t-c\,\lVert w_t-w_{t-1}\rVert_1,
+\label{eq:netret}
+\end{equation}
+trong đó $c$ là tỷ lệ phí trên một đơn vị giá trị giao dịch. Ở kỳ đầu tiên, $w_{0}=0$ nên chi phí bằng $c$ nhân với toàn bộ giá trị danh mục. Mô hình này bỏ qua tác động giá và giới hạn thanh khoản; hệ quả của giả định này được thảo luận ở Chương~\ref{ch:thaoluan}.
+
+\subsection{Các thước đo hiệu quả}
+\label{sec:metrics}
+
+Cho chuỗi lợi suất ròng $r_1,\dots,r_n$ của một chiến lược với $p$ kỳ mỗi năm ($p=12$ cho tái cân bằng theo tháng, $p=52$ theo tuần). Đường giá trị tài sản là $E_t=\prod_{s\le t}(1+r_s)$ với $E_0=1$.
+
+\textit{Lợi suất tích lũy và lợi suất quy năm:}
+\begin{equation}
+R_{\mathrm{cum}}=E_n-1,\qquad R_{\mathrm{ann}}=E_n^{\,p/n}-1 .
+\end{equation}
+
+\textit{Tỷ số Sharpe quy năm} \cite{sharpe1966,sharpe1994}:
+\begin{equation}
+\mathrm{SR}=\sqrt{p}\;\frac{\bar r}{\hat\sigma_r},
+\label{eq:sharpe}
+\end{equation}
+với $\bar r$ và $\hat\sigma_r$ là trung bình và độ lệch chuẩn mẫu của $r_t$. Thống nhất với mã nguồn của luận văn, lãi suất phi rủi ro được lấy bằng không; điều này làm tỷ số Sharpe của mọi chiến lược cao hơn một lượng xấp xỉ như nhau và không ảnh hưởng đến thứ hạng tương đối giữa các chiến lược có độ biến động gần nhau.
+
+\textit{Mức sụt giảm tối đa:}
+\begin{equation}
+\mathrm{MDD}=\min_{t}\;\frac{E_t-\max_{s\le t}E_s}{\max_{s\le t}E_s}\;\le 0 .
+\end{equation}
+
+\textit{Tỷ số Calmar} \cite{young1991} đo lợi suất trên một đơn vị rủi ro sụt giảm:
+\begin{equation}
+\mathrm{Calmar}=\frac{R_{\mathrm{ann}}}{|\mathrm{MDD}|}.
+\label{eq:calmar}
+\end{equation}
+
+\subsection{Độ bất định của tỷ số Sharpe}
+\label{sec:sharpe-se}
+
+Tỷ số Sharpe tính từ dữ liệu là một ước lượng và có sai số. Với lợi suất độc lập cùng phân phối, Lo \cite{lo2002} chỉ ra rằng tỷ số Sharpe theo kỳ $\widehat{\mathrm{SR}}_{1}=\bar r/\hat\sigma_r$ có phân phối tiệm cận chuẩn với sai số chuẩn
+\begin{equation}
+\mathrm{se}\big(\widehat{\mathrm{SR}}_{1}\big)\approx\sqrt{\frac{1+\tfrac12\,\mathrm{SR}_{1}^{2}}{n}} .
+\label{eq:lo}
+\end{equation}
+Sau khi quy năm, sai số chuẩn được nhân với $\sqrt{p}$. Công thức~\eqref{eq:lo} có một hệ quả thực tế quan trọng cho luận văn. Với tái cân bằng theo tháng trên giai đoạn kiểm tra hai năm, $n=23$ và $p=12$; khi tỷ số Sharpe quy năm vào khoảng $1$, sai số chuẩn quy năm xấp xỉ $\sqrt{12}\cdot\sqrt{(1+1/24)/23}\approx 0{,}74$. Nói cách khác, khoảng tin cậy 95\% của một tỷ số Sharpe bằng $1$ trải từ khoảng $-0{,}4$ đến $2{,}4$. Chênh lệch tỷ số Sharpe vài phần mười giữa hai chiến lược trên một giai đoạn như vậy không đủ để kết luận chiến lược nào tốt hơn. Bailey và López de Prado \cite{bailey2014} bổ sung rằng khi kết quả tốt nhất được chọn ra từ nhiều cấu hình hoặc nhiều lần chạy, tỷ số Sharpe quan sát được còn bị chệch lên. Đây là lý do luận văn báo cáo kết quả trung bình trên nhiều hạt giống và so sánh với phân phối của danh mục ngẫu nhiên, thay vì chỉ báo cáo lần chạy tốt nhất.
+
+\section{Mô hình chuỗi thời gian}
+\label{sec:lt-chuoi}
+
+\subsection{Mạng LSTM và GRU}
+
+Mạng LSTM \cite{hochreiter1997} xử lý chuỗi đầu vào $x_1,\dots,x_T$ bằng cách duy trì trạng thái ẩn $h_t$ và trạng thái ô nhớ $c_t$. Tại mỗi bước:
+\begin{equation}
+\begin{aligned}
+f_t&=\sigma(W_f[h_{t-1},x_t]+b_f), & i_t&=\sigma(W_i[h_{t-1},x_t]+b_i),\\
+o_t&=\sigma(W_o[h_{t-1},x_t]+b_o), & \tilde c_t&=\tanh(W_c[h_{t-1},x_t]+b_c),\\
+c_t&=f_t\odot c_{t-1}+i_t\odot\tilde c_t, & h_t&=o_t\odot\tanh(c_t),
+\end{aligned}
+\label{eq:lstm}
+\end{equation}
+trong đó $\sigma$ là hàm sigmoid, $\odot$ là tích từng phần tử; $f_t$, $i_t$, $o_t$ lần lượt là cổng quên, cổng vào và cổng ra. Cấu trúc cộng trong cập nhật $c_t$ cho phép gradient truyền qua nhiều bước mà không triệt tiêu nhanh. Mạng GRU \cite{cho2014} gộp trạng thái ô nhớ vào trạng thái ẩn và chỉ dùng hai cổng (cổng cập nhật và cổng đặt lại), nên có ít tham số hơn. Khi dùng làm bộ mã hóa, trạng thái ẩn ở bước cuối cùng $h_T$ của tầng trên cùng được lấy làm biểu diễn của cả chuỗi.
+
+\subsection{Transformer và cơ chế tự chú ý}
+
+Transformer \cite{vaswani2017} thay phép hồi quy bằng cơ chế tự chú ý (self-attention). Cho ma trận $Z\in\R^{T\times d}$ chứa biểu diễn của $T$ bước thời gian. Phép chú ý tích vô hướng có chuẩn hóa được định nghĩa là
+\begin{equation}
+\operatorname{Attn}(Q,K,V)=\softmax\!\Big(\frac{QK\T}{\sqrt{d_k}}+M\Big)V,
+\label{eq:attn}
+\end{equation}
+với $Q=ZW_Q$, $K=ZW_K$, $V=ZW_V$ và $d_k$ là số chiều của khóa. Ma trận mặt nạ $M\in\R^{T\times T}$ quyết định bước nào được ``nhìn'' bước nào. Với \emph{mặt nạ nhân quả}, $M_{st}=0$ nếu $t\le s$ và $M_{st}=-\infty$ nếu $t>s$, nên biểu diễn tại bước $s$ chỉ phụ thuộc vào các bước từ $1$ đến $s$. Chú ý nhiều đầu (multi-head attention) chạy song song $H$ phép chú ý trên các không gian con rồi ghép kết quả:
+\begin{equation}
+\operatorname{MHA}(Z)=\big[\operatorname{Attn}_1(Z)\,\Vert\,\cdots\,\Vert\,\operatorname{Attn}_H(Z)\big]W_O .
+\end{equation}
+
+Vì phép chú ý bất biến với hoán vị của các bước, thông tin vị trí được bổ sung bằng mã hóa vị trí dạng sin:
+\begin{equation}
+\mathrm{PE}(s,2k)=\sin\!\big(s/10000^{2k/d}\big),\qquad \mathrm{PE}(s,2k+1)=\cos\!\big(s/10000^{2k/d}\big).
+\label{eq:pe}
+\end{equation}
+Mỗi tầng mã hóa gồm một khối chú ý nhiều đầu và một mạng truyền thẳng theo từng vị trí, mỗi khối có kết nối tắt và chuẩn hóa theo tầng \cite{ba2016}. Trong biến thể \emph{pre-norm} dùng trong luận văn, phép chuẩn hóa được đặt trước mỗi khối:
+\begin{equation}
+Z'=Z+\operatorname{MHA}(\LN(Z)),\qquad Z''=Z'+\operatorname{FFN}(\LN(Z')).
+\label{eq:prenorm}
+\end{equation}
+Cách sắp xếp này thường giúp huấn luyện ổn định hơn với mạng nhỏ và ít dữ liệu. So với LSTM, Transformer cho phép mỗi bước truy cập trực tiếp mọi bước trước đó, nhưng có nhiều tham số hơn và không có thiên kiến quy nạp về thứ tự, do đó cần nhiều dữ liệu hơn để học tốt.
+
+\section{Mạng nơ-ron đồ thị}
+\label{sec:lt-gnn}
+
+\subsection{Đồ thị và cơ chế truyền thông điệp}
+
+Một đồ thị có trọng số $G=(V,E,A)$ gồm tập nút $V$ với $|V|=N$, tập cạnh $E$ và ma trận kề $A\in\R^{N\times N}$, trong đó $A_{ij}>0$ nếu có cạnh nối $i$ và $j$. Ký hiệu $\mathcal{N}(i)=\{j: A_{ij}\ne 0\}$ là tập lân cận của nút $i$ (gồm cả chính nó khi đồ thị có khuyên). Mỗi nút mang một véc-tơ đặc trưng $h_i$. Mạng nơ-ron đồ thị theo cơ chế truyền thông điệp \cite{gilmer2017} cập nhật biểu diễn của mỗi nút qua các tầng:
+\begin{equation}
+h_i^{(l+1)}=\psi\Big(h_i^{(l)},\;\bigoplus_{j\in\mathcal{N}(i)}\phi\big(h_i^{(l)},h_j^{(l)},A_{ij}\big)\Big),
+\label{eq:mpnn}
+\end{equation}
+trong đó $\phi$ là hàm tạo thông điệp, $\bigoplus$ là một phép gộp bất biến với hoán vị (tổng, trung bình, cực đại) và $\psi$ là hàm cập nhật. Sau $L$ tầng, biểu diễn của một nút chứa thông tin từ các nút cách nó không quá $L$ bước.
+
+\subsection{Mạng tích chập đồ thị}
+
+Mạng tích chập đồ thị (GCN) của Kipf và Welling \cite{kipf2017} dùng phép gộp là trung bình có trọng số cố định theo bậc của nút. Với ma trận kề đã có khuyên $\tilde A$ và ma trận bậc $\tilde D_{ii}=\sum_j\tilde A_{ij}$, một tầng GCN là
+\begin{equation}
+H^{(l+1)}=\sigma\big(\hat A\,H^{(l)}W^{(l)}\big),\qquad \hat A=\tilde D^{-1/2}\tilde A\,\tilde D^{-1/2}.
+\label{eq:gcn}
+\end{equation}
+Trọng số gộp $\hat A_{ij}=\tilde A_{ij}/\sqrt{\tilde D_{ii}\tilde D_{jj}}$ do cấu trúc đồ thị quyết định hoàn toàn và không phụ thuộc vào nội dung của các nút. Khi $\tilde A$ là ma trận có trọng số, cạnh mạnh hơn đóng góp nhiều hơn.
+
+\subsection{Mạng chú ý đồ thị}
+
+Mạng chú ý đồ thị (GAT) của Veličković và cộng sự \cite{velickovic2018} thay trọng số gộp cố định bằng trọng số học được. Với ma trận trọng số $W$ và hai véc-tơ chú ý $a_{\mathrm{src}}$, $a_{\mathrm{dst}}$, điểm chú ý chưa chuẩn hóa giữa nút $i$ và lân cận $j$ là
+\begin{equation}
+e_{ij}=\LeakyReLU\big(a_{\mathrm{src}}\T Wh_i+a_{\mathrm{dst}}\T Wh_j\big).
+\label{eq:gat-e}
+\end{equation}
+Điểm này được chuẩn hóa trong phạm vi lân cận của $i$:
+\begin{equation}
+\alpha_{ij}=\frac{\exp(e_{ij})}{\sum_{k\in\mathcal{N}(i)}\exp(e_{ik})},
+\label{eq:gat-alpha}
+\end{equation}
+và biểu diễn mới của nút $i$ là
+\begin{equation}
+h_i'=\sum_{j\in\mathcal{N}(i)}\alpha_{ij}\,Wh_j .
+\label{eq:gat-h}
+\end{equation}
+Với chú ý nhiều đầu, $H$ bộ tham số $(W^{(k)},a^{(k)}_{\mathrm{src}},a^{(k)}_{\mathrm{dst}})$ được áp dụng song song; kết quả được ghép nối ở các tầng giữa và lấy trung bình ở tầng cuối.
+
+Cần lưu ý hai điểm về công thức~\eqref{eq:gat-e}. Thứ nhất, trong GAT gốc, ma trận kề chỉ quyết định \emph{cạnh nào tồn tại}; độ lớn của $A_{ij}$ không tham gia vào $\alpha_{ij}$. Thứ hai, do $e_{ij}$ là tổng của một số hạng chỉ phụ thuộc $i$ và một số hạng chỉ phụ thuộc $j$, thứ hạng của các lân cận theo $\alpha_{ij}$ là như nhau với mọi nút $i$ -- hạn chế được Brody, Alon và Yahav \cite{brody2022} gọi là chú ý ``tĩnh'' và khắc phục bằng biến thể GATv2. Hai điểm này có liên quan đến hướng cải tiến được nêu ở Chương~\ref{ch:thaoluan}.
+
+\section{Học tăng cường và thuật toán PPO}
+\label{sec:lt-rl}
+
+\subsection{Quá trình quyết định Markov}
+
+Một quá trình quyết định Markov (MDP) được xác định bởi bộ $(\mathcal{S},\mathcal{A},P,r,\gamma)$: không gian trạng thái $\mathcal{S}$, không gian hành động $\mathcal{A}$, xác suất chuyển $P(s'\mid s,a)$, hàm thưởng $r(s,a)$ và hệ số chiết khấu $\gamma\in[0,1)$ \cite{sutton2018}. Một chính sách ngẫu nhiên $\pi_\theta(a\mid s)$ là phân phối trên hành động khi biết trạng thái. Mục tiêu là tìm tham số $\theta$ cực đại lợi nhuận chiết khấu kỳ vọng
+\begin{equation}
+J(\theta)=\E_{\tau\sim\pi_\theta}\Big[\sum_{t=0}^{\infty}\gamma^{t}r_t\Big].
+\end{equation}
+Hàm giá trị trạng thái, hàm giá trị hành động và hàm lợi thế lần lượt là
+\begin{equation}
+V^{\pi}(s)=\E\Big[\sum_{k\ge0}\gamma^{k}r_{t+k}\,\Big|\,s_t=s\Big],\quad
+Q^{\pi}(s,a)=\E\Big[\sum_{k\ge0}\gamma^{k}r_{t+k}\,\Big|\,s_t=s,a_t=a\Big],\quad
+A^{\pi}=Q^{\pi}-V^{\pi}.
+\end{equation}
+Hàm lợi thế cho biết hành động $a$ tốt hơn hay kém hơn mức trung bình của chính sách tại trạng thái $s$.
+
+Trong bài toán danh mục, trạng thái là thông tin thị trường quan sát được đến trước ngày quyết định, hành động là véc-tơ tỷ trọng, và phần thưởng là một hàm của lợi suất ròng. Một đặc điểm quan trọng là hành động của nhà đầu tư nhỏ không làm thay đổi diễn biến giá: xác suất chuyển của phần ``thị trường'' trong trạng thái không phụ thuộc vào hành động. Hành động chỉ ảnh hưởng đến tương lai thông qua chi phí giao dịch (phụ thuộc tỷ trọng kỳ trước) và, trong luận văn này, qua trạng thái nội tại của hàm thưởng.
+
+\subsection{Phương pháp gradient chính sách}
+
+Định lý gradient chính sách \cite{williams1992,sutton2018} cho biểu thức
+\begin{equation}
+\nabla_\theta J(\theta)=\E_{\pi_\theta}\big[\nabla_\theta\log\pi_\theta(a_t\mid s_t)\,A^{\pi_\theta}(s_t,a_t)\big].
+\label{eq:pg}
+\end{equation}
+Về trực giác, tham số được điều chỉnh để tăng xác suất của những hành động có lợi thế dương và giảm xác suất của những hành động có lợi thế âm. Trong kiến trúc actor--critic, \emph{actor} tham số hóa chính sách $\pi_\theta$ còn \emph{critic} ước lượng hàm giá trị $V_\phi$ để tính lợi thế. Ước lượng~\eqref{eq:pg} từ một số ít quỹ đạo có phương sai lớn; đây là nguồn gốc chính của sự bất ổn trong huấn luyện.
+
+\subsection{Ước lượng lợi thế tổng quát}
+
+Ước lượng lợi thế tổng quát (GAE) \cite{schulman2016} dùng sai số sai phân thời gian
+\begin{equation}
+\delta_t=r_t+\gamma V_\phi(s_{t+1})-V_\phi(s_t)
+\end{equation}
+và định nghĩa
+\begin{equation}
+\hat A_t=\sum_{k=0}^{n-t-1}(\gamma\lambda)^{k}\,\delta_{t+k},
+\label{eq:gae}
+\end{equation}
+tính được bằng truy hồi ngược $\hat A_t=\delta_t+\gamma\lambda\hat A_{t+1}$. Tham số $\lambda\in[0,1]$ điều chỉnh sự đánh đổi giữa độ chệch và phương sai: $\lambda=0$ cho ước lượng một bước (phương sai thấp, chệch nhiều nếu critic chưa chính xác), $\lambda=1$ cho ước lượng Monte Carlo (không chệch, phương sai cao). Mục tiêu hồi quy của critic là $\hat G_t=\hat A_t+V_\phi(s_t)$.
+
+\subsection{Thuật toán PPO}
+
+Cập nhật gradient chính sách với bước quá lớn có thể làm chính sách xấu đi đột ngột. TRPO \cite{schulman2015} giới hạn độ lệch giữa chính sách mới và cũ bằng một ràng buộc về phân kỳ Kullback--Leibler; PPO \cite{schulman2017} đạt hiệu quả tương tự bằng một hàm mục tiêu đơn giản hơn. Đặt tỷ số xác suất
+\begin{equation}
+\rho_t(\theta)=\frac{\pi_\theta(a_t\mid s_t)}{\pi_{\theta_{\mathrm{old}}}(a_t\mid s_t)} .
+\end{equation}
+Hàm mục tiêu cắt của PPO là
+\begin{equation}
+L^{\mathrm{clip}}(\theta)=\E_t\Big[\min\big(\rho_t(\theta)\hat A_t,\;\clip(\rho_t(\theta),1-\epsilon,1+\epsilon)\,\hat A_t\big)\Big],
+\label{eq:ppo-clip}
+\end{equation}
+với $\epsilon$ là ngưỡng cắt. Phép cắt loại bỏ động lực đẩy $\rho_t$ ra ngoài khoảng $[1-\epsilon,1+\epsilon]$, nhờ đó cùng một lô dữ liệu có thể được dùng cho nhiều bước cập nhật. Hàm mất mát đầy đủ gồm ba thành phần:
+\begin{equation}
+L(\theta,\phi)=-L^{\mathrm{clip}}(\theta)+c_v\,\E_t\big[(V_\phi(s_t)-\hat G_t)^2\big]-c_e\,\E_t\big[\mathcal{H}(\pi_\theta(\cdot\mid s_t))\big],
+\label{eq:ppo-loss}
+\end{equation}
+trong đó số hạng thứ hai huấn luyện critic và số hạng thứ ba thưởng cho entropy của chính sách nhằm duy trì khám phá.
+
+\subsection{Chính sách trên đơn hình: phân phối Dirichlet}
+\label{sec:dirichlet}
+
+Hành động trong bài toán danh mục là một điểm trên đơn hình $\Delta^{N-1}$. Thay vì lấy mẫu từ phân phối chuẩn rồi ép về đơn hình, có thể dùng trực tiếp một phân phối có giá là đơn hình. Phân phối Dirichlet $\Dir(\alpha)$ với tham số tập trung $\alpha=(\alpha_1,\dots,\alpha_N)$, $\alpha_i>0$, có mật độ
+\begin{equation}
+p(w\mid\alpha)=\frac{\Gamma(\alpha_0)}{\prod_{i}\Gamma(\alpha_i)}\prod_{i=1}^{N}w_i^{\alpha_i-1},\qquad \alpha_0=\sum_{i=1}^{N}\alpha_i,
+\label{eq:dirichlet}
+\end{equation}
+với kỳ vọng và phương sai
+\begin{equation}
+\E[w_i]=\frac{\alpha_i}{\alpha_0},\qquad \operatorname{Var}[w_i]=\frac{\alpha_i(\alpha_0-\alpha_i)}{\alpha_0^2(\alpha_0+1)} .
+\label{eq:dir-mean}
+\end{equation}
+Tỷ lệ giữa các $\alpha_i$ quyết định tỷ trọng kỳ vọng, còn tổng $\alpha_0$ quyết định mức độ tập trung của phân phối quanh kỳ vọng. Khi mọi $\alpha_i<1$, mật độ dồn về biên của đơn hình: mỗi mẫu là một danh mục thưa, dồn phần lớn vốn vào một số ít mã. Khi các $\alpha_i$ xấp xỉ bằng nhau, tỷ trọng kỳ vọng gần với phân bổ đều bất kể giá trị chung của chúng. Hai tính chất này giúp giải thích hành vi của chính sách được quan sát ở Chương~\ref{ch:thucnghiem}.
+
+\section{Tỷ số Sharpe vi phân}
+\label{sec:lt-dsr}
+
+Tỷ số Sharpe được định nghĩa trên cả chuỗi lợi suất nên không thể dùng trực tiếp làm phần thưởng tại từng bước. Moody và cộng sự \cite{moody1998,moody2001} đề xuất tỷ số Sharpe vi phân (Differential Sharpe Ratio -- DSR) như sau. Duy trì các ước lượng trung bình trượt mũ của mô-men bậc nhất và bậc hai của lợi suất:
+\begin{equation}
+A_t=A_{t-1}+\eta\,\Delta A_t,\qquad B_t=B_{t-1}+\eta\,\Delta B_t,
+\label{eq:dsr-ab}
+\end{equation}
+với $\Delta A_t=r_t-A_{t-1}$, $\Delta B_t=r_t^2-B_{t-1}$ và $\eta\in(0,1)$ là tốc độ cập nhật. Tỷ số Sharpe trượt tương ứng là
+\begin{equation}
+S_t=\frac{A_t}{\sqrt{B_t-A_t^2}} .
+\label{eq:dsr-s}
+\end{equation}
+Khai triển $S_t$ theo $\eta$ quanh $\eta=0$ và lấy hệ số bậc nhất, ta được tỷ số Sharpe vi phân
+\begin{equation}
+D_t=\frac{\partial S_t}{\partial\eta}\Big|_{\eta=0}=\frac{B_{t-1}\,\Delta A_t-\tfrac12\,A_{t-1}\,\Delta B_t}{\big(B_{t-1}-A_{t-1}^2\big)^{3/2}} .
+\label{eq:dsr}
+\end{equation}
+$D_t$ đo mức độ mà lợi suất $r_t$ vừa quan sát làm tăng hay giảm tỷ số Sharpe trượt. Tử số cho thấy hai tác động: lợi suất cao hơn trung bình ($\Delta A_t>0$) làm tăng $D_t$, còn lợi suất có bình phương lớn hơn mô-men bậc hai hiện tại ($\Delta B_t>0$) làm giảm $D_t$ khi trung bình đang dương -- tức biến động bất thường bị phạt ngay cả khi nó theo hướng có lợi. Nhờ đó, cực đại tổng các $D_t$ khuyến khích tác tử tìm lợi suất cao và ổn định, thay vì chỉ lợi suất cao.
+
+Mẫu số của~\eqref{eq:dsr} là lũy thừa $3/2$ của phương sai trượt. Khi phương sai trượt còn nhỏ -- điển hình ở những bước đầu của một quỹ đạo, khi $A$ và $B$ mới được khởi tạo từ rất ít quan sát -- $D_t$ có thể nhận giá trị rất lớn. Cách khởi tạo và giới hạn biên độ phần thưởng vì vậy là một chi tiết cài đặt có ảnh hưởng thực sự, được phân tích ở Mục~\ref{sec:reward-analysis}.
+
+\section{Tổng kết chương}
+
+Chương này đã trình bày các nền tảng lý thuyết của luận văn. Về tài chính, mô hình trung bình--phương sai và ước lượng co rút cung cấp các chiến lược đối chứng; các thước đo Sharpe, MDD và Calmar cùng công thức sai số chuẩn của tỷ số Sharpe cung cấp công cụ đánh giá và cảnh báo về độ bất định của đánh giá. Về học sâu, LSTM, GRU và Transformer là các lựa chọn cho bộ mã hóa thời gian; GCN và GAT là các lựa chọn cho mạng đồ thị, khác nhau ở chỗ trọng số gộp là cố định hay học được. Về học tăng cường, PPO với GAE là thuật toán huấn luyện, phân phối Dirichlet là dạng chính sách phù hợp với hành động trên đơn hình, và tỷ số Sharpe vi phân là phần thưởng nhạy với rủi ro. Chương tiếp theo ghép các thành phần này thành mô hình đề xuất.
