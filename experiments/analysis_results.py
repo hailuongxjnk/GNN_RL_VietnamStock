@@ -168,14 +168,14 @@ if MAIN in runs:
 
     # ── HÌNH: lịch sử huấn luyện ──
     fig, axes = plt.subplots(1, 2, figsize=(7.4, 3.0))
-    cols = [C1, C2, C3, C4, C5]
-    for (s, r), c in zip(sorted(runs[MAIN].items()), cols):
-        it = range(1, len(r['history']) + 1)
-        axes[0].plot(it, [h['reward'] for h in r['history']], color=c, marker='o', ms=3, lw=1.3, label=f'hạt giống {s}')
-        axes[1].plot(it, [h['val_sharpe'] for h in r['history']], color=c, marker='o', ms=3, lw=1.3)
+    H = sorted(runs[MAIN].items())
+    for key, ax in (('reward', axes[0]), ('val_sharpe', axes[1])):
+        Y = np.array([[h[key] for h in r['history']] for _, r in H]); it = np.arange(1, Y.shape[1] + 1)
+        for y in Y: ax.plot(it, y, color=C1, lw=0.8, alpha=0.35)
+        ax.plot(it, Y.mean(0), color=C1, lw=2.2, marker='o', ms=3.5, label=f'trung bình {len(Y)} hạt giống')
     axes[0].set_title('Phần thưởng trung bình (huấn luyện)'); axes[1].set_title('Tỷ số Sharpe trên tập kiểm định')
     for a in axes: a.set_xlabel('Vòng lặp PPO'); a.axhline(0, color=MUTED, lw=0.8)
-    axes[0].legend(fontsize=8, ncol=2, loc='upper center', bbox_to_anchor=(1.1, -0.28))
+    axes[0].legend(fontsize=8, loc='upper center', bbox_to_anchor=(1.1, -0.28))
     fig.savefig(os.path.join(FIG, 'training_history.pdf')); plt.close(fig)
 
     # ── HÌNH: phân phối Sharpe của danh mục ngẫu nhiên ──
@@ -184,7 +184,6 @@ if MAIN in runs:
     top = ax.get_ylim()[1]
     for b in S['main_per_seed']:
         ax.axvline(b['sharpe'], color=C1, lw=1.8)
-        ax.text(b['sharpe'], top * 1.01, str(b['seed']), ha='center', va='bottom', fontsize=8.5, color=INK)
     ax.axvline(bm['Equal-weight']['metrics']['sharpe'], color=C2, lw=1.8, ls='--')
     ax.axvline(bm['VN-Index']['metrics']['sharpe'], color=C3, lw=1.8, ls='--')
     from matplotlib.lines import Line2D

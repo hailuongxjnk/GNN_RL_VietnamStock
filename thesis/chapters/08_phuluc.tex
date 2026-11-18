@@ -29,6 +29,8 @@ Tệp & Nội dung \\
 \texttt{experiments/baselines.py} & Các chiến lược đối chứng: phân bổ đều, VN-Index, phương sai nhỏ nhất, trung bình--phương sai, động lượng, danh mục ngẫu nhiên. \\
 \texttt{experiments/untrained.py} & Đối chứng mạng khởi tạo ngẫu nhiên, không huấn luyện. \\
 \texttt{experiments/baselines\_structural.py} & Các quy tắc chọn cổ phiếu theo cấu trúc đồ thị; đặc điểm của cổ phiếu được chọn. \\
+\texttt{experiments/run\_extra.py}, \texttt{baselines\_extra.py} & Kiểm định cuốn chiếu 2020--2025, thêm hạt giống, thí nghiệm trên tập thanh khoản (Mục~\ref{sec:walkforward}, \ref{sec:liquid}). \\
+\texttt{experiments/build\_liquid\_cache.py} & Dựng tập cổ phiếu thanh khoản tốt. \\
 \texttt{experiments/analysis\_*.py}, \texttt{make\_tables.py} & Tổng hợp kết quả, vẽ hình và sinh bảng của luận văn. \\
 \bottomrule
 \end{tabularx}
@@ -50,6 +52,11 @@ python analysis_data.py        # hinh va thong ke Chuong 3
 python analysis_longterm.py    # phan tich tuong quan dai han
 python analysis_results.py     # hinh va thong ke Chuong 4
 python make_tables.py          # sinh cac bang LaTeX
+python build_liquid_cache.py   # tap co phieu thanh khoan tot
+python run_extra.py            # cuon chieu, them hat giong, tap thanh khoan
+python baselines_extra.py liq  # doi chung tren tap thanh khoan
+python baselines_extra.py wf   # doi chung 2020-2025
+python analysis_extra.py       # bang va hinh cuon chieu, thanh khoan
 \end{verbatim}}
 
 Tính đúng đắn của quy trình dựng dữ liệu đã được kiểm chứng: khi dựng bảng dữ liệu \emph{không} điều chỉnh giá (\texttt{python build\_dataset.py raw}), bảng thu được có đúng 554.556 dòng như trong sổ tay gốc, và việc nạp mô hình đã lưu \texttt{model\_weekly.pt} rồi đánh giá trên tập kiểm tra cho các chỉ số trùng khớp với kết quả lưu trong sổ tay gốc (lợi suất tích lũy 18,4\%, tỷ số Sharpe 0,53, mức sụt giảm tối đa $-14{,}6\%$). Các thực nghiệm được chạy trên CPU; mỗi lần huấn luyện mô hình Transformer + GAT với 12 vòng lặp PPO mất khoảng 12--14 phút trên một nhân xử lý.
@@ -72,8 +79,9 @@ Dữ liệu giá & Giá đóng cửa chưa điều chỉnh & Đã điều chỉn
 Phần thưởng DSR & Khởi tạo từ một quan sát & Làm nóng 12 bước \\
 Chọn mô hình & Sharpe kiểm định, dropout bật & Sharpe kiểm định, dropout tắt \\
 Số vòng lặp PPO & 8 & 12 \\
-Số hạt giống & 2 & 5 (cấu hình chính), 3 (biến thể) \\
+Số hạt giống & 2 & 10 (cấu hình chính), 3 (biến thể) \\
 Đối chứng & Phân bổ đều, VN-Index, hai phép loại bỏ thành phần & Thêm Markowitz, động lượng, danh mục ngẫu nhiên, mạng chưa huấn luyện, các quy tắc cấu trúc \\
+Giai đoạn đánh giá & 2024--2025 & 2024--2025; thêm kiểm định cuốn chiếu 2020--2025 và tập thanh khoản \\
 \bottomrule
 \end{tabularx}
 \end{table}

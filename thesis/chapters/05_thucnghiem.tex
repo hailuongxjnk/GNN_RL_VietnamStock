@@ -1,7 +1,7 @@
 \chapter{THỰC NGHIỆM VÀ ĐÁNH GIÁ KẾT QUẢ}
 \label{ch:thucnghiem}
 
-Chương này đánh giá tính khả thi của mô hình đề xuất bằng thực nghiệm. Mục~\ref{sec:setup} mô tả giao thức đánh giá, các chiến lược đối chứng và các biến thể của mô hình. Mục~\ref{sec:overall} trình bày kết quả tổng thể trên tập kiểm tra. Các mục tiếp theo lần lượt xem xét độ tin cậy của kết quả, vai trò của đồ thị tương quan dài hạn, phép loại bỏ thành phần, quá trình huấn luyện và hành vi của chính sách.
+Chương này đánh giá tính khả thi của mô hình đề xuất bằng thực nghiệm. Mục~\ref{sec:setup} mô tả giao thức đánh giá, các chiến lược đối chứng và các biến thể của mô hình. Mục~\ref{sec:overall} trình bày kết quả tổng thể trên tập kiểm tra. Các mục tiếp theo lần lượt xem xét độ tin cậy của kết quả, vai trò của đồ thị tương quan dài hạn, phép loại bỏ thành phần, quá trình huấn luyện và hành vi của chính sách. Hai mục cuối kiểm tra độ vững của kết quả bằng kiểm định cuốn chiếu trên giai đoạn 2020--2025 và bằng cách giới hạn tập cổ phiếu ở các mã thanh khoản tốt.
 
 \section{Thiết lập thực nghiệm}
 \label{sec:setup}
@@ -41,7 +41,7 @@ Luận văn so sánh mô hình đề xuất với ba nhóm đối chứng.
   \item \textbf{LSTM thay cho Transformer} ở bộ mã hóa thời gian.
   \item \textbf{LSTM thuần} và \textbf{GRU thuần:} bộ mã hóa hồi quy không dùng đồ thị, với cùng tác tử PPO -- tương ứng với các mô hình học sâu chuỗi thời gian đơn lẻ nêu trong đề cương.
 \end{itemize}
-Mô hình đề xuất và biến thể đồ thị ngắn hạn được huấn luyện với 5 hạt giống; các biến thể còn lại với 3 hạt giống.
+Mô hình đề xuất và biến thể đồ thị ngắn hạn được huấn luyện với 10 hạt giống; các biến thể còn lại với 3 hạt giống.
 
 \section{Kết quả tổng thể}
 \label{sec:overall}
@@ -65,13 +65,13 @@ Bảng~\ref{tab:overall} trình bày kết quả trên tập kiểm tra và Hìn
 
 Có thể rút ra các nhận xét sau.
 
-\textit{Mô hình đề xuất vận hành đúng và cho kết quả tốt hơn hai mốc ``không lựa chọn''.} Trên cả 5 hạt giống, mô hình với đồ thị tương quan dài hạn đạt tỷ số Sharpe từ 1,14 đến 1,73 (trung bình $1{,}32\pm0{,}24$) và lợi suất tích lũy từ 30,9\% đến 41,5\% (trung bình 36,8\%), cao hơn danh mục phân bổ đều (Sharpe 0,90; lợi suất 28,0\%) và cao hơn trung vị của danh mục 20 mã ngẫu nhiên (Sharpe 0,82). Mức sụt giảm tối đa trung bình là $-5{,}9\%$, thấp hơn phân bổ đều ($-8{,}9\%$) và tương đương VN-Index; tỷ số Calmar trung bình 3,29, gấp đôi phân bổ đều.
+\textit{Mô hình đề xuất vận hành đúng và cho kết quả tốt hơn hai mốc ``không lựa chọn''.} Trên cả 10 hạt giống, mô hình với đồ thị tương quan dài hạn đạt tỷ số Sharpe từ 1,05 đến 1,73 (trung bình $1{,}25\pm0{,}19$) và lợi suất tích lũy từ 30,9\% đến 57,5\% (trung bình 42,2\%), cao hơn danh mục phân bổ đều (Sharpe 0,90; lợi suất 28,0\%) và cao hơn trung vị của danh mục 20 mã ngẫu nhiên (Sharpe 0,82). Mức sụt giảm tối đa trung bình là $-7{,}7\%$, thấp hơn phân bổ đều ($-8{,}9\%$) nhưng lớn hơn VN-Index ($-5{,}9\%$); tỷ số Calmar trung bình 2,84, gần gấp đôi phân bổ đều.
 
 \textit{Mô hình chưa vượt các mốc so sánh mạnh nhất.} Tỷ số Sharpe trung bình của mô hình thấp hơn VN-Index (1,45) và danh mục trung bình--phương sai với hiệp phương sai co rút (1,56); lợi suất tích lũy cũng thấp hơn hai mốc này (cùng 50,4\%) và thấp hơn chiến lược động lượng (69,0\%, nhưng với độ biến động 23\% và mức sụt giảm gần gấp đôi). Như đã nêu, giai đoạn kiểm tra đặc biệt thuận lợi cho chỉ số tính theo vốn hóa và cho các chiến lược bám theo nhóm cổ phiếu dẫn dắt. Đáng chú ý, danh mục trung bình--phương sai -- cũng khai thác cấu trúc hiệp phương sai ước lượng trên 250 phiên -- là chiến lược đa dạng hóa tốt nhất trong bảng; điều này một lần nữa cho thấy thông tin phụ thuộc dài hạn giữa các cổ phiếu là có giá trị trên thị trường Việt Nam.
 
-\textit{Rủi ro của mô hình thấp hơn thị trường.} Độ biến động quy năm của mô hình là 13,3\%, thấp hơn phân bổ đều (15,8\%) và VN-Index (15,6\%). Trong đợt sụt giảm mạnh của thị trường vào tháng 4/2025, danh mục của mô hình giảm ít hơn rõ rệt (Hình~\ref{fig:equity}). Nguồn gốc của đặc điểm này được phân tích ở Mục~\ref{sec:policy-behaviour}.
+\textit{Rủi ro của mô hình tương đương thị trường.} Độ biến động quy năm trung bình của mô hình là 16,0\%, tương đương phân bổ đều (15,8\%) và VN-Index (15,6\%), nhưng khác nhau đáng kể giữa các hạt giống (độ lệch chuẩn 3,7 điểm phần trăm). Trong kỳ nắm giữ tháng 4/2025, khi thị trường giảm mạnh, danh mục của mô hình giảm trung bình 5,6\%, so với 7,4\% của phân bổ đều và 5,9\% của VN-Index. Như vậy trên giai đoạn này, ưu thế của mô hình so với phân bổ đều chủ yếu nằm ở lợi suất, còn rủi ro ở mức tương đương thị trường.
 
-\textit{Chi phí giao dịch ở mức chấp nhận được.} Mức luân chuyển trung bình là 0,51 mỗi tháng, tức khoảng một phần tư danh mục được thay thế mỗi kỳ, tương đương danh mục trung bình--phương sai (0,49) và bằng một nửa biến thể đồ thị ngắn hạn.
+\textit{Chi phí giao dịch ở mức chấp nhận được.} Mức luân chuyển trung bình là 0,64 mỗi tháng, tức khoảng một phần ba danh mục được thay thế mỗi kỳ; với phí 10 điểm cơ bản, chi phí tương ứng khoảng 0,8\% mỗi năm. Mức này cao hơn danh mục trung bình--phương sai (0,49) nhưng chỉ bằng khoảng một nửa biến thể đồ thị ngắn hạn (1,15).
 
 \section{Độ tin cậy của kết quả}
 \label{sec:reliability}
@@ -80,7 +80,7 @@ Kết quả tốt trên một giai đoạn kiểm tra chưa đủ để kết lu
 
 \subsection{Độ ổn định qua các hạt giống}
 
-Bảng~\ref{tab:perseed} trình bày kết quả của từng hạt giống. Cả 5 lần huấn luyện đều cho tỷ số Sharpe trên 1,1 và mức sụt giảm tối đa không quá 9\%; độ lệch chuẩn của tỷ số Sharpe giữa các hạt giống là 0,24. Để so sánh, biến thể dùng đồ thị ngắn hạn có tỷ số Sharpe dao động từ 0,37 đến 1,23 (độ lệch chuẩn 0,32). Như vậy đồ thị dài hạn không chỉ cho kết quả trung bình cao hơn mà còn cho kết quả ổn định hơn -- một tính chất quan trọng về mặt khả thi, vì người dùng chỉ huấn luyện mô hình một số ít lần.
+Bảng~\ref{tab:perseed} trình bày kết quả của từng hạt giống. Cả 10 lần huấn luyện đều cho tỷ số Sharpe trên 1,05 -- cao hơn phân bổ đều -- và mức sụt giảm tối đa không quá 12,4\%; độ lệch chuẩn của tỷ số Sharpe giữa các hạt giống là 0,19. Để so sánh, biến thể dùng đồ thị ngắn hạn có tỷ số Sharpe dao động từ 0,37 đến 1,32 (độ lệch chuẩn 0,30), và 8 trong 10 hạt giống của nó thấp hơn phân bổ đều (0,90). Như vậy đồ thị dài hạn không chỉ cho kết quả trung bình cao hơn mà còn cho kết quả ổn định hơn -- một tính chất quan trọng về mặt khả thi, vì người dùng chỉ huấn luyện mô hình một số ít lần.
 
 \begin{table}[ht]
 \centering\footnotesize
@@ -92,32 +92,32 @@ Bảng~\ref{tab:perseed} trình bày kết quả của từng hạt giống. C�
 
 \subsection{So sánh với danh mục ngẫu nhiên}
 
-Hình~\ref{fig:random} đặt tỷ số Sharpe của từng hạt giống lên phân phối tỷ số Sharpe của 1.000 danh mục 20 mã ngẫu nhiên. Phân phối này rất rộng: khoảng 90\% trải từ 0,37 đến 1,38, nghĩa là chỉ riêng may rủi trong việc chọn 20 mã đã có thể tạo ra tỷ số Sharpe cao hơn phân bổ đều tới 0,5. Cả 5 hạt giống của mô hình đều nằm ở nửa trên của phân phối, tại các phân vị từ 84\% đến 99,5\%. Xác suất để 5 danh mục ngẫu nhiên độc lập cùng vượt phân vị 83\% là khoảng $0{,}17^5\approx 10^{-4}$; do đó việc mô hình chọn cổ phiếu tốt hơn ngẫu nhiên \emph{trong giai đoạn kiểm tra này} khó có thể là tình cờ. Con số này cần được hiểu thận trọng vì danh mục của các hạt giống không độc lập với nhau: trung bình hai hạt giống trùng nhau 40\% số mã (Mục~\ref{sec:policy-behaviour}). Tuy nhiên, chỉ có một hạt giống vượt phân vị 95\%, nên từng lần huấn luyện riêng lẻ chưa đủ mạnh để tự nó bác bỏ giả thuyết ngẫu nhiên.
+Hình~\ref{fig:random} đặt tỷ số Sharpe của từng hạt giống lên phân phối tỷ số Sharpe của 1.000 danh mục 20 mã ngẫu nhiên. Phân phối này rất rộng: khoảng 90\% trải từ 0,37 đến 1,38, nghĩa là chỉ riêng may rủi trong việc chọn 20 mã đã có thể tạo ra tỷ số Sharpe cao hơn phân bổ đều tới 0,5. Cả 10 hạt giống của mô hình đều nằm ở nửa trên của phân phối, tại các phân vị từ 76\% đến 99,5\%. Xác suất để 10 danh mục ngẫu nhiên độc lập cùng vượt phân vị 76\% là khoảng $0{,}24^{10}\approx 6\cdot10^{-7}$; do đó việc mô hình chọn cổ phiếu tốt hơn ngẫu nhiên \emph{trong giai đoạn kiểm tra này} khó có thể là tình cờ. Con số này cần được hiểu thận trọng vì danh mục của các hạt giống không độc lập với nhau: trung bình hai hạt giống trùng nhau 36\% số mã (Mục~\ref{sec:policy-behaviour}). Tuy nhiên, chỉ có một hạt giống vượt phân vị 95\%, nên từng lần huấn luyện riêng lẻ chưa đủ mạnh để tự nó bác bỏ giả thuyết ngẫu nhiên.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.95\textwidth]{random_portfolios.pdf}
-\caption{Tỷ số Sharpe của mô hình đề xuất (mỗi vạch là một hạt giống, số phía trên là mã hạt giống) so với phân phối của 1.000 danh mục 20 mã ngẫu nhiên giữ nguyên.}
+\caption{Tỷ số Sharpe của mô hình đề xuất (mỗi vạch là một hạt giống) so với phân phối của 1.000 danh mục 20 mã ngẫu nhiên giữ nguyên.}
 \label{fig:random}
 \end{figure}
 
 \subsection{Ý nghĩa thống kê}
 
-Với 23 quan sát hằng tháng, sai số chuẩn của tỷ số Sharpe theo công thức~\eqref{eq:lo} vào khoảng 0,75 cho mọi chiến lược trong Bảng~\ref{tab:overall}. Chênh lệch tỷ số Sharpe giữa mô hình và phân bổ đều (0,42) hay giữa mô hình và VN-Index ($-0{,}13$) đều nhỏ hơn một sai số chuẩn. Thống kê $t$ của chênh lệch lợi suất hằng tháng so với phân bổ đều nằm trong khoảng 0,1 đến 0,6 tùy hạt giống (Bảng~\ref{tab:perseed}), xa ngưỡng ý nghĩa thông thường; mô hình có lợi suất cao hơn phân bổ đều trong 11 đến 14 trên 23 tháng.
+Với 23 quan sát hằng tháng, sai số chuẩn của tỷ số Sharpe theo công thức~\eqref{eq:lo} vào khoảng 0,75 cho mọi chiến lược trong Bảng~\ref{tab:overall}. Chênh lệch tỷ số Sharpe giữa mô hình và phân bổ đều (0,35) hay giữa mô hình và VN-Index ($-0{,}20$) đều nhỏ hơn một sai số chuẩn. Thống kê $t$ của chênh lệch lợi suất hằng tháng so với phân bổ đều nằm trong khoảng 0,07 đến 1,39 tùy hạt giống (Bảng~\ref{tab:perseed}), dưới ngưỡng ý nghĩa thông thường; mô hình có lợi suất cao hơn phân bổ đều trong 10 đến 15 trên 23 tháng.
 
-Hai kết luận cần được phân biệt rõ. Một mặt, sự khác biệt giữa các \emph{cấu hình mô hình} trên cùng một giai đoạn kiểm tra có thể được đánh giá qua độ biến động giữa các hạt giống: chênh lệch tỷ số Sharpe giữa đồ thị dài hạn và đồ thị ngắn hạn ($1{,}32$ so với $0{,}70$) lớn gấp khoảng 3,5 lần sai số chuẩn của chênh lệch đó, nên có thể tin rằng trên giai đoạn này đồ thị dài hạn cho kết quả tốt hơn. Mặt khác, câu hỏi liệu mô hình có lợi thế \emph{bền vững trong tương lai} so với phân bổ đều hay VN-Index thì hai năm dữ liệu chưa trả lời được: mọi chênh lệch đều nằm trong phạm vi sai số của thước đo. Luận văn vì vậy chỉ khẳng định tính khả thi, không khẳng định tính vượt trội.
+Hai kết luận cần được phân biệt rõ. Một mặt, sự khác biệt giữa các \emph{cấu hình mô hình} trên cùng một giai đoạn kiểm tra có thể được đánh giá qua độ biến động giữa các hạt giống: chênh lệch tỷ số Sharpe giữa đồ thị dài hạn và đồ thị ngắn hạn ($1{,}25$ so với $0{,}79$, mỗi cấu hình 10 hạt giống) lớn gấp khoảng 4 lần sai số chuẩn của chênh lệch đó, nên có thể tin rằng trên giai đoạn này đồ thị dài hạn cho kết quả tốt hơn. Mặt khác, câu hỏi liệu mô hình có lợi thế \emph{bền vững trong tương lai} so với phân bổ đều hay VN-Index thì hai năm dữ liệu chưa trả lời được: mọi chênh lệch đều nằm trong phạm vi sai số của thước đo. Kiểm định cuốn chiếu ở Mục~\ref{sec:walkforward} mở rộng giai đoạn đánh giá lên 71 tháng để trả lời câu hỏi này đầy đủ hơn. Luận văn vì vậy chỉ khẳng định tính khả thi, không khẳng định tính vượt trội.
 
 \section{Vai trò của đồ thị tương quan dài hạn}
 \label{sec:graph-role}
 
 Kết quả đáng chú ý nhất của luận văn là ảnh hưởng của cấu trúc đồ thị. Bảng~\ref{tab:overall} cho thấy một hiện tượng nhất quán ở cả mô hình đã huấn luyện lẫn mạng chưa huấn luyện:
 \begin{itemize}
-  \item Với mô hình đã huấn luyện, thay đồ thị ngắn hạn bằng đồ thị dài hạn nâng tỷ số Sharpe trung bình từ 0,70 lên 1,32, nâng lợi suất tích lũy từ 19,1\% lên 36,8\%, giảm mức sụt giảm tối đa từ $-9{,}7\%$ xuống $-5{,}9\%$ và giảm một nửa mức luân chuyển.
+  \item Với mô hình đã huấn luyện, thay đồ thị ngắn hạn bằng đồ thị dài hạn nâng tỷ số Sharpe trung bình từ 0,79 lên 1,25, nâng lợi suất tích lũy từ 22,8\% lên 42,2\%, giảm mức sụt giảm tối đa từ $-10{,}1\%$ xuống $-7{,}7\%$ và giảm gần một nửa mức luân chuyển (1,15 xuống 0,64).
   \item Với 30 mạng chưa huấn luyện, cùng một phép thay thế nâng tỷ số Sharpe trung bình từ $0{,}88\pm0{,}36$ lên $1{,}27\pm0{,}36$; chênh lệch này lớn gấp hơn bốn lần sai số chuẩn của nó.
 \end{itemize}
 Nói cách khác, chỉ riêng việc đưa đồ thị tương quan dài hạn vào kiến trúc -- trước khi có bất kỳ bước học nào -- đã làm thay đổi một cách có hệ thống những cổ phiếu được chọn, theo hướng có lợi. Đồ thị đóng vai trò một \emph{thiên kiến quy nạp}: nó quy định cổ phiếu nào chia sẻ thông tin với cổ phiếu nào, và do đó quy định những cổ phiếu nào có biểu diễn khác biệt với số đông.
 
-Để hiểu cơ chế, Bảng~\ref{tab:picks} mô tả đặc điểm của các cổ phiếu được chọn, đo bằng phân vị trong tập cổ phiếu đủ điều kiện cùng ngày. Các cổ phiếu được mô hình chọn có bậc trên đồ thị dài hạn ở phân vị trung bình 0,17: trung bình mỗi mã được chọn chỉ nối với 9 mã khác, trong khi một cổ phiếu đủ điều kiện điển hình nối với 59 mã. Mô hình vì vậy nghiêng mạnh về các cổ phiếu \emph{ít liên kết với phần còn lại của thị trường} -- chính là nhóm ``ít liên kết'' ở Bảng~\ref{tab:groups}. Về mặt cơ chế, một nút có ít lân cận giữ được biểu diễn riêng của mình sau các tầng chú ý đồ thị, trong khi các nút thuộc cụm lớn bị kéo về biểu diễn trung bình của cụm; khi actor chấm điểm và chọn 20 mã có điểm cao nhất, các nút có biểu diễn khác biệt chiếm ưu thế.
+Để hiểu cơ chế, Bảng~\ref{tab:picks} mô tả đặc điểm của các cổ phiếu được chọn, đo bằng phân vị trong tập cổ phiếu đủ điều kiện cùng ngày. Các cổ phiếu được mô hình chọn có bậc trên đồ thị dài hạn ở phân vị trung bình 0,22: trung bình mỗi mã được chọn chỉ nối với 17 mã khác, trong khi một cổ phiếu đủ điều kiện điển hình nối với 59 mã. Mô hình vì vậy nghiêng mạnh về các cổ phiếu \emph{ít liên kết với phần còn lại của thị trường} -- chính là nhóm ``ít liên kết'' ở Bảng~\ref{tab:groups}. Về mặt cơ chế, một nút có ít lân cận giữ được biểu diễn riêng của mình sau các tầng chú ý đồ thị, trong khi các nút thuộc cụm lớn bị kéo về biểu diễn trung bình của cụm; khi actor chấm điểm và chọn 20 mã có điểm cao nhất, các nút có biểu diễn khác biệt chiếm ưu thế.
 
 \begin{table}[ht]
 \centering\footnotesize
@@ -127,7 +127,7 @@ Nói cách khác, chỉ riêng việc đưa đồ thị tương quan dài hạn 
 \begin{adjustbox}{max width=\textwidth}\input{tables/picks}\end{adjustbox}
 \end{table}
 
-Về mặt tài chính, lựa chọn này có ý nghĩa rõ ràng: một danh mục gồm các cổ phiếu ít tương quan với thị trường và với nhau được đa dạng hóa tốt hơn, nên có độ biến động và mức sụt giảm thấp hơn. Bảng~\ref{tab:structural} kiểm chứng trực tiếp ý nghĩa của mức độ liên kết bằng các quy tắc chọn 20 mã không cần học. Danh mục gồm 20 mã \emph{liên kết nhiều nhất} trên đồ thị dài hạn có kết quả rất kém (Sharpe 0,16; mức sụt giảm $-26{,}9\%$; độ biến động 24,5\%), vì đó là các cổ phiếu cùng lên cùng xuống theo thị trường. Danh mục gồm 20 mã \emph{ít liên kết nhất} có độ biến động chỉ 8\% và mức sụt giảm $-6{,}4\%$, nhưng lợi suất thấp (10,2\%). Mô hình đề xuất cho kết quả tốt hơn cả hai quy tắc đơn giản này (Sharpe 1,32; lợi suất 36,8\%), tức nó không chỉ đơn thuần chọn các mã có bậc thấp nhất mà kết hợp thông tin cấu trúc với các đặc trưng khác của cổ phiếu.
+Về mặt tài chính, lựa chọn này có ý nghĩa rõ ràng: một danh mục gồm các cổ phiếu ít tương quan với thị trường và với nhau được đa dạng hóa tốt hơn, nên có độ biến động và mức sụt giảm thấp hơn. Bảng~\ref{tab:structural} kiểm chứng trực tiếp ý nghĩa của mức độ liên kết bằng các quy tắc chọn 20 mã không cần học. Danh mục gồm 20 mã \emph{liên kết nhiều nhất} trên đồ thị dài hạn có kết quả rất kém (Sharpe 0,16; mức sụt giảm $-26{,}9\%$; độ biến động 24,5\%), vì đó là các cổ phiếu cùng lên cùng xuống theo thị trường. Danh mục gồm 20 mã \emph{ít liên kết nhất} có độ biến động chỉ 8\% và mức sụt giảm $-6{,}4\%$, nhưng lợi suất thấp (10,2\%). Mô hình đề xuất cho kết quả tốt hơn cả hai quy tắc đơn giản này (Sharpe 1,25; lợi suất 42,2\%), tức nó không chỉ đơn thuần chọn các mã có bậc thấp nhất mà kết hợp thông tin cấu trúc với các đặc trưng khác của cổ phiếu.
 
 \begin{table}[ht]
 \centering\small
@@ -136,12 +136,12 @@ Về mặt tài chính, lựa chọn này có ý nghĩa rõ ràng: một danh m�
 \begin{adjustbox}{max width=\textwidth}\input{tables/structural}\end{adjustbox}
 \end{table}
 
-Bảng~\ref{tab:picks} cũng cho thấy một hệ quả cần thận trọng: các cổ phiếu được chọn có độ kém thanh khoản ở phân vị 0,74 và tỷ lệ phiên giá đứng yên ở phân vị 0,70 (trung bình 26\% số phiên trong 60 phiên gần nhất không đổi giá, so với 14\% của toàn bộ tập cổ phiếu). Cổ phiếu ít giao dịch thường ít tương quan với thị trường một phần vì giá của chúng phản ứng chậm; độ biến động đo được của chúng có thể thấp hơn rủi ro thực, và việc giao dịch 5\% giá trị danh mục ở các mã này trong một phiên là khó với danh mục quy mô lớn. Quy tắc ``ít liên kết nhất trong nhóm thanh khoản tốt'' ở Bảng~\ref{tab:structural} cho thấy lợi ích của tiêu chí liên kết thấp vẫn còn khi giới hạn ở nửa cổ phiếu thanh khoản tốt hơn (Sharpe 1,24; lợi suất 33,4\%), nên hiệu ứng không hoàn toàn do thanh khoản; nhưng ảnh hưởng của thanh khoản đến kết quả của mô hình cần được kiểm chứng trực tiếp trong các nghiên cứu tiếp theo (Mục~\ref{sec:hanche}).
+Bảng~\ref{tab:picks} cũng cho thấy một hệ quả cần thận trọng: các cổ phiếu được chọn có độ kém thanh khoản ở phân vị 0,67 và tỷ lệ phiên giá đứng yên ở phân vị 0,62 (trung bình 21\% số phiên trong 60 phiên gần nhất không đổi giá, so với 14\% của toàn bộ tập cổ phiếu). Cổ phiếu ít giao dịch thường ít tương quan với thị trường một phần vì giá của chúng phản ứng chậm; độ biến động đo được của chúng có thể thấp hơn rủi ro thực, và việc giao dịch 5\% giá trị danh mục ở các mã này trong một phiên là khó với danh mục quy mô lớn. Quy tắc ``ít liên kết nhất trong nhóm thanh khoản tốt'' ở Bảng~\ref{tab:structural} cho thấy lợi ích của tiêu chí liên kết thấp vẫn còn khi giới hạn ở nửa cổ phiếu thanh khoản tốt hơn (Sharpe 1,24; lợi suất 33,4\%), nên hiệu ứng không hoàn toàn do thanh khoản; ảnh hưởng của thanh khoản đến kết quả của chính mô hình được kiểm chứng trực tiếp ở Mục~\ref{sec:liquid}.
 
 \section{Phép loại bỏ thành phần}
 \label{sec:ablation}
 
-Bảng~\ref{tab:ablation} và Hình~\ref{fig:ablation} trình bày kết quả của các biến thể mô hình. Vì mỗi biến thể chỉ có 3--5 hạt giống và độ lệch chuẩn giữa các hạt giống vào khoảng 0,1--0,3, chỉ những chênh lệch lớn mới nên được diễn giải.
+Bảng~\ref{tab:ablation} và Hình~\ref{fig:ablation} trình bày kết quả của các biến thể mô hình. Vì mỗi biến thể chỉ có 3--10 hạt giống và độ lệch chuẩn giữa các hạt giống vào khoảng 0,1--0,3, chỉ những chênh lệch lớn mới nên được diễn giải.
 
 \begin{table}[ht]
 \centering\footnotesize
@@ -158,15 +158,15 @@ Bảng~\ref{tab:ablation} và Hình~\ref{fig:ablation} trình bày kết quả c
 \label{fig:ablation}
 \end{figure}
 
-\textit{Đồ thị dài hạn so với đồ thị ngắn hạn.} Đây là khác biệt lớn nhất trong bảng và đã được phân tích ở Mục~\ref{sec:graph-role}: tỷ số Sharpe 1,32 so với 0,70; mức sụt giảm tối đa $-5{,}9\%$ so với $-9{,}7\%$; mức luân chuyển 0,51 so với 1,03. Mức luân chuyển gấp đôi của đồ thị ngắn hạn là hệ quả trực tiếp của việc cấu trúc đồ thị thay đổi nhanh (Hình~\ref{fig:persist}): khi tập lân cận của mỗi cổ phiếu đổi gần một nửa sau mỗi tháng, biểu diễn và thứ hạng của cổ phiếu cũng đổi theo.
+\textit{Đồ thị dài hạn so với đồ thị ngắn hạn.} Đây là khác biệt lớn nhất trong bảng và đã được phân tích ở Mục~\ref{sec:graph-role}: tỷ số Sharpe 1,25 so với 0,79; mức sụt giảm tối đa $-7{,}7\%$ so với $-10{,}1\%$; mức luân chuyển 0,64 so với 1,15. Mức luân chuyển gấp đôi của đồ thị ngắn hạn là hệ quả trực tiếp của việc cấu trúc đồ thị thay đổi nhanh (Hình~\ref{fig:persist}): khi tập lân cận của mỗi cổ phiếu đổi gần một nửa sau mỗi tháng, biểu diễn và thứ hạng của cổ phiếu cũng đổi theo.
 
-\textit{Có đồ thị dài hạn so với không có đồ thị.} Khi bỏ đồ thị, tỷ số Sharpe trung bình của mô hình Transformer giảm từ 1,32 xuống 1,05, nhưng chênh lệch này nằm trong phạm vi biến động giữa các hạt giống. Khác biệt rõ ràng nằm ở \emph{rủi ro}: không có đồ thị, độ biến động quy năm tăng từ 13,3\% lên 19,7\% và mức sụt giảm tối đa từ $-5{,}9\%$ lên $-11{,}0\%$; tỷ số Calmar giảm từ 3,29 xuống 2,00. Hiện tượng tương tự xuất hiện với bộ mã hóa LSTM: LSTM + GAT trên đồ thị dài hạn có độ biến động 12,0\% và mức sụt giảm $-5{,}9\%$, trong khi LSTM thuần có độ biến động 20,0\% và mức sụt giảm $-11{,}5\%$. Như vậy ở cả hai bộ mã hóa, đồ thị tương quan dài hạn làm giảm khoảng một phần ba độ biến động và giảm một nửa mức sụt giảm tối đa. Đây là đóng góp nhất quán nhất của đồ thị: nó không nhất thiết làm tăng lợi suất, nhưng làm danh mục được đa dạng hóa tốt hơn.
+\textit{Có đồ thị dài hạn so với không có đồ thị.} Khi bỏ đồ thị, tỷ số Sharpe trung bình của mô hình Transformer giảm từ 1,25 xuống 1,05, nhưng chênh lệch này nằm trong phạm vi biến động giữa các hạt giống. Khác biệt rõ hơn nằm ở \emph{rủi ro}: không có đồ thị, độ biến động quy năm tăng từ 16,0\% lên 19,7\% và mức sụt giảm tối đa từ $-7{,}7\%$ lên $-11{,}0\%$; tỷ số Calmar giảm từ 2,84 xuống 2,00. Hiện tượng tương tự xuất hiện với bộ mã hóa LSTM: LSTM + GAT trên đồ thị dài hạn có độ biến động 12,0\% và mức sụt giảm $-5{,}9\%$, trong khi LSTM thuần có độ biến động 20,0\% và mức sụt giảm $-11{,}5\%$. Như vậy ở cả hai bộ mã hóa, đồ thị tương quan dài hạn làm giảm độ biến động (khoảng 20\% với Transformer, 40\% với LSTM) và giảm mức sụt giảm tối đa (khoảng 30\% và 50\%). Đây là đóng góp nhất quán nhất của đồ thị: nó không nhất thiết làm tăng lợi suất, nhưng làm danh mục được đa dạng hóa tốt hơn.
 
-\textit{GAT so với GCN.} Thay GAT bằng GCN trên cùng đồ thị dài hạn làm tỷ số Sharpe giảm từ 1,32 xuống 0,81, mức sụt giảm tăng lên $-10{,}7\%$, và cả ba hạt giống của GCN đều thấp hơn mọi hạt giống của GAT. Với GCN, biểu diễn của mỗi nút là trung bình có trọng số cố định trên toàn bộ lân cận; trên một đồ thị có bậc trung bình vài chục, phép gộp này làm các nút trong cùng cụm trở nên gần như giống hệt nhau. Cơ chế chú ý của GAT cho phép mỗi nút giữ lại nhiều thông tin riêng hơn. Kết quả này ủng hộ việc dùng trọng số gộp học được trên đồ thị tương quan dày.
+\textit{GAT so với GCN.} Thay GAT bằng GCN trên cùng đồ thị dài hạn làm tỷ số Sharpe giảm từ 1,25 xuống 0,81, mức sụt giảm tăng lên $-10{,}7\%$, và cả ba hạt giống của GCN đều thấp hơn mọi hạt giống trong 10 hạt giống của GAT. Với GCN, biểu diễn của mỗi nút là trung bình có trọng số cố định trên toàn bộ lân cận; trên một đồ thị có bậc trung bình vài chục, phép gộp này làm các nút trong cùng cụm trở nên gần như giống hệt nhau. Cơ chế chú ý của GAT cho phép mỗi nút giữ lại nhiều thông tin riêng hơn. Kết quả này ủng hộ việc dùng trọng số gộp học được trên đồ thị tương quan dày.
 
-\textit{Transformer so với LSTM.} Trên đồ thị dài hạn, bộ mã hóa LSTM cho tỷ số Sharpe $1{,}47\pm0{,}13$, không thấp hơn Transformer ($1{,}32\pm0{,}24$), với mức sụt giảm tương đương nhưng mức luân chuyển cao gần gấp đôi (0,96 so với 0,51). Với lượng dữ liệu hiện có, luận văn không tìm thấy bằng chứng rằng cơ chế tự chú ý theo thời gian tốt hơn mạng hồi quy; lựa chọn giữa hai bộ mã hóa là thứ yếu so với lựa chọn đồ thị.
+\textit{Transformer so với LSTM.} Trên đồ thị dài hạn, bộ mã hóa LSTM cho tỷ số Sharpe $1{,}47\pm0{,}13$, không thấp hơn Transformer ($1{,}25\pm0{,}19$), với mức sụt giảm tương đương nhưng mức luân chuyển cao hơn (0,96 so với 0,64). Với lượng dữ liệu hiện có, luận văn không tìm thấy bằng chứng rằng cơ chế tự chú ý theo thời gian tốt hơn mạng hồi quy; lựa chọn giữa hai bộ mã hóa là thứ yếu so với lựa chọn đồ thị.
 
-\textit{Các mô hình học sâu chuỗi thời gian đơn lẻ.} LSTM thuần đạt tỷ số Sharpe $1{,}27\pm0{,}29$ với lợi suất trung bình cao nhất trong các biến thể (58,2\%) nhưng rất phân tán giữa các hạt giống ($\pm30{,}7\%$) và có rủi ro cao; GRU thuần đạt $0{,}80\pm0{,}19$ với mức sụt giảm lớn nhất ($-13{,}7\%$). So với hai mô hình này, mô hình lai với đồ thị dài hạn có lợi suất điều chỉnh theo rủi ro sụt giảm tốt hơn (Calmar 3,29 so với 2,30 và 1,04) và ổn định hơn giữa các lần huấn luyện.
+\textit{Các mô hình học sâu chuỗi thời gian đơn lẻ.} LSTM thuần đạt tỷ số Sharpe $1{,}27\pm0{,}29$ với lợi suất trung bình cao nhất trong các biến thể (58,2\%) nhưng rất phân tán giữa các hạt giống ($\pm30{,}7\%$) và có rủi ro cao; GRU thuần đạt $0{,}80\pm0{,}19$ với mức sụt giảm lớn nhất ($-13{,}7\%$). So với hai mô hình này, mô hình lai với đồ thị dài hạn có lợi suất điều chỉnh theo rủi ro sụt giảm tốt hơn (Calmar 2,84 so với 2,30 và 1,04) và ổn định hơn giữa các lần huấn luyện.
 
 Tóm lại, phép loại bỏ thành phần cho thấy thứ tự quan trọng của các lựa chọn thiết kế: quan trọng nhất là thang thời gian của đồ thị (dài hạn thay vì ngắn hạn), tiếp đến là cách gộp thông tin trên đồ thị (chú ý thay vì trung bình cố định); loại bộ mã hóa thời gian ít quan trọng hơn.
 
@@ -178,16 +178,16 @@ Mục trước cho thấy phần lớn chất lượng của chính sách đến
 
 \subsection{Diễn biến huấn luyện}
 
-Hình~\ref{fig:history} trình bày phần thưởng trung bình trên quỹ đạo huấn luyện và tỷ số Sharpe trên tập kiểm định qua 12 vòng lặp, cho 5 hạt giống. Cả hai đại lượng dao động quanh một mức mà không có xu hướng tăng rõ rệt. Vòng lặp được chọn theo tập kiểm định là vòng 1 ở ba hạt giống, vòng 2 ở một hạt giống và vòng 9 ở một hạt giống (Bảng~\ref{tab:perseed}); tức ở phần lớn các lần chạy, mô hình tốt nhất trên tập kiểm định là mô hình mới chỉ qua 4 đến 8 bước gradient.
+Hình~\ref{fig:history} trình bày phần thưởng trung bình trên quỹ đạo huấn luyện và tỷ số Sharpe trên tập kiểm định qua 12 vòng lặp, cho 10 hạt giống. Cả hai đại lượng dao động quanh một mức mà không có xu hướng tăng rõ rệt. Vòng lặp được chọn theo tập kiểm định là vòng 1 ở bốn hạt giống, vòng 2 ở một hạt giống, và các vòng 5--10 ở năm hạt giống còn lại (Bảng~\ref{tab:perseed}); tức ở nhiều lần chạy, mô hình tốt nhất trên tập kiểm định là mô hình mới chỉ qua 4 bước gradient.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.95\textwidth]{training_history.pdf}
-\caption{Diễn biến huấn luyện của mô hình đề xuất với 5 hạt giống: phần thưởng trung bình mỗi bước trên quỹ đạo huấn luyện (trái) và tỷ số Sharpe của chính sách tất định trên tập kiểm định (phải).}
+\caption{Diễn biến huấn luyện của mô hình đề xuất với 10 hạt giống: phần thưởng trung bình mỗi bước trên quỹ đạo huấn luyện (trái) và tỷ số Sharpe của chính sách tất định trên tập kiểm định (phải). Đường mảnh: từng hạt giống; đường đậm: trung bình.}
 \label{fig:history}
 \end{figure}
 
-So sánh với mạng chưa huấn luyện khẳng định nhận xét này: mô hình sau huấn luyện đạt tỷ số Sharpe $1{,}32\pm0{,}24$ (5 hạt giống), mạng chưa huấn luyện đạt $1{,}27\pm0{,}36$ (30 hạt giống). Hai phân phối không phân biệt được về trung bình. Khác biệt quan sát được nằm ở độ phân tán và chi phí: mô hình được chọn qua tập kiểm định có độ lệch chuẩn nhỏ hơn (0,24 so với 0,36), không có lần chạy nào kém (thấp nhất 1,14 so với 0,59), mức sụt giảm tối đa trung bình thấp hơn ($-5{,}9\%$ so với $-7{,}2\%$) và mức luân chuyển thấp hơn (0,51 so với 0,60). Với số hạt giống hiện có, luận văn coi đây là dấu hiệu, chưa phải bằng chứng, rằng bước huấn luyện kết hợp chọn mô hình giúp loại bỏ các chính sách xấu.
+So sánh với mạng chưa huấn luyện khẳng định nhận xét này: trên giai đoạn 2024--2025, mô hình sau huấn luyện đạt tỷ số Sharpe $1{,}25\pm0{,}19$ (10 hạt giống), mạng chưa huấn luyện đạt $1{,}27\pm0{,}36$ (30 hạt giống). Hai phân phối không phân biệt được về trung bình; mức sụt giảm tối đa ($-7{,}7\%$ so với $-7{,}2\%$) và mức luân chuyển (0,64 so với 0,60) cũng tương đương. Khác biệt duy nhất là độ phân tán: mô hình được chọn qua tập kiểm định có độ lệch chuẩn nhỏ hơn (0,19 so với 0,36) và không có lần chạy nào kém (thấp nhất 1,05 so với 0,59). Như vậy, \emph{trên giai đoạn kiểm tra này}, đóng góp của bước huấn luyện chủ yếu là loại bỏ các chính sách xấu chứ chưa nâng mức hiệu quả trung bình. Kiểm định cuốn chiếu ở Mục~\ref{sec:walkforward} cho một bức tranh khác, thuận lợi hơn cho quá trình huấn luyện.
 
 \subsection{Vì sao tín hiệu học còn yếu}
 
@@ -204,7 +204,7 @@ Có ba nguyên nhân chính, đều có thể định lượng.
 \label{fig:dsr}
 \end{figure}
 
-\textit{Tập kiểm định quá ngắn để chọn mô hình.} Tỷ số Sharpe kiểm định được tính từ 11 quan sát hằng tháng, có sai số chuẩn trên 1. Hình~\ref{fig:valtest} đặt tỷ số Sharpe kiểm định đối chiếu với tỷ số Sharpe kiểm tra cho toàn bộ 25 lần huấn luyện của luận văn: hệ số tương quan giữa hai đại lượng là 0,04, tức gần như bằng không. Tỷ số Sharpe trên năm 2023 vì vậy chỉ là một chỉ dẫn yếu cho hiệu quả trên 2024--2025.
+\textit{Tập kiểm định quá ngắn để chọn mô hình.} Tỷ số Sharpe kiểm định được tính từ 11 quan sát hằng tháng, có sai số chuẩn trên 1. Hình~\ref{fig:valtest} đặt tỷ số Sharpe kiểm định đối chiếu với tỷ số Sharpe kiểm tra cho toàn bộ 35 lần huấn luyện trên giai đoạn kiểm tra chính: hệ số tương quan giữa hai đại lượng là 0,04, tức gần như bằng không. Tỷ số Sharpe trên năm 2023 vì vậy chỉ là một chỉ dẫn yếu cho hiệu quả trên 2024--2025.
 
 \begin{figure}[ht]
 \centering
@@ -227,9 +227,9 @@ Bảng~\ref{tab:behaviour} tóm tắt các đặc điểm của danh mục do m�
 
 \textit{Danh mục luôn hợp lệ.} Ở mọi ngày quyết định và mọi hạt giống, danh mục gồm đúng 20 mã đủ điều kiện, tổng tỷ trọng bằng 1 và không mã nào vượt trần 10\%. Về mặt kỹ thuật, cơ chế mặt nạ và phép chiếu hoạt động đúng với tập cổ phiếu thay đổi từ 147 đến 179 mã trong giai đoạn kiểm tra.
 
-\textit{Chính sách thực chất là một bộ chọn cổ phiếu.} Tham số tập trung $\alpha_i$ của các mã khác nhau rất ít: hệ số biến thiên chỉ 4,5--6\%. Theo công thức~\eqref{eq:dir-mean}, tỷ trọng kỳ vọng của mỗi mã khi đó xấp xỉ $1/N_t$; sau khi giữ 20 mã có tỷ trọng lớn nhất và chuẩn hóa, mỗi mã nhận từ 4,4\% đến 6,4\%, tức gần như chia đều. Trần 10\% không bao giờ có hiệu lực. Như vậy tác tử quyết định \emph{chọn mã nào} chứ chưa quyết định \emph{phân bổ bao nhiêu}. Nguyên nhân nằm ở cấu trúc của không gian hành động: sự khác biệt rất nhỏ giữa các $\alpha_i$ đã đủ để xác định 20 mã được chọn, nên không có áp lực nào buộc actor tạo ra khác biệt lớn hơn.
+\textit{Chính sách thực chất là một bộ chọn cổ phiếu.} Tham số tập trung $\alpha_i$ của các mã khác nhau rất ít: hệ số biến thiên chỉ 1,9--6\%. Theo công thức~\eqref{eq:dir-mean}, tỷ trọng kỳ vọng của mỗi mã khi đó xấp xỉ $1/N_t$; sau khi giữ 20 mã có tỷ trọng lớn nhất và chuẩn hóa, mỗi mã nhận từ 4,4\% đến 6,4\%, tức gần như chia đều. Trần 10\% không bao giờ có hiệu lực. Như vậy tác tử quyết định \emph{chọn mã nào} chứ chưa quyết định \emph{phân bổ bao nhiêu}. Nguyên nhân nằm ở cấu trúc của không gian hành động: sự khác biệt rất nhỏ giữa các $\alpha_i$ đã đủ để xác định 20 mã được chọn, nên không có áp lực nào buộc actor tạo ra khác biệt lớn hơn.
 
-\textit{Lựa chọn nhất quán giữa các lần huấn luyện và ổn định theo thời gian.} Hai hạt giống bất kỳ trùng nhau trung bình 40\% số mã nắm giữ tại cùng một thời điểm, trong khi hai danh mục ngẫu nhiên chỉ trùng nhau khoảng 12\%. Giữa hai tháng liên tiếp, 56--85\% số mã được giữ lại. Trong hai năm kiểm tra, 5 hạt giống đã nắm giữ tổng cộng 130 mã khác nhau trên khoảng 180 mã từng đủ điều kiện, tức mô hình không dồn vào một nhóm nhỏ cố định. Tính nhất quán này phù hợp với phân tích ở Mục~\ref{sec:graph-role}: lựa chọn của mô hình được định hình bởi cấu trúc đồ thị dài hạn, vốn giống nhau giữa các hạt giống và thay đổi chậm theo thời gian.
+\textit{Lựa chọn nhất quán giữa các lần huấn luyện và ổn định theo thời gian.} Hai hạt giống bất kỳ trùng nhau trung bình 36\% số mã nắm giữ tại cùng một thời điểm, trong khi hai danh mục ngẫu nhiên chỉ trùng nhau khoảng 12\%. Giữa hai tháng liên tiếp, 56--85\% số mã được giữ lại. Mỗi hạt giống nắm giữ một tập mã thay đổi theo thời gian; gộp cả 10 hạt giống, mô hình đã từng nắm giữ phần lớn các mã đủ điều kiện, tức không dồn vào một nhóm nhỏ cố định. Tính nhất quán này phù hợp với phân tích ở Mục~\ref{sec:graph-role}: lựa chọn của mô hình được định hình bởi cấu trúc đồ thị dài hạn, vốn giống nhau giữa các hạt giống và thay đổi chậm theo thời gian.
 
 \section{Kiểm định cuốn chiếu trên giai đoạn 2020--2025}
 \label{sec:walkforward}
@@ -281,7 +281,27 @@ Cần lưu ý rằng tỷ số Sharpe của mọi chiến lược trên 2020--20
 
 \textit{Ý nghĩa thống kê.} Với 71 quan sát hằng tháng, sai số chuẩn của tỷ số Sharpe theo công thức~\eqref{eq:lo} vào khoảng 0,42 -- nhỏ hơn gần một nửa so với giai đoạn hai năm nhưng vẫn lớn hơn chênh lệch 0,21 giữa mô hình và phân bổ đều. Thống kê $t$ của chênh lệch lợi suất hằng tháng so với phân bổ đều là 0,49; $-0{,}45$ và 1,02 ở ba hạt giống. Như vậy lợi thế của mô hình so với phân bổ đều vẫn chưa có ý nghĩa thống kê, và luận văn giữ nguyên kết luận ở mức khả thi. Các so sánh \emph{giữa các cấu hình} (đồ thị dài hạn so với ngắn hạn, đã huấn luyện so với chưa huấn luyện) thì đáng tin cậy hơn, vì chúng được lặp lại qua nhiều hạt giống và nhiều năm.
 
+\section{Kiểm tra trên tập cổ phiếu thanh khoản tốt}
+\label{sec:liquid}
+
+Mục~\ref{sec:graph-role} cho thấy mô hình nghiêng về các cổ phiếu ít liên kết, và các cổ phiếu này thường kém thanh khoản hơn trung bình. Điều này đặt ra hai câu hỏi: kết quả của mô hình có phụ thuộc vào nhóm cổ phiếu khó giao dịch hay không, và độ biến động thấp đo được có phải một phần là do giá của các cổ phiếu này ít thay đổi hay không. Để trả lời, mô hình được huấn luyện và đánh giá lại trên một tập cổ phiếu hẹp hơn.
+
+\textit{Thiết kế.} Tại mỗi ngày quyết định, ngoài điều kiện vốn hóa ở Mục~\ref{sec:universe}, luận văn loại thêm (i) 30\% số cổ phiếu đủ điều kiện có chỉ số kém thanh khoản Amihud trung bình 20 phiên cao nhất, (ii) các cổ phiếu có hơn 25\% số phiên trong 60 phiên gần nhất không đổi giá, và (iii) các cổ phiếu thiếu dữ liệu thanh khoản. Trên giai đoạn kiểm tra, số cổ phiếu đủ điều kiện giảm từ khoảng 163 xuống khoảng 101 mã mỗi tháng. Mô hình với đồ thị dài hạn được huấn luyện lại từ đầu trên tập mới với 5 hạt giống, giữ nguyên mọi siêu tham số; các chiến lược đối chứng và 30 mạng chưa huấn luyện được tính lại trên cùng tập cổ phiếu.
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{Kết quả trên tập kiểm tra 2024--2025 khi chỉ dùng cổ phiếu thanh khoản tốt (khoảng 101 mã mỗi tháng)}
+\label{tab:liquid}
+\begin{adjustbox}{max width=\textwidth}\input{tables/liquid}\end{adjustbox}
+\end{table}
+
+\textit{Kết quả.} Bảng~\ref{tab:liquid} cho thấy kết quả kém hơn đáng kể so với tập cổ phiếu đầy đủ. Mô hình đạt tỷ số Sharpe $0{,}79\pm0{,}22$ và lợi suất $31{,}4\%$, vẫn cao hơn phân bổ đều trên cùng tập (0,66; 22,4\%) và trung vị danh mục ngẫu nhiên (0,61), nhưng chỉ 3 trong 5 hạt giống vượt phân bổ đều. Chênh lệch so với phân bổ đều giảm từ 0,35 xuống 0,14. Độ biến động (20,3\%) và mức sụt giảm tối đa ($-15{,}0\%$) của mô hình không còn thấp hơn phân bổ đều (18,8\%; $-14{,}9\%$). Mạng chưa huấn luyện cho kết quả tương đương mô hình đã huấn luyện ($0{,}87\pm0{,}22$). Trong khi đó, hai danh mục Markowitz lại tốt hơn hẳn trên tập này (tỷ số Sharpe 1,61 cho cả phương sai nhỏ nhất và trung bình--phương sai).
+
+\textit{Diễn giải.} Kết quả này cho thấy một phần đáng kể ưu thế của mô hình trên tập cổ phiếu đầy đủ -- đặc biệt là độ biến động và mức sụt giảm thấp -- gắn với các cổ phiếu kém thanh khoản. Như đã thảo luận ở Mục~\ref{sec:graph-role}, giá của các cổ phiếu này phản ứng chậm nên vừa ít tương quan với thị trường vừa có độ biến động đo được thấp hơn rủi ro thực. Khi loại chúng ra, mô hình vẫn vận hành đúng, vẫn cho kết quả không kém phân bổ đều và danh mục ngẫu nhiên, nhưng không còn thể hiện lợi thế rõ rệt. Đây là một hạn chế quan trọng đối với khả năng áp dụng thực tế và được thảo luận thêm ở Mục~\ref{sec:hanche}. Do giới hạn tài nguyên tính toán, thí nghiệm này chưa so sánh đồ thị dài hạn với đồ thị ngắn hạn trên tập thanh khoản.
+
 \section{Tổng kết chương}
 
-Chương này đã đánh giá tính khả thi của mô hình lai trên dữ liệu thị trường Việt Nam. Về tính đúng đắn, mô hình vận hành đầu--cuối với tập cổ phiếu thay đổi theo thời gian và luôn tạo ra danh mục hợp lệ. Về hiệu quả, với đồ thị tương quan dài hạn, mô hình đạt tỷ số Sharpe $1{,}32\pm0{,}24$ và lợi suất 36,8\% trên giai đoạn 2024--2025, cao hơn phân bổ đều và danh mục ngẫu nhiên ở cả 5 hạt giống, với độ biến động và mức sụt giảm thấp hơn thị trường; mô hình chưa vượt VN-Index và danh mục trung bình--phương sai, và các chênh lệch so với những mốc này nằm trong sai số thống kê của giai đoạn kiểm tra hai năm. Về vai trò của các thành phần, đồ thị tương quan dài hạn là yếu tố có ảnh hưởng lớn và nhất quán nhất: nó nâng gần gấp đôi tỷ số Sharpe so với đồ thị ngắn hạn, giảm khoảng một phần ba độ biến động so với không dùng đồ thị, và tác động này đã xuất hiện ngay ở mạng chưa huấn luyện. Ngược lại, đóng góp của quá trình huấn luyện PPO còn nhỏ do lượng kinh nghiệm hạn chế, và chính sách hiện mới đóng vai trò chọn cổ phiếu chứ chưa phân bổ tỷ trọng. Chương tiếp theo thảo luận ý nghĩa của các kết quả này.
+Chương này đã đánh giá tính khả thi của mô hình lai trên dữ liệu thị trường Việt Nam. Về tính đúng đắn, mô hình vận hành đầu--cuối với tập cổ phiếu thay đổi theo thời gian và luôn tạo ra danh mục hợp lệ. Về hiệu quả, trên giai đoạn kiểm tra chính 2024--2025, mô hình với đồ thị tương quan dài hạn đạt tỷ số Sharpe $1{,}25\pm0{,}19$ và lợi suất 42,2\% trên 10 hạt giống, cao hơn phân bổ đều và trung vị danh mục ngẫu nhiên ở mọi hạt giống, nhưng chưa vượt VN-Index và danh mục trung bình--phương sai. Trên kiểm định cuốn chiếu 71 tháng (2020--2025), mô hình đạt tỷ số Sharpe $0{,}76\pm0{,}15$, cao nhất trong các chiến lược được so sánh, với mức sụt giảm thấp hơn phân bổ đều. Tuy nhiên, ở cả hai giai đoạn, chênh lệch so với phân bổ đều và VN-Index vẫn nằm trong sai số thống kê.
 
+Về vai trò của các thành phần, đồ thị tương quan dài hạn là yếu tố có ảnh hưởng lớn và nhất quán nhất: nó cho kết quả tốt hơn đồ thị ngắn hạn trên cả giai đoạn kiểm tra chính (10 hạt giống) lẫn kiểm định cuốn chiếu (3 hạt giống, năm trong sáu năm), với mức luân chuyển thấp hơn. Đóng góp của quá trình huấn luyện PPO không thấy được trên giai đoạn 2024--2025, nhưng thể hiện rõ trong kiểm định cuốn chiếu, khi mô hình được huấn luyện lại hằng năm. Chính sách hiện mới đóng vai trò chọn cổ phiếu chứ chưa phân bổ tỷ trọng. Cuối cùng, khi giới hạn ở các cổ phiếu thanh khoản tốt, ưu thế của mô hình thu hẹp đáng kể, cho thấy một phần kết quả gắn với nhóm cổ phiếu kém thanh khoản. Chương tiếp theo thảo luận ý nghĩa của các kết quả này.

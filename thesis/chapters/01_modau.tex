@@ -26,7 +26,7 @@ Từ mục tiêu tổng quát, luận văn đặt ra các mục tiêu cụ thể
   \item Xây dựng bộ dữ liệu tích hợp cho thị trường Việt Nam giai đoạn 2016--2025, gồm dữ liệu giá và chỉ báo kỹ thuật, chỉ số tài chính doanh nghiệp và biến vĩ mô, với quy trình xử lý tránh rò rỉ thông tin tương lai.
   \item Phân tích quan hệ tương quan dài hạn giữa các cổ phiếu: kiểm tra sự tồn tại của các nhóm cổ phiếu tương quan, tính bền vững ngoài mẫu của quan hệ này, và so sánh đồ thị ước lượng trên cửa sổ dài với đồ thị ước lượng trên cửa sổ ngắn.
   \item Thiết kế kiến trúc huấn luyện đầu--cuối gồm bộ mã hóa thời gian Transformer, mạng chú ý đồ thị GAT trên đồ thị tương quan dài hạn và tác tử PPO với phần thưởng là tỷ số Sharpe vi phân tính trên lợi suất ròng sau phí giao dịch.
-  \item Đánh giá tính khả thi của mô hình theo ba khía cạnh: (i) tính đúng đắn -- mô hình tạo ra danh mục hợp lệ, thỏa mãn ràng buộc, không dùng thông tin tương lai; (ii) hiệu quả -- so sánh với các chiến lược đối chứng theo tỷ số Sharpe, lợi suất tích lũy, mức sụt giảm tối đa và tỷ số Calmar; (iii) độ tin cậy -- mức ổn định của kết quả qua các hạt giống ngẫu nhiên, so với danh mục ngẫu nhiên và mạng chưa huấn luyện.
+  \item Đánh giá tính khả thi của mô hình theo ba khía cạnh: (i) tính đúng đắn -- mô hình tạo ra danh mục hợp lệ, thỏa mãn ràng buộc, không dùng thông tin tương lai; (ii) hiệu quả -- so sánh với các chiến lược đối chứng theo tỷ số Sharpe, lợi suất tích lũy, mức sụt giảm tối đa và tỷ số Calmar; (iii) độ tin cậy -- mức ổn định của kết quả qua các hạt giống ngẫu nhiên, so với danh mục ngẫu nhiên và mạng chưa huấn luyện, và khi đánh giá cuốn chiếu trên nhiều năm hoặc giới hạn ở cổ phiếu thanh khoản tốt.
   \item Phân tích vai trò của từng thành phần (bộ mã hóa, đồ thị, cửa sổ tương quan), chỉ ra các hạn chế và đề xuất hướng phát triển.
 \end{itemize}
 
@@ -54,7 +54,7 @@ Về dữ liệu, luận văn thu thập dữ liệu giao dịch hằng ngày, b
 
 Về mô hình, luận văn cài đặt toàn bộ kiến trúc bằng PyTorch, trong đó mạng đồ thị và vòng lặp PPO được tự cài đặt để kiểm soát đầy đủ luồng gradient từ hàm mục tiêu của tác tử ngược về mạng đồ thị và bộ mã hóa thời gian.
 
-Về đánh giá, luận văn áp dụng quy trình kiểm thử ngược (backtest) theo thứ tự thời gian, chọn mô hình theo tỷ số Sharpe trên tập kiểm định, báo cáo kết quả trên nhiều hạt giống ngẫu nhiên dưới dạng trung bình và độ lệch chuẩn, và so sánh với phân phối kết quả của các danh mục chọn ngẫu nhiên nhằm phân biệt kỹ năng lựa chọn của mô hình với may rủi.
+Về đánh giá, luận văn áp dụng quy trình kiểm thử ngược (backtest) theo thứ tự thời gian, chọn mô hình theo tỷ số Sharpe trên tập kiểm định, báo cáo kết quả trên nhiều hạt giống ngẫu nhiên dưới dạng trung bình và độ lệch chuẩn, và so sánh với phân phối kết quả của các danh mục chọn ngẫu nhiên nhằm phân biệt kỹ năng lựa chọn của mô hình với may rủi. Ngoài giai đoạn kiểm tra chính, mô hình còn được đánh giá bằng kiểm định cuốn chiếu (walk-forward) trên sáu năm 2020--2025, huấn luyện lại mỗi năm, và trên một tập cổ phiếu được lọc theo thanh khoản.
 
 \section*{Nội dung nghiên cứu}
 
@@ -67,11 +67,11 @@ Các đóng góp chính của luận văn gồm:
   \item \textit{Bằng chứng thực nghiệm về quan hệ tương quan dài hạn trên thị trường Việt Nam.} Luận văn chỉ ra rằng các nhóm cổ phiếu tìm được hoàn toàn từ dữ liệu giá trùng với các nhóm ngành (thép, chứng khoán, dầu khí, ngân hàng, bất động sản); quan hệ ước lượng trên 2016--2022 tiếp tục đúng trên 2024--2025; và đồ thị tương quan 250 phiên ổn định hơn hẳn đồ thị 60 phiên.
   \item \textit{Một khung mô hình lai huấn luyện đầu--cuối cho thị trường Việt Nam.} Mô hình kết hợp bộ mã hóa Transformer có mặt nạ nhân quả, mạng chú ý đồ thị trên đồ thị tương quan dài hạn và tác tử PPO với chính sách Dirichlet trên đơn hình tỷ trọng, phần thưởng là tỷ số Sharpe vi phân sau phí giao dịch. Tập cổ phiếu được phép thay đổi theo thời gian thông qua mặt nạ đủ điều kiện.
   \item \textit{Một bộ dữ liệu và quy trình xử lý đáng tin cậy.} Dữ liệu gồm 19 đặc trưng thuộc ba nhóm cho 222 mã trong mười năm; chuỗi giá được điều chỉnh theo sự kiện doanh nghiệp bằng phép đối chiếu chéo với hệ số P/B; chỉ số tài chính được gắn theo ngày công bố báo cáo; mọi phép chuẩn hóa và ước lượng tương quan chỉ dùng các phiên trước ngày quyết định.
-  \item \textit{Một quy trình đánh giá tính khả thi có kiểm soát.} Ngoài danh mục phân bổ đều và VN-Index, luận văn so sánh với danh mục Markowitz dùng hiệp phương sai co rút Ledoit--Wolf, chiến lược động lượng, phân phối của 1.000 danh mục ngẫu nhiên, mạng chưa huấn luyện, các phép loại bỏ thành phần, và báo cáo trên nhiều hạt giống ngẫu nhiên.
+  \item \textit{Một quy trình đánh giá tính khả thi có kiểm soát.} Ngoài danh mục phân bổ đều và VN-Index, luận văn so sánh với danh mục Markowitz dùng hiệp phương sai co rút Ledoit--Wolf, chiến lược động lượng, phân phối của 1.000 danh mục ngẫu nhiên, mạng chưa huấn luyện, các phép loại bỏ thành phần, kiểm định cuốn chiếu sáu năm và kiểm tra trên tập cổ phiếu thanh khoản tốt, và báo cáo trên nhiều hạt giống ngẫu nhiên.
   \item \textit{Các kết luận trung thực về khả năng và giới hạn của phương pháp,} cùng một danh sách cụ thể các điều kiện cần cải thiện để phương pháp có thể được triển khai trong thực tế.
 \end{itemize}
 
-Một phần nội dung của luận văn đã được công bố trong bài báo \cite{tran2026dynamic}. So với bài báo, luận văn chuyển trọng tâm sang đồ thị tương quan dài hạn, sửa dữ liệu giá theo sự kiện doanh nghiệp, hiệu chỉnh phần thưởng và cách chọn mô hình, mở rộng số hạt giống cùng các chiến lược đối chứng; vì vậy các con số trong luận văn không trùng với bài báo (xem Phụ lục~\ref{app:paper}).
+Một phần nội dung của luận văn đã được công bố trong bài báo \cite{tran2026dynamic}. So với bài báo, luận văn chuyển trọng tâm sang đồ thị tương quan dài hạn, sửa dữ liệu giá theo sự kiện doanh nghiệp, hiệu chỉnh phần thưởng và cách chọn mô hình, mở rộng số hạt giống, các chiến lược đối chứng và các phép kiểm tra độ vững; vì vậy các con số trong luận văn không trùng với bài báo (xem Phụ lục~\ref{app:paper}).
 
 \section*{Bố cục của luận văn}
 

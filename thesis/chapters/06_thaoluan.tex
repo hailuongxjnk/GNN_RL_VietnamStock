@@ -18,17 +18,17 @@ Khía cạnh & Bằng chứng & Kết luận \\
 \midrule
 Cơ sở dữ liệu của ý tưởng & Tương quan dài hạn có cấu trúc theo nhóm ngành; 76\% cặp tương quan mạnh ở 2016--2022 vẫn mạnh ở 2024--2025; đồ thị 250 phiên giữ 81\% cạnh qua mỗi tháng (Mục~\ref{sec:graph}) & Đạt \\
 Tính đúng đắn & Huấn luyện đầu--cuối chạy được trên tập cổ phiếu thay đổi (35--179 mã); danh mục luôn thỏa ràng buộc; không dùng thông tin tương lai; chi phí tính toán thấp (dưới 15 phút mỗi lần huấn luyện trên CPU) & Đạt \\
-Hiệu quả so với mốc không lựa chọn & Sharpe $1{,}32$ so với $0{,}90$ (phân bổ đều) và $0{,}82$ (ngẫu nhiên); cả 5 hạt giống đều cao hơn; rủi ro thấp hơn thị trường & Đạt, trong giai đoạn kiểm tra \\
-Hiệu quả so với mốc mạnh & Thấp hơn VN-Index (1,45) và trung bình--phương sai (1,56); chênh lệch trong phạm vi sai số & Chưa vượt \\
-Độ ổn định & Độ lệch chuẩn Sharpe giữa các hạt giống 0,24; không có lần chạy kém & Đạt \\
-Vai trò của đồ thị dài hạn & Hơn đồ thị ngắn hạn rõ rệt; giảm một phần ba độ biến động so với không đồ thị; nhất quán ở hai bộ mã hóa và ở mạng chưa huấn luyện & Được xác nhận \\
-Vai trò của học tăng cường & Mô hình sau huấn luyện không khác biệt về trung bình so với mạng chưa huấn luyện; chính sách chưa học phân bổ tỷ trọng & Chưa được xác nhận \\
-Khả năng triển khai & Danh mục nghiêng về cổ phiếu kém thanh khoản; mô hình chi phí đơn giản & Cần nghiên cứu thêm \\
+Hiệu quả so với mốc không lựa chọn & 2024--2025: Sharpe $1{,}25$ so với $0{,}90$ (phân bổ đều) và $0{,}82$ (ngẫu nhiên), cả 10 hạt giống đều cao hơn. 2020--2025 (cuốn chiếu): $0{,}76$ so với $0{,}55$ và $0{,}61$. Chênh lệch chưa có ý nghĩa thống kê & Đạt, chưa có ý nghĩa thống kê \\
+Hiệu quả so với mốc mạnh & 2024--2025: thấp hơn VN-Index (1,45) và trung bình--phương sai (1,56). 2020--2025: cao hơn cả hai (0,54 và 0,49). Mọi chênh lệch trong phạm vi sai số & Không kết luận được \\
+Độ ổn định & Độ lệch chuẩn Sharpe giữa các hạt giống 0,19 (10 hạt giống); không có lần chạy kém trên 2024--2025 & Đạt \\
+Vai trò của đồ thị dài hạn & Hơn đồ thị ngắn hạn trên 2024--2025 (10 hạt giống) và trên 2020--2025 (mọi hạt giống, năm trong sáu năm); giảm độ biến động so với không đồ thị; nhất quán ở mạng chưa huấn luyện. Chưa kiểm chứng trên tập thanh khoản & Được xác nhận trên tập đầy đủ \\
+Vai trò của học tăng cường & 2024--2025: không khác mạng chưa huấn luyện. 2020--2025 (huấn luyện lại hằng năm): 0,76 so với 0,48, khoảng ba sai số chuẩn. Chính sách chưa học phân bổ tỷ trọng & Có dấu hiệu, cần thêm bằng chứng \\
+Khả năng triển khai & Danh mục nghiêng về cổ phiếu kém thanh khoản; trên tập thanh khoản tốt, Sharpe giảm còn 0,79 (phân bổ đều 0,66) và ưu thế về rủi ro biến mất; mô hình chi phí đơn giản & Hạn chế, cần nghiên cứu thêm \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-Nhìn tổng thể, phương pháp \emph{khả thi về mặt kỹ thuật và có cơ sở thực nghiệm}: có thể xây dựng, huấn luyện và vận hành một mô hình lai trên dữ liệu Việt Nam với nguồn lực tính toán khiêm tốn, và mô hình cho danh mục hợp lý, ổn định, có rủi ro thấp hơn thị trường. Đồng thời, kết quả cho thấy rõ thành phần nào của phương pháp đang thực sự tạo ra giá trị và thành phần nào chưa.
+Nhìn tổng thể, phương pháp \emph{khả thi về mặt kỹ thuật và có cơ sở thực nghiệm}: có thể xây dựng, huấn luyện và vận hành một mô hình lai trên dữ liệu Việt Nam với nguồn lực tính toán khiêm tốn, và mô hình cho danh mục hợp lệ, ổn định, có hiệu quả không thấp hơn các mốc không lựa chọn trên cả hai giai đoạn đánh giá. Đồng thời, kết quả cho thấy rõ thành phần nào của phương pháp đang thực sự tạo ra giá trị, thành phần nào chưa, và điều kiện nào (thanh khoản) làm ưu thế của mô hình thu hẹp.
 
 \section{Diễn giải các kết quả chính}
 
@@ -40,24 +40,24 @@ Kết quả nhất quán nhất của luận văn là lợi ích của đồ th�
 
 \textit{Thứ hai, đồ thị dài hạn phân biệt được cổ phiếu ``thuộc số đông'' và cổ phiếu ``đứng riêng''.} Trên đồ thị dài hạn, các cổ phiếu trong cùng một cụm lớn chia sẻ thông tin với nhau qua các tầng chú ý và có biểu diễn gần nhau, còn các cổ phiếu ít liên kết giữ được biểu diễn riêng. Mô hình vì vậy có sẵn thông tin về mức độ đa dạng hóa mà mỗi cổ phiếu mang lại cho danh mục. Phép kiểm chứng ở Bảng~\ref{tab:structural} cho thấy thông tin này có giá trị: danh mục gồm các cổ phiếu liên kết nhiều nhất có độ biến động gấp ba và mức sụt giảm gấp bốn danh mục gồm các cổ phiếu ít liên kết nhất.
 
-\textit{Thứ ba, đồ thị dài hạn cho quyết định ổn định.} Vì cấu trúc đồ thị thay đổi chậm, thứ hạng của các cổ phiếu cũng thay đổi chậm; mức luân chuyển chỉ bằng một nửa so với đồ thị ngắn hạn, nên chi phí giao dịch thấp hơn và kết quả giữa các lần huấn luyện gần nhau hơn.
+\textit{Thứ ba, đồ thị dài hạn cho quyết định ổn định.} Vì cấu trúc đồ thị thay đổi chậm, thứ hạng của các cổ phiếu cũng thay đổi chậm; mức luân chuyển chỉ bằng khoảng 55--65\% so với đồ thị ngắn hạn ở cả hai giai đoạn đánh giá, nên chi phí giao dịch thấp hơn và kết quả giữa các lần huấn luyện gần nhau hơn.
 
-Một hệ quả thú vị là cơ chế này hoạt động theo hướng của lý thuyết danh mục cổ điển: lợi ích chính của đồ thị là \emph{giảm rủi ro thông qua đa dạng hóa}, không phải dự báo lợi suất. Điều này cũng giải thích vì sao danh mục trung bình--phương sai với hiệp phương sai co rút -- phương pháp truyền thống khai thác cùng loại thông tin -- là mốc so sánh mạnh nhất. Hai cách tiếp cận dùng cấu trúc phụ thuộc dài hạn theo hai cách khác nhau: bộ tối ưu Markowitz dùng nó tường minh trong một bài toán toàn phương, còn mô hình lai dùng nó như một cấu trúc để lan truyền thông tin phi tuyến.
+Một hệ quả thú vị là cơ chế này hoạt động theo hướng của lý thuyết danh mục cổ điển: lợi ích chính của đồ thị là \emph{giảm rủi ro thông qua đa dạng hóa}, không phải dự báo lợi suất. Kết quả trên tập thanh khoản tốt (Mục~\ref{sec:liquid}) cho thấy cần thận trọng với nhận định này: một phần mức rủi ro thấp đo được đến từ các cổ phiếu ít giao dịch, mà độ biến động đo được của chúng thấp hơn rủi ro thực. Điều này cũng giải thích vì sao danh mục trung bình--phương sai với hiệp phương sai co rút -- phương pháp truyền thống khai thác cùng loại thông tin -- là mốc so sánh mạnh nhất. Hai cách tiếp cận dùng cấu trúc phụ thuộc dài hạn theo hai cách khác nhau: bộ tối ưu Markowitz dùng nó tường minh trong một bài toán toàn phương, còn mô hình lai dùng nó như một cấu trúc để lan truyền thông tin phi tuyến.
 
-\subsection{Vì sao học tăng cường chưa đóng góp nhiều}
+\subsection{Về đóng góp của học tăng cường}
 
-Mô hình sau huấn luyện không khác biệt về trung bình so với mạng chưa huấn luyện. Điều này không có nghĩa học tăng cường không phù hợp với bài toán, mà phản ánh điều kiện huấn luyện hiện tại (Mục~\ref{sec:training-analysis}):
+Hai giai đoạn đánh giá cho hai bức tranh khác nhau. Trên 2024--2025, mô hình sau huấn luyện không khác biệt về trung bình so với mạng chưa huấn luyện. Trên kiểm định cuốn chiếu 2020--2025, khi mô hình được huấn luyện lại hằng năm, mô hình đã huấn luyện vượt rõ mạng chưa huấn luyện (0,76 so với 0,48). Một cách giải thích là lợi ích của huấn luyện thể hiện chủ yếu qua khả năng \emph{thích nghi} với dữ liệu gần nhất, và lợi ích ấy chỉ đo được khi đánh giá trên nhiều giai đoạn. Dù vậy, với 3 hạt giống trong kiểm định cuốn chiếu, bằng chứng này chưa đủ mạnh, và tín hiệu học hiện vẫn yếu vì các lý do sau (Mục~\ref{sec:training-analysis}):
 \begin{itemize}
   \item Tác tử chỉ có 79 bước quyết định theo tháng để học, và 48 bước gradient cho hơn 120 nghìn tham số.
   \item Phần lớn biến động của phần thưởng đến từ thị trường chung, không phụ thuộc vào hành động của tác tử; phần tín hiệu thực sự do lựa chọn cổ phiếu tạo ra là nhỏ so với nhiễu.
   \item Không gian hành động có một ánh xạ nhiều--một: mọi mẫu Dirichlet có cùng 20 mã lớn nhất dẫn tới gần như cùng một danh mục, nên gradient không tạo áp lực để actor phân biệt mạnh hơn giữa các cổ phiếu hay học cách phân bổ tỷ trọng.
-  \item Tập kiểm định 11 tháng không đủ để chọn mô hình: tương quan giữa tỷ số Sharpe kiểm định và kiểm tra trên 25 lần huấn luyện xấp xỉ bằng không.
+  \item Tập kiểm định 11 tháng không đủ để chọn mô hình: tương quan giữa tỷ số Sharpe kiểm định và kiểm tra trên 35 lần huấn luyện xấp xỉ bằng không.
 \end{itemize}
-Các nguyên nhân này đều thuộc về lượng dữ liệu và thiết kế bài toán học, và đều có hướng khắc phục cụ thể (Mục~\ref{sec:caitien}). Trong trạng thái hiện tại, vai trò thực tế của học tăng cường trong mô hình là cung cấp một khung tối ưu trực tiếp theo mục tiêu đầu tư có tính đến chi phí giao dịch; giá trị gia tăng của nó so với một mạng chấm điểm ngẫu nhiên trên cùng kiến trúc chưa được chứng minh.
+Các nguyên nhân này đều thuộc về lượng dữ liệu và thiết kế bài toán học, và đều có hướng khắc phục cụ thể (Mục~\ref{sec:caitien}). Trong trạng thái hiện tại, vai trò thực tế của học tăng cường trong mô hình là cung cấp một khung tối ưu trực tiếp theo mục tiêu đầu tư có tính đến chi phí giao dịch; giá trị gia tăng của nó so với một mạng chấm điểm ngẫu nhiên trên cùng kiến trúc mới có dấu hiệu ở kiểm định cuốn chiếu và cần được khẳng định bằng nhiều hạt giống hơn.
 
 \subsection{Về việc chưa vượt VN-Index}
 
-Giai đoạn 2024--2025 là giai đoạn mà chỉ số tính theo vốn hóa có lợi thế cấu trúc: VN-Index tăng 50,4\% trong khi cổ phiếu trung vị chỉ tăng 9,4\%. Mọi chiến lược đa dạng hóa bị giới hạn tỷ trọng đều khó theo kịp chỉ số trong điều kiện này; danh mục phân bổ đều chỉ đạt 28,0\%. Mô hình đề xuất đạt 36,8\% với độ biến động thấp hơn chỉ số và mức sụt giảm tương đương. Việc so sánh công bằng hơn với chỉ số cần một giai đoạn kiểm tra dài hơn, bao gồm cả các năm thị trường có độ rộng tốt và các năm thị trường giảm.
+Giai đoạn 2024--2025 là giai đoạn mà chỉ số tính theo vốn hóa có lợi thế cấu trúc: VN-Index tăng 50,4\% trong khi cổ phiếu trung vị chỉ tăng 9,4\%. Mọi chiến lược đa dạng hóa bị giới hạn tỷ trọng đều khó theo kịp chỉ số trong điều kiện này; danh mục phân bổ đều chỉ đạt 28,0\%. Mô hình đề xuất đạt 42,2\% với độ biến động tương đương chỉ số. Kiểm định cuốn chiếu xác nhận rằng thứ hạng này phụ thuộc vào giai đoạn: trên 2020--2025, gồm cả năm 2021 thị trường tăng rộng và năm 2022 thị trường giảm sâu, mô hình có tỷ số Sharpe 0,76 so với 0,54 của VN-Index và lợi suất tích lũy 119,9\% so với 76,0\%. Ngay cả trên giai đoạn dài này, chênh lệch vẫn chưa có ý nghĩa thống kê, nên luận văn không kết luận mô hình tốt hơn hay kém hơn chỉ số.
 
 
 
@@ -83,11 +83,11 @@ Ma trận kề & DTW và nhân quả Granger & Tương quan Pearson trên cửa 
 Quan hệ dài hạn & Trọng tâm của đề tài & Trọng tâm: phân tích nhóm, tính bền ngoài mẫu; đồ thị dài hạn là cấu hình chính, đồ thị 60 phiên là đối chứng & Đúng đề cương \\
 Phần thưởng & Sharpe tích lũy hoặc hàm tiện ích & Tỷ số Sharpe vi phân sau phí & Đúng đề cương \\
 Chi phí giao dịch & Không xét ở giai đoạn đầu & Có xét: 10 điểm cơ bản & Mở rộng \\
-Giai đoạn kiểm tra & 2022--2025 & 2024--2025 (2023 làm kiểm định) & Thu hẹp \\
+Giai đoạn kiểm tra & 2022--2025 & Kiểm tra chính 2024--2025; kiểm định cuốn chiếu 2020--2025 (gồm năm 2022) & Mở rộng \\
 Đối chứng & Markowitz, LSTM thuần, GRU thuần & Phân bổ đều, VN-Index, Markowitz (hai dạng), động lượng, ngẫu nhiên, mạng chưa huấn luyện, LSTM/GRU thuần + PPO & Mở rộng \\
-Tối ưu siêu tham số & Tìm lưới hoặc Bayes; phân tích độ nhạy & Không tinh chỉnh; chỉ có phép loại bỏ thành phần & Chưa thực hiện \\
+Tối ưu siêu tham số & Tìm lưới hoặc Bayes; phân tích độ nhạy & Không tinh chỉnh; có phép loại bỏ thành phần, kiểm định cuốn chiếu và kiểm tra trên tập thanh khoản & Chưa thực hiện \\
 Chỉ số & Sharpe, MDD, lợi suất tích lũy, Calmar & Như đề cương, thêm biến động và luân chuyển & Đúng đề cương \\
-Mục tiêu & Xây dựng mô hình lai hiệu quả hơn phương pháp truyền thống và học sâu đơn lẻ & Chứng minh tính khả thi; hơn phân bổ đều và LSTM/GRU thuần về rủi ro; chưa hơn trung bình--phương sai & Đạt một phần \\
+Mục tiêu & Xây dựng mô hình lai hiệu quả hơn phương pháp truyền thống và học sâu đơn lẻ & Chứng minh tính khả thi; hơn phân bổ đều và LSTM/GRU thuần; hơn trung bình--phương sai trên 2020--2025 nhưng không trên 2024--2025; chưa có ý nghĩa thống kê & Đạt một phần \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -96,9 +96,9 @@ Mục tiêu & Xây dựng mô hình lai hiệu quả hơn phương pháp truyề
 
 \textit{Về cách đo quan hệ dài hạn.} Đề cương dự kiến dùng DTW \cite{sakoe1978} và kiểm định nhân quả Granger \cite{granger1969}. Luận văn dùng tương quan Pearson trên cửa sổ dài vì ba lý do. Một là chi phí tính toán: đồ thị phải được ước lượng lại tại hàng trăm ngày quyết định cho hơn hai vạn cặp cổ phiếu, trong khi DTW có độ phức tạp bậc hai theo độ dài chuỗi và kiểm định Granger cần ước lượng một mô hình tự hồi quy cho mỗi cặp có thứ tự. Hai là độ tin cậy thống kê: kiểm định theo cặp trên hơn hai vạn cặp gặp vấn đề kiểm định bội nghiêm trọng. Ba là tính diễn giải: tương quan lợi suất gắn trực tiếp với rủi ro danh mục trong khung trung bình--phương sai, và kết quả ở Mục~\ref{sec:graph} cho thấy nó đã đủ để nhận diện các nhóm cổ phiếu có quan hệ bền vững. Đổi lại, tương quan Pearson chỉ đo quan hệ tuyến tính đồng thời, không nắm bắt quan hệ dẫn--trễ mà hai phương pháp kia hướng tới; các thước đo quan hệ dài hạn theo nghĩa chặt hơn như đồng liên kết \cite{englegranger1987} cũng chưa được khảo sát.
 
-\textit{Về giai đoạn kiểm tra.} Đề cương dự kiến kiểm tra trên 2022--2025 để bao gồm đợt suy giảm năm 2022. Với cách chia 70/10/20 theo thời gian, năm 2022 thuộc tập huấn luyện và giai đoạn kiểm tra chỉ gồm hai năm thị trường tăng. Vì vậy luận văn chưa đánh giá được mô hình trong điều kiện thị trường giảm -- điều kiện mà khả năng kiểm soát rủi ro của phần thưởng dạng Sharpe có ý nghĩa nhất.
+\textit{Về giai đoạn kiểm tra.} Đề cương dự kiến kiểm tra trên 2022--2025 để bao gồm đợt suy giảm năm 2022. Với cách chia 70/10/20 theo thời gian, năm 2022 thuộc tập huấn luyện của thực nghiệm chính. Để bù lại, luận văn bổ sung kiểm định cuốn chiếu 2020--2025, trong đó năm 2022 là một năm kiểm tra ngoài mẫu (Mục~\ref{sec:walkforward}). Trong năm này, mô hình giảm 31,2\%, ít hơn phân bổ đều (41,0\%) và tương đương VN-Index (31,6\%).
 
-\textit{Về mục tiêu.} Đề cương đặt mục tiêu xây dựng mô hình hiệu quả hơn các phương pháp truyền thống và mô hình học sâu đơn lẻ. Trong quá trình thực hiện, mục tiêu được xác định lại là nghiên cứu tính khả thi của phương pháp: với hai năm dữ liệu kiểm tra, không một nghiên cứu nào có thể khẳng định tính vượt trội một cách có cơ sở thống kê. Kết quả cho thấy mô hình lai với đồ thị dài hạn có lợi suất điều chỉnh rủi ro tốt hơn phân bổ đều, LSTM thuần và GRU thuần, nhưng chưa hơn danh mục trung bình--phương sai.
+\textit{Về mục tiêu.} Đề cương đặt mục tiêu xây dựng mô hình hiệu quả hơn các phương pháp truyền thống và mô hình học sâu đơn lẻ. Trong quá trình thực hiện, mục tiêu được xác định lại là nghiên cứu tính khả thi của phương pháp: với hai năm dữ liệu kiểm tra, không một nghiên cứu nào có thể khẳng định tính vượt trội một cách có cơ sở thống kê. Kết quả cho thấy mô hình lai với đồ thị dài hạn có tỷ số Sharpe và tỷ số Calmar cao hơn phân bổ đều, LSTM thuần và GRU thuần trên 2024--2025, và cao hơn mọi chiến lược đối chứng trên 2020--2025; nhưng các chênh lệch so với chiến lược truyền thống chưa có ý nghĩa thống kê, và ưu thế thu hẹp đáng kể trên tập cổ phiếu thanh khoản tốt.
 
 \section{Ý nghĩa thực tiễn}
 
@@ -108,7 +108,7 @@ Thứ nhất, luận văn cung cấp một \emph{khung phần mềm hoàn chỉn
 
 Thứ hai, kết quả về quan hệ tương quan dài hạn có giá trị độc lập với mô hình. Đối với người quản lý danh mục, mức độ liên kết của một cổ phiếu trên đồ thị tương quan dài hạn là một chỉ báo đơn giản, ổn định và có ý nghĩa về rủi ro: danh mục dồn vào các cổ phiếu liên kết chặt chịu mức sụt giảm lớn gấp nhiều lần. Các nhóm cổ phiếu tìm được từ dữ liệu cũng có thể dùng thay cho phân ngành chính thức khi cần kiểm soát mức tập trung của danh mục.
 
-Thứ ba, luận văn đề xuất một \emph{bộ kiểm tra tối thiểu} cho các nghiên cứu cùng loại. Trước khi kết luận về một mô hình học tăng cường trên dữ liệu chứng khoán Việt Nam, cần trả lời ba câu hỏi: kết quả có ổn định qua các hạt giống không; kết quả có nằm ngoài phân phối của danh mục ngẫu nhiên có cùng số mã không; và mô hình sau huấn luyện có khác mạng chưa huấn luyện không. Ba phép kiểm tra này rẻ về tính toán nhưng giúp xác định đúng nguồn gốc của kết quả.
+Thứ ba, luận văn đề xuất một \emph{bộ kiểm tra tối thiểu} cho các nghiên cứu cùng loại. Trước khi kết luận về một mô hình học tăng cường trên dữ liệu chứng khoán Việt Nam, cần trả lời ba câu hỏi: kết quả có ổn định qua các hạt giống không; kết quả có nằm ngoài phân phối của danh mục ngẫu nhiên có cùng số mã không; mô hình sau huấn luyện có khác mạng chưa huấn luyện không; và kết quả có còn khi đánh giá cuốn chiếu trên nhiều năm và khi giới hạn ở cổ phiếu thanh khoản tốt không. Các phép kiểm tra này rẻ về tính toán nhưng giúp xác định đúng nguồn gốc của kết quả.
 
 Thứ tư, luận văn chỉ ra một lưu ý quan trọng về dữ liệu: chuỗi giá chưa điều chỉnh theo sự kiện doanh nghiệp làm lợi suất của danh mục phân bổ đều trên 2024--2025 thấp đi hơn 7 điểm phần trăm. Đây là cảnh báo thực tế đối với mọi nghiên cứu kiểm thử ngược dùng dữ liệu giá thô của thị trường Việt Nam, nơi cổ tức bằng cổ phiếu và cổ phiếu thưởng rất phổ biến; phép đối chiếu chéo với hệ số P/B là một cách đơn giản để phát hiện vấn đề này.
 
@@ -119,24 +119,26 @@ Nghiên cứu có các hạn chế sau, xếp theo mức độ ảnh hưởng đ
 
 \textit{(1) Điều chỉnh giá mới ở mức gần đúng.} Phép điều chỉnh ở Mục~\ref{sec:adjust} chỉ nhận diện được các sự kiện có tỷ lệ pha loãng từ khoảng 16\% trở lên; các đợt phát hành tỷ lệ nhỏ không được xử lý và cổ tức tiền mặt chưa được cộng vào lợi suất. Lợi suất của các chiến lược dựa trên cổ phiếu vì vậy vẫn bị đánh giá thấp so với VN-Index. Cách khắc phục triệt để là dùng trực tiếp chuỗi giá đã điều chỉnh và dữ liệu cổ tức từ nhà cung cấp.
 
-\textit{(2) Giai đoạn kiểm tra ngắn và chỉ gồm một chế độ thị trường.} Hai năm với 23 kỳ tái cân bằng theo tháng cho sai số chuẩn của tỷ số Sharpe vào khoảng 0,7. Mọi so sánh giữa các chiến lược trong luận văn đều nằm trong phạm vi sai số này. Giai đoạn kiểm tra cũng không có thị trường giảm kéo dài.
+\textit{(2) Ưu thế phụ thuộc vào cổ phiếu kém thanh khoản.} Trên tập cổ phiếu thanh khoản tốt (Mục~\ref{sec:liquid}), tỷ số Sharpe của mô hình giảm từ 1,25 xuống 0,79, chênh lệch so với phân bổ đều giảm từ 0,35 xuống 0,14, ưu thế về độ biến động và mức sụt giảm biến mất, và hai danh mục Markowitz tốt hơn hẳn. Đây là hạn chế quan trọng nhất về khả năng áp dụng thực tế. Thí nghiệm này mới có 5 hạt giống và chưa so sánh đồ thị dài hạn với đồ thị ngắn hạn trên tập thanh khoản.
 
-\textit{(3) Quy mô huấn luyện nhỏ.} Mỗi lần huấn luyện chỉ gồm 12 vòng lặp trên một quỹ đạo 79 bước, tức 48 bước gradient, với 3--5 hạt giống cho mỗi cấu hình. Chưa có tìm kiếm siêu tham số hay phân tích độ nhạy theo ngưỡng tương quan và độ dài cửa sổ như đề cương dự kiến. Do đó nhận định về đóng góp hạn chế của học tăng cường là kết luận về cấu hình cụ thể này, chưa phải về lớp mô hình lai nói chung.
+\textit{(3) Chưa có ý nghĩa thống kê.} Giai đoạn kiểm tra chính hai năm cho sai số chuẩn của tỷ số Sharpe vào khoảng 0,75; kiểm định cuốn chiếu 71 tháng giảm con số này xuống khoảng 0,42, nhưng chênh lệch giữa mô hình và các chiến lược truyền thống vẫn nhỏ hơn sai số này. Kiểm định cuốn chiếu cũng chỉ có 3 hạt giống cho mỗi cấu hình.
 
-\textit{(4) Thiên lệch kẻ sống sót.} Chín mã đã hủy niêm yết hoặc không còn dữ liệu bị loại khỏi tập cổ phiếu; trong đó có những mã từng có vốn hóa lớn trước khi sụp đổ. Việc loại chúng làm lợi suất của mọi chiến lược dựa trên cổ phiếu cao hơn thực tế, và ảnh hưởng nhiều nhất đến giai đoạn huấn luyện 2016--2022.
+\textit{(4) Quy mô huấn luyện nhỏ.} Mỗi lần huấn luyện chỉ gồm 12 vòng lặp trên một quỹ đạo tối đa 79 bước, tức 48 bước gradient, với 3--10 hạt giống cho mỗi cấu hình. Chưa có tìm kiếm siêu tham số hay phân tích độ nhạy theo ngưỡng tương quan và độ dài cửa sổ như đề cương dự kiến. Do đó nhận định về đóng góp hạn chế của học tăng cường là kết luận về cấu hình cụ thể này, chưa phải về lớp mô hình lai nói chung.
 
-\textit{(5) Mô hình chi phí và thanh khoản đơn giản.} Phí 10 điểm cơ bản thấp hơn chi phí thực tế của nhà đầu tư tại Việt Nam khi tính cả phí môi giới, thuế bán và chênh lệch giá mua--bán. Mô hình không xét tác động giá, khối lượng khớp tối đa, biên độ dao động và chu kỳ thanh toán. Hạn chế này đặc biệt đáng kể vì chính sách có xu hướng chọn các mã kém thanh khoản (Mục~\ref{sec:graph-role}), nơi một danh mục quy mô vừa cũng khó giao dịch được 5\% tỷ trọng trong một phiên; đồng thời, giá của các mã ít giao dịch thay đổi thưa thớt, làm độ biến động đo được thấp hơn rủi ro thật và tỷ số Sharpe bị thổi phồng.
+\textit{(5) Thiên lệch kẻ sống sót.} Chín mã đã hủy niêm yết hoặc không còn dữ liệu bị loại khỏi tập cổ phiếu; trong đó có những mã từng có vốn hóa lớn trước khi sụp đổ. Việc loại chúng làm lợi suất của mọi chiến lược dựa trên cổ phiếu cao hơn thực tế, và ảnh hưởng nhiều nhất đến giai đoạn huấn luyện 2016--2022.
 
-\textit{(6) Một số giả định đơn giản hóa trong bài toán học.} Trạng thái nội tại của phần thưởng DSR và tỷ trọng kỳ trước không nằm trong trạng thái quan sát của tác tử, nên quá trình quyết định không hoàn toàn Markov; giá trị thiếu được thay bằng không trước khi chuẩn hóa theo lát cắt ngang; lãi suất phi rủi ro được lấy bằng không khi tính tỷ số Sharpe.
+\textit{(6) Mô hình chi phí đơn giản.} Phí 10 điểm cơ bản thấp hơn chi phí thực tế của nhà đầu tư tại Việt Nam khi tính cả phí môi giới, thuế bán và chênh lệch giá mua--bán. Mô hình không xét tác động giá, khối lượng khớp tối đa, biên độ dao động và chu kỳ thanh toán. Hạn chế này càng đáng kể vì chính sách có xu hướng chọn các mã kém thanh khoản (Mục~\ref{sec:graph-role}), nơi một danh mục quy mô vừa cũng khó giao dịch được 5\% tỷ trọng trong một phiên.
 
-\textit{(7) Phạm vi dữ liệu.} Chưa có dữ liệu tin tức; ngành nghề của doanh nghiệp chưa được dùng để xây dựng hay kiểm chứng đồ thị; biến lạm phát theo tháng chỉ được cập nhật khi ngày cuối tháng là ngày giao dịch.
+\textit{(7) Một số giả định đơn giản hóa trong bài toán học.} Trạng thái nội tại của phần thưởng DSR và tỷ trọng kỳ trước không nằm trong trạng thái quan sát của tác tử, nên quá trình quyết định không hoàn toàn Markov; giá trị thiếu được thay bằng không trước khi chuẩn hóa theo lát cắt ngang; lãi suất phi rủi ro được lấy bằng không khi tính tỷ số Sharpe.
+
+\textit{(8) Phạm vi dữ liệu.} Chưa có dữ liệu tin tức; ngành nghề của doanh nghiệp chưa được dùng để xây dựng hay kiểm chứng đồ thị; biến lạm phát theo tháng chỉ được cập nhật khi ngày cuối tháng là ngày giao dịch.
 
 \section{Hướng cải tiến}
 \label{sec:caitien}
 
 Từ các phân tích trên, có thể đề xuất các hướng cải tiến cụ thể, xếp theo thứ tự ưu tiên.
 
-\textit{Hoàn thiện dữ liệu và ràng buộc thanh khoản.} Dùng chuỗi giá đã điều chỉnh đầy đủ, cộng cổ tức tiền mặt vào lợi suất, bổ sung các mã đã hủy niêm yết cho đến ngày hủy, và thêm bộ lọc thanh khoản (chẳng hạn giá trị giao dịch bình quân tối thiểu) vào điều kiện đủ điều kiện. Bước cuối là phép kiểm chứng quan trọng nhất đối với kết quả của luận văn: cần xác nhận lợi ích của đồ thị dài hạn vẫn còn khi tập cổ phiếu chỉ gồm các mã giao dịch được.
+\textit{Hoàn thiện dữ liệu và ràng buộc thanh khoản.} Dùng chuỗi giá đã điều chỉnh đầy đủ, cộng cổ tức tiền mặt vào lợi suất, bổ sung các mã đã hủy niêm yết cho đến ngày hủy, và đưa ràng buộc thanh khoản trực tiếp vào bài toán (chẳng hạn giới hạn tỷ trọng theo giá trị giao dịch bình quân, hoặc phạt tỷ trọng ở mã kém thanh khoản trong phần thưởng). Kết quả ở Mục~\ref{sec:liquid} cho thấy đây là hướng ưu tiên hàng đầu: cần thiết kế lại mô hình sao cho lợi ích của đồ thị dài hạn được khai thác trên các mã giao dịch được, và so sánh đồ thị dài hạn với ngắn hạn trên tập này.
 
 \textit{Tăng lượng kinh nghiệm cho tác tử.} Với tái cân bằng theo tháng, có thể tạo nhiều quỹ đạo hơn bằng cách dùng các ngày quyết định lệch pha (bắt đầu từ mỗi ngày trong tháng), lấy mẫu ngẫu nhiên các đoạn con của giai đoạn huấn luyện, hoặc lấy mẫu ngẫu nhiên tập con cổ phiếu ở mỗi quỹ đạo. Số bước gradient cũng cần tăng lên đáng kể: hàng nghìn bước thay vì vài chục bước như hiện tại.
 
@@ -148,7 +150,7 @@ Từ các phân tích trên, có thể đề xuất các hướng cải tiến c
 
 \textit{Phát triển đồ thị dài hạn.} Đây là hướng có triển vọng nhất theo kết quả của luận văn. Có thể loại thành phần thị trường chung khỏi lợi suất trước khi tính tương quan để cạnh phản ánh quan hệ riêng giữa hai mã, như đã làm khi phân nhóm ở Mục~\ref{sec:groups}; dùng số lân cận cố định thay cho ngưỡng cố định để mật độ ổn định qua các chế độ thị trường; kéo dài cửa sổ lên hai đến ba năm hoặc dùng trọng số giảm dần theo thời gian; đưa độ lớn tương quan vào hệ số chú ý và thử GATv2 \cite{brody2022}; kết hợp đồ thị dài hạn với đồ thị ngắn hạn theo hướng của \cite{sun2024cikm}; và khảo sát các thước đo quan hệ dài hạn khác như đồng liên kết hay DTW.
 
-\textit{Đánh giá chặt chẽ hơn.} Dùng kiểm định tiến cuốn chiếu (walk-forward) trên nhiều giai đoạn kiểm tra, trong đó có năm 2022; tăng số hạt giống; báo cáo khoảng tin cậy bootstrap cho chênh lệch tỷ số Sharpe; và mô hình hóa chi phí phụ thuộc thanh khoản.
+\textit{Đánh giá chặt chẽ hơn.} Tăng số hạt giống cho kiểm định cuốn chiếu và kéo dài giai đoạn kiểm định khi có thêm dữ liệu; báo cáo khoảng tin cậy bootstrap cho chênh lệch tỷ số Sharpe; và mô hình hóa chi phí phụ thuộc thanh khoản.
 
 \section{Tổng kết chương}
-Chương này đã tổng hợp đánh giá tính khả thi của phương pháp. Mô hình lai GNN + RL trên đồ thị tương quan dài hạn khả thi về mặt kỹ thuật, có cơ sở thực nghiệm vững ở phần cấu trúc quan hệ, và cho danh mục có rủi ro thấp hơn thị trường trong giai đoạn kiểm tra. Lợi ích chủ yếu đến từ đồ thị dài hạn -- thông qua cơ chế đa dạng hóa -- trong khi đóng góp của học tăng cường còn hạn chế do lượng kinh nghiệm nhỏ. So với đề cương, luận văn đã hoàn thành kiến trúc lai, bộ dữ liệu ba nhóm đặc trưng, phần phân tích quan hệ dài hạn và phần so sánh thực nghiệm; chưa tích hợp tin tức và đã thay cách đo quan hệ dài hạn. Các hạn chế về thanh khoản, độ dài giai đoạn kiểm tra và quy mô huấn luyện đã được nêu rõ cùng các hướng khắc phục cụ thể.
+Chương này đã tổng hợp đánh giá tính khả thi của phương pháp. Mô hình lai GNN + RL trên đồ thị tương quan dài hạn khả thi về mặt kỹ thuật, có cơ sở thực nghiệm vững ở phần cấu trúc quan hệ, và cho kết quả không thấp hơn các mốc không lựa chọn trên cả giai đoạn kiểm tra chính lẫn kiểm định cuốn chiếu sáu năm. Lợi ích chủ yếu đến từ đồ thị dài hạn -- thông qua cơ chế đa dạng hóa; đóng góp của học tăng cường chỉ thấy được khi mô hình được huấn luyện lại hằng năm. Ưu thế của mô hình thu hẹp đáng kể khi giới hạn ở cổ phiếu thanh khoản tốt. So với đề cương, luận văn đã hoàn thành kiến trúc lai, bộ dữ liệu ba nhóm đặc trưng, phần phân tích quan hệ dài hạn và phần so sánh thực nghiệm; chưa tích hợp tin tức và đã thay cách đo quan hệ dài hạn. Các hạn chế về thanh khoản, ý nghĩa thống kê và quy mô huấn luyện đã được nêu rõ cùng các hướng khắc phục cụ thể.
