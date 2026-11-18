@@ -40,11 +40,11 @@ def optimise(mu, S, kind):
     return w / w.sum()
 
 
-def run(freq, clean=False):
-    df = C.load_df(); cd = C.CachedData(freq=freq)
+def run(freq, clean=False, dates=None, graph='A60'):
+    df = C.load_df(); cd = C.CachedData(graph=graph, freq=freq)
     # clean=True: quyết định vẫn dựa trên dữ liệu gốc, chỉ lãi/lỗ thực hiện được tính trên lợi suất đã hiệu chỉnh
     df_eval = df
-    dates = C.quiet_split(df, freq)['test']
+    dates = dates if dates is not None else C.quiet_split(df, freq)['test']
     ppy = 52 if freq == 'W' else 12
     wide = df.pivot(index='date', columns='symbol', values='log_return')
     mom = df.pivot(index='date', columns='symbol', values='momentum_60d')
