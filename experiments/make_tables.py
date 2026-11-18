@@ -92,7 +92,7 @@ write('features_desc', body)
 import pickle, glob
 body = ("\\begin{tabular}{@{}lccccccc@{}}\n\\toprule\nCấu hình & Hạt giống & Vòng chọn & Sharpe KĐ & Sharpe KT & Lợi suất (\\%) & MDD (\\%) & Calmar \\\\\n\\midrule\n")
 for c in ['tf_gat_long', 'full', 'tf_gcn_long', 'tf_nograph', 'lstm_gat_long', 'lstm_nograph', 'gru_nograph']:
-    fs = sorted(glob.glob(os.path.join(C.RESULTS, f'{c}_seed*.pkl')))
+    fs = sorted(glob.glob(os.path.join(C.RESULTS, f'{c}_seed*.pkl')), key=lambda x: int(x.rsplit('seed', 1)[1][:-4]))
     for i, fn in enumerate(fs):
         r = pickle.load(open(fn, 'rb')); m = r['test']['metrics']
         import numpy as np

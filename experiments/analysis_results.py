@@ -12,7 +12,9 @@ NAMES = {'tf_gat_long': 'Transformer + GAT, đồ thị dài hạn (đề xuất
          'gru_nograph': 'GRU, không đồ thị', 'tf_gcn': 'Transformer + GCN, đồ thị ngắn hạn'}
 runs = {}
 for f in sorted(glob.glob(os.path.join(C.RESULTS, '*_seed*.pkl'))):
-    r = pickle.load(open(f, 'rb')); runs.setdefault(r['config'], {})[r['seed']] = r
+    r = pickle.load(open(f, 'rb'))
+    if r['config'] not in NAMES: continue  # tập thanh khoản: xem analysis_extra.py
+    runs.setdefault(r['config'], {})[r['seed']] = r
 base = pickle.load(open(os.path.join(C.RESULTS, 'baselines.pkl'), 'rb'))
 df = C.load_df()
 S = {'n_runs': {k: sorted(v) for k, v in runs.items()}}

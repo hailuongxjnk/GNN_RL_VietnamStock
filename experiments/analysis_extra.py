@@ -21,7 +21,7 @@ def lo_se(r, ppy=12):
 wf = {}
 for fn in glob.glob(os.path.join(R, 'wf', '*.pkl')):
     r = pickle.load(open(fn, 'rb')); wf.setdefault(r['config'], {}).setdefault(r['seed'], {})[r['year']] = r
-bw = pickle.load(open(os.path.join(R, 'baselines_wf.pkl'), 'rb'))['M']
+bw = pickle.load(open(os.path.join(R, 'baselines_wf.pkl'), 'rb'))
 dates = list(bw['_dates']); years = sorted(set(d.year for d in dates))
 def by_year(rets, ds):
     s = pd.Series(rets, index=pd.to_datetime(ds)); return {y: s[s.index.year == y].values for y in years}
@@ -132,7 +132,7 @@ if 'tf_gat_long' in S['wf']:
 
 # ───────── (B) tập thanh khoản ─────────
 liq = [pickle.load(open(fn, 'rb')) for fn in sorted(glob.glob(os.path.join(R, 'tf_gat_long_liq_seed*.pkl')))]
-bl = pickle.load(open(os.path.join(R, 'baselines_liq.pkl'), 'rb'))['M'] if os.path.exists(os.path.join(R, 'baselines_liq.pkl')) else None
+bl = pickle.load(open(os.path.join(R, 'baselines_liq.pkl'), 'rb')) if os.path.exists(os.path.join(R, 'baselines_liq.pkl')) else None
 if liq and bl:
     S['liq'] = {'model': stats([r['test']['metrics'] for r in liq]), 'n': len(liq),
                 'turnover': float(np.mean([np.mean(r['test']['turnover'][1:]) for r in liq])),

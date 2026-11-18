@@ -231,6 +231,56 @@ Bảng~\ref{tab:behaviour} tóm tắt các đặc điểm của danh mục do m�
 
 \textit{Lựa chọn nhất quán giữa các lần huấn luyện và ổn định theo thời gian.} Hai hạt giống bất kỳ trùng nhau trung bình 40\% số mã nắm giữ tại cùng một thời điểm, trong khi hai danh mục ngẫu nhiên chỉ trùng nhau khoảng 12\%. Giữa hai tháng liên tiếp, 56--85\% số mã được giữ lại. Trong hai năm kiểm tra, 5 hạt giống đã nắm giữ tổng cộng 130 mã khác nhau trên khoảng 180 mã từng đủ điều kiện, tức mô hình không dồn vào một nhóm nhỏ cố định. Tính nhất quán này phù hợp với phân tích ở Mục~\ref{sec:graph-role}: lựa chọn của mô hình được định hình bởi cấu trúc đồ thị dài hạn, vốn giống nhau giữa các hạt giống và thay đổi chậm theo thời gian.
 
+\section{Kiểm định cuốn chiếu trên giai đoạn 2020--2025}
+\label{sec:walkforward}
+
+Mọi kết quả ở các mục trước dựa trên một lần chia dữ liệu duy nhất, với tập kiểm tra hai năm. Hai năm là quá ngắn để phân biệt kỹ năng với may rủi (Mục~\ref{sec:reliability}), và một giai đoạn kiểm tra duy nhất có thể tình cờ thuận lợi cho phương pháp. Mục này đánh giá lại mô hình bằng quy trình \emph{kiểm định cuốn chiếu} (walk-forward), vốn là cách đánh giá chuẩn cho các chiến lược đầu tư.
+
+\subsection{Thiết kế}
+
+Với mỗi năm $Y$ từ 2020 đến 2025, mô hình được huấn luyện lại từ đầu trên các ngày quyết định đến hết năm $Y-2$, chọn mô hình theo tỷ số Sharpe trên năm $Y-1$, rồi được dùng để ra quyết định trong suốt năm $Y$. Như vậy mọi quyết định trong năm $Y$ chỉ dựa vào dữ liệu trước năm $Y$, và tập huấn luyện lớn dần theo thời gian (từ 31 ngày quyết định cho năm 2020 đến 91 ngày cho năm 2025). Ghép sáu năm kiểm tra liên tiếp cho một chuỗi lợi suất ngoài mẫu gồm 71 tháng, từ 01/2020 đến 12/2025, bao trùm nhiều trạng thái thị trường khác nhau: cú sốc COVID-19 đầu năm 2020, giai đoạn tăng mạnh năm 2021, giai đoạn suy giảm sâu năm 2022 và giai đoạn phục hồi 2023--2025.
+
+Hai cấu hình được đánh giá là mô hình với đồ thị dài hạn (250 phiên) và với đồ thị ngắn hạn (60 phiên), mỗi cấu hình 3 hạt giống, tổng cộng $2\times6\times3=36$ lần huấn luyện. Mọi siêu tham số giữ nguyên như Bảng~\ref{tab:hyper}; không có tham số nào được điều chỉnh sau khi xem kết quả. Các chiến lược đối chứng và 30 mạng chưa huấn luyện được tính trên đúng 71 tháng này.
+
+\subsection{Kết quả}
+
+Bảng~\ref{tab:wftotal} trình bày kết quả trên toàn bộ 71 tháng, Bảng~\ref{tab:wfyear} trình bày tỷ số Sharpe theo từng năm và Hình~\ref{fig:wf} trình bày đường lợi suất tích lũy.
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{Kiểm định cuốn chiếu: kết quả ngoài mẫu trên 71 tháng, 01/2020--12/2025. Mô hình: trung bình $\pm$ độ lệch chuẩn trên 3 hạt giống; mạng chưa huấn luyện: 30 hạt giống.}
+\label{tab:wftotal}
+\begin{adjustbox}{max width=\textwidth}\input{tables/wf_total}\end{adjustbox}
+\end{table}
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{Kiểm định cuốn chiếu: tỷ số Sharpe quy năm theo từng năm kiểm tra (trung bình trên các hạt giống). Cột cuối tính trên cả chuỗi 71 tháng.}
+\label{tab:wfyear}
+\begin{adjustbox}{max width=\textwidth}\input{tables/wf_sharpe}\end{adjustbox}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.95\textwidth]{equity_walkforward.pdf}
+\caption{Lợi suất tích lũy ngoài mẫu của kiểm định cuốn chiếu, 01/2020--12/2025. Dải màu lam: khoảng từ hạt giống thấp nhất đến cao nhất của mô hình với đồ thị dài hạn. Vạch dọc: thời điểm mô hình được huấn luyện lại.}
+\label{fig:wf}
+\end{figure}
+
+\textit{Mô hình duy trì được kết quả trên giai đoạn dài hơn.} Trên 71 tháng, mô hình với đồ thị dài hạn đạt tỷ số Sharpe $0{,}76\pm0{,}15$ và lợi suất tích lũy trung bình 119,9\% (tăng trưởng kép 14,0\%/năm), so với 0,55 và 82,7\% của phân bổ đều, 0,54 và 76,0\% của VN-Index, 0,49 và 51,5\% của danh mục trung bình--phương sai. Độ biến động (19,4\%) và mức sụt giảm tối đa ($-34{,}6\%$) thấp hơn phân bổ đều (23,7\%; $-43{,}6\%$); mức sụt giảm tương đương VN-Index ($-32{,}2\%$). Trên giai đoạn dài này, mô hình có tỷ số Sharpe và tỷ số Calmar cao nhất trong mọi chiến lược được so sánh. Hai trong ba hạt giống (0,81 và 0,89) vượt phân vị 95\% của danh mục 20 mã ngẫu nhiên (0,77); hạt giống còn lại (0,59) nằm quanh trung vị (0,61).
+
+Cần lưu ý rằng tỷ số Sharpe của mọi chiến lược trên 2020--2025 thấp hơn nhiều so với trên 2024--2025, vì giai đoạn này chứa năm 2022 với mức giảm trên 30\%. Thứ hạng giữa các chiến lược cũng khác: VN-Index và danh mục trung bình--phương sai, vốn là hai mốc mạnh nhất trên 2024--2025, không còn vượt trội trên giai đoạn dài hơn. Điều này minh họa nhận định ở Mục~\ref{sec:reliability} rằng kết quả trên một giai đoạn kiểm tra hai năm phụ thuộc nhiều vào giai đoạn đó.
+
+\textit{Kết quả theo từng năm.} Bảng~\ref{tab:wfyear} cho thấy mô hình có tỷ số Sharpe cao hơn phân bổ đều trong ba năm (2020, 2023, 2024) và thấp hơn trong hai năm (2021, 2025). Năm 2022 cần được đọc cẩn thận: tỷ số Sharpe của mô hình ($-3{,}00$) âm hơn của phân bổ đều ($-1{,}97$), nhưng đó là do độ biến động của mô hình thấp (12\% so với khoảng 30\%); xét theo lợi suất, mô hình giảm 31,2\% trong khi phân bổ đều giảm 41,0\%. Khi lợi suất âm, độ biến động thấp làm tỷ số Sharpe âm hơn, nên tỷ số Sharpe theo năm không phải là thước đo phù hợp cho năm thị trường giảm. Mô hình không vượt trội ở mọi năm; lợi thế trên toàn giai đoạn đến từ việc giảm thiệt hại trong năm 2022 và lợi suất tốt hơn trong 2023--2024.
+
+\textit{Đồ thị dài hạn tốt hơn đồ thị ngắn hạn một cách nhất quán.} Trên 71 tháng, đồ thị ngắn hạn cho tỷ số Sharpe $0{,}50\pm0{,}04$ và lợi suất 64,7\%, thấp hơn đồ thị dài hạn ở cả ba hạt giống (chênh lệch 0,31; 0,41 và 0,05) và ở năm trong sáu năm. Mức luân chuyển của đồ thị dài hạn cũng thấp hơn (0,68 so với 1,06 mỗi tháng). Như vậy kết luận chính của Mục~\ref{sec:graph-role} -- quan hệ tương quan dài hạn là cấu trúc đồ thị phù hợp hơn -- không chỉ đúng trên giai đoạn 2024--2025 mà còn đúng trên một giai đoạn dài gấp ba lần với nhiều trạng thái thị trường khác nhau.
+
+\textit{Huấn luyện có đóng góp rõ hơn trong kiểm định cuốn chiếu.} Khác với giai đoạn 2024--2025 (Mục~\ref{sec:training-analysis}), trên 71 tháng mô hình đã huấn luyện vượt rõ mạng chưa huấn luyện: $0{,}76\pm0{,}15$ so với $0{,}48\pm0{,}14$ với đồ thị dài hạn, và $0{,}50\pm0{,}04$ so với $0{,}33\pm0{,}19$ với đồ thị ngắn hạn. Với đồ thị dài hạn, chênh lệch 0,28 lớn gấp khoảng ba lần sai số chuẩn của nó; cả ba hạt giống đã huấn luyện đều cao hơn trung bình của 30 mạng chưa huấn luyện, và mạng chưa huấn luyện có mức sụt giảm tối đa lớn hơn hẳn ($-45{,}1\%$ so với $-34{,}6\%$). Một cách giải thích hợp lý là ở kiểm định cuốn chiếu, mô hình được huấn luyện lại hằng năm trên dữ liệu gần nhất và được chọn theo năm liền trước, nên quá trình huấn luyện có cơ hội thích nghi với thay đổi của thị trường. Đây là bằng chứng mạnh nhất trong luận văn rằng quá trình học tăng cường có đóng góp riêng ngoài kiến trúc và đồ thị, dù với 3 hạt giống bằng chứng này vẫn cần được củng cố thêm.
+
+\textit{Ý nghĩa thống kê.} Với 71 quan sát hằng tháng, sai số chuẩn của tỷ số Sharpe theo công thức~\eqref{eq:lo} vào khoảng 0,42 -- nhỏ hơn gần một nửa so với giai đoạn hai năm nhưng vẫn lớn hơn chênh lệch 0,21 giữa mô hình và phân bổ đều. Thống kê $t$ của chênh lệch lợi suất hằng tháng so với phân bổ đều là 0,49; $-0{,}45$ và 1,02 ở ba hạt giống. Như vậy lợi thế của mô hình so với phân bổ đều vẫn chưa có ý nghĩa thống kê, và luận văn giữ nguyên kết luận ở mức khả thi. Các so sánh \emph{giữa các cấu hình} (đồ thị dài hạn so với ngắn hạn, đã huấn luyện so với chưa huấn luyện) thì đáng tin cậy hơn, vì chúng được lặp lại qua nhiều hạt giống và nhiều năm.
+
 \section{Tổng kết chương}
 
 Chương này đã đánh giá tính khả thi của mô hình lai trên dữ liệu thị trường Việt Nam. Về tính đúng đắn, mô hình vận hành đầu--cuối với tập cổ phiếu thay đổi theo thời gian và luôn tạo ra danh mục hợp lệ. Về hiệu quả, với đồ thị tương quan dài hạn, mô hình đạt tỷ số Sharpe $1{,}32\pm0{,}24$ và lợi suất 36,8\% trên giai đoạn 2024--2025, cao hơn phân bổ đều và danh mục ngẫu nhiên ở cả 5 hạt giống, với độ biến động và mức sụt giảm thấp hơn thị trường; mô hình chưa vượt VN-Index và danh mục trung bình--phương sai, và các chênh lệch so với những mốc này nằm trong sai số thống kê của giai đoạn kiểm tra hai năm. Về vai trò của các thành phần, đồ thị tương quan dài hạn là yếu tố có ảnh hưởng lớn và nhất quán nhất: nó nâng gần gấp đôi tỷ số Sharpe so với đồ thị ngắn hạn, giảm khoảng một phần ba độ biến động so với không dùng đồ thị, và tác động này đã xuất hiện ngay ở mạng chưa huấn luyện. Ngược lại, đóng góp của quá trình huấn luyện PPO còn nhỏ do lượng kinh nghiệm hạn chế, và chính sách hiện mới đóng vai trò chọn cổ phiếu chứ chưa phân bổ tỷ trọng. Chương tiếp theo thảo luận ý nghĩa của các kết quả này.
