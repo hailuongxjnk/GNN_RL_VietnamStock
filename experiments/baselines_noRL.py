@@ -4,7 +4,8 @@ quyết định tại d chỉ dùng thông tin trước d, nắm giữ trong (d,
 
   (1) 'Bậc thấp top-20'  — quy tắc không học trên đồ thị dài hạn A250: 20 mã đủ điều kiện có ít cạnh nhất
                            (ít liên kết tương quan nhất), tỷ trọng đều. Đây là cách diễn đạt bằng một dòng
-                           hành vi mà mô hình đã học được (Mục 4.5), nên dùng để kiểm tra PPO có thêm gì không.
+                           hành vi mà mô hình đã học được (Mục 4.5). LƯU Ý: bản này phá thế hòa theo thứ tự
+                           chữ cái (~30 mã bậc 0) nên KHÔNG dùng trong luận văn; xem lowdeg_variants.py.
   (2) 'Vốn hoá (tự dựng)' — danh mục trọng số vốn hoá trên các mã đủ điều kiện, mô phỏng VN-Index.
       Vốn hoá lấy từ Bloomberg (Total_MKC.xlsx, cập nhật 6 tháng/lần), ước lượng tại d bằng vốn hoá ở kỳ
       công bố gần nhất trước d nhân với biến động giá từ kỳ đó đến d.

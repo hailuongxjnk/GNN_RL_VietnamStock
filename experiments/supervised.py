@@ -11,7 +11,7 @@ kém đi không? Hai phương án thay thế, cùng tập cổ phiếu, cùng ph
                Chọn mô hình theo tỷ số Sharpe trên tập kiểm định (tắt dropout). Danh mục: 20 mã điểm cao nhất,
                tỷ trọng đều 5%.
   (2) 'lowdeg' — QUY TẮC KHÔNG HỌC trên đồ thị: chọn 20 mã có bậc nhỏ nhất trong đồ thị dài hạn, tỷ trọng đều
-               (xem baselines_noRL.py; tất định, không cần hạt giống).
+               (xem lowdeg_variants.py, có xử lý thế hòa).
 
 Chạy trên cả cách chia chính (kiểm tra 2024–2025, 10 hạt giống) và kiểm định cuốn chiếu 2020–2025 (8 hạt giống).
 Code gốc không bị sửa. Kết quả: results/sup_seed*.pkl, results/wf/sup_y*_seed*.pkl

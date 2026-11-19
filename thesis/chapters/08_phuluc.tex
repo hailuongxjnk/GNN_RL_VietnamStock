@@ -31,6 +31,8 @@ Tệp & Nội dung \\
 \texttt{experiments/baselines\_structural.py} & Các quy tắc chọn cổ phiếu theo cấu trúc đồ thị; đặc điểm của cổ phiếu được chọn. \\
 \texttt{experiments/run\_extra.py}, \texttt{run\_extra2.py}, \texttt{baselines\_extra.py} & Kiểm định cuốn chiếu 2020--2025, thêm hạt giống, thí nghiệm trên tập thanh khoản (Mục~\ref{sec:walkforward}, \ref{sec:liquid}). \\
 \texttt{experiments/supervised.py}, \texttt{lowdeg\_variants.py}, \texttt{baselines\_noRL.py}, \texttt{analysis\_noRL.py} & Phương án không dùng học tăng cường (học có giám sát, quy tắc bậc thấp) và chỉ số vốn hóa bỏ họ Vingroup (Mục~\ref{sec:norl}, \ref{sec:vingroup}). \\
+\texttt{experiments/residual.py} & PPO học phần điều chỉnh quanh quy tắc bậc thấp (Mục~\ref{sec:norl}). \\
+\texttt{experiments/robustness2.py} & Độ nhạy theo cửa sổ và ngưỡng, bootstrap khối dừng, độ nhạy theo chi phí (Mục~\ref{sec:robust2}). \\
 \texttt{experiments/build\_liquid\_cache.py} & Dựng tập cổ phiếu thanh khoản tốt. \\
 \texttt{experiments/analysis\_*.py}, \texttt{make\_tables.py} & Tổng hợp kết quả, vẽ hình và sinh bảng của luận văn. \\
 \bottomrule
@@ -62,7 +64,9 @@ python baselines_extra.py liq60 # mang chua huan luyen, A60, thanh khoan
 python supervised.py          # thay PPO bang hoc co giam sat
 python lowdeg_variants.py     # quy tac bac thap tren cac do thi
 python baselines_noRL.py      # chi so von hoa bo ho Vingroup
+python residual.py 3          # PPO hoc phan dieu chinh
 python analysis_noRL.py       # bang ket qua
+python robustness2.py         # do nhay, bootstrap, chi phi
 python analysis_extra.py       # bang va hinh cuon chieu, thanh khoan
 \end{verbatim}}
 

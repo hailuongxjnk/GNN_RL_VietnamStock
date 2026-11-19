@@ -1,9 +1,9 @@
 """
 Học tăng cường "học phần điều chỉnh" quanh quy tắc bậc thấp (Mục 4.10).
 
-Mục 4.10 cho thấy quy tắc không học "chọn 20 mã ít liên kết nhất trên đồ thị dài hạn" bằng hoặc hơn mô hình
-PPO học từ đầu. Thí nghiệm này hỏi: nếu cho PPO XUẤT PHÁT từ quy tắc đó và chỉ học phần điều chỉnh,
-nó có vượt được quy tắc không?
+Mục 4.10 so sánh PPO học từ đầu với quy tắc không học "chọn các mã ít liên kết nhất trên đồ thị dài hạn"
+(lowdeg_variants.py): PPO hơn quy tắc trên tập đầy đủ nhưng kém hẳn trên tập thanh khoản. Thí nghiệm này hỏi:
+nếu cho PPO XUẤT PHÁT từ quy tắc đó và chỉ học phần điều chỉnh, nó có vượt được cả hai không?
 
 Thiết kế (không sửa code gốc):
   - Mạng đồ thị PriorGAT: giống GAT gốc, nối thêm một cột "điểm ưu tiên" p_i = -(bậc_i chuẩn hoá z
