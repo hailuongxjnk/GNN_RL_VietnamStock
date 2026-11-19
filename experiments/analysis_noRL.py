@@ -36,6 +36,22 @@ nr = pickle.load(open(os.path.join(R, 'baselines_noRL.pkl'), 'rb'))
 bl = pickle.load(open(os.path.join(R, 'baselines.pkl'), 'rb'))['M']
 bw = pickle.load(open(os.path.join(R, 'baselines_wf.pkl'), 'rb'))
 
+# ── học tăng cường xuất phát từ quy tắc (residual.py) ──
+rs = seeds('resid_seed*.pkl'); rsl = seeds('resid_liq_seed*.pkl'); wfr = wf_chain('resid')
+RESID_TEST = mrow('PPO học phần điều chỉnh quanh quy tắc', [o['test']['metrics'] for o in rs], np.mean([np.mean(o['test']['turnover'][1:]) for o in rs]), len(rs)) if rs else ''
+RESID_WF = mrow('PPO học phần điều chỉnh quanh quy tắc', [C.perf_metrics(v['returns'], 12) for v in wfr.values()], np.mean([v['turn'] for v in wfr.values()]), len(wfr)) if wfr else ''
+if rs:
+    S['resid'] = {'test': stats([o['test']['metrics']['sharpe'] for o in rs]), 'test_start': stats([o['start']['metrics']['sharpe'] for o in rs]),
+                  'test_values': [o['test']['metrics']['sharpe'] for o in rs], 'g': [o['g'] for o in rs],
+                  'test_cum': stats([o['test']['metrics']['cum_return'] for o in rs]),
+                  'wf': stats([C.perf_metrics(v['returns'], 12)['sharpe'] for v in wfr.values()]), 'n_wf': len(wfr),
+                  'liq': stats([o['test']['metrics']['sharpe'] for o in rsl]), 'liq_start': stats([o['start']['metrics']['sharpe'] for o in rsl]), 'n_liq': len(rsl)}
+    ws = {}
+    for fn in glob.glob(os.path.join(R, 'wf', 'resid_y*_seed*.pkl')):
+        o = pickle.load(open(fn, 'rb')); ws.setdefault(o['seed'], {})[o['year']] = o['start']['returns']
+    st = [sum((v[y] for y in years), []) for v in ws.values() if all(y in v for y in years)]
+    S['resid']['wf_start'] = stats([C.perf_metrics(r, 12)['sharpe'] for r in st]) if st else None
+
 # ── giai đoạn chính 2024–2025 ──
 ppo = seeds('tf_gat_long_seed*.pkl'); ppo60 = seeds('full_seed*.pkl'); sup = seeds('sup_seed*.pkl')
 un = pickle.load(open(os.path.join(R, 'untrained_A250.pkl'), 'rb'))
@@ -43,8 +59,9 @@ tb = head
 tb += mrow('\\textbf{Transformer + GAT + PPO} (đề xuất)', [o['test']['metrics'] for o in ppo], np.mean([np.mean(o['test']['turnover'][1:]) for o in ppo]), len(ppo))
 tb += mrow('Transformer + GAT + học có giám sát', [o['test']['metrics'] for o in sup], np.mean([np.mean(o['test']['turnover'][1:]) for o in sup]), len(sup))
 tb += mrow('Transformer + GAT chưa huấn luyện', [o['metrics'] for o in un], np.mean([o['turnover'] for o in un]), len(un))
-tb += mrow('Quy tắc bậc thấp, đồ thị dài hạn', [ld['test_A250']['metrics']], np.mean(ld['test_A250']['turnover'][1:]), 1)
-tb += mrow('Quy tắc bậc thấp, đồ thị ngắn hạn', [ld['test_A60']['metrics']], np.mean(ld['test_A60']['turnover'][1:]), 1)
+tb += RESID_TEST
+tb += mrow('Quy tắc bậc thấp, đồ thị dài hạn', [ld['test_A250']['all']['metrics']], np.mean(ld['test_A250']['all']['turnover'][1:]), 1)
+tb += mrow('Quy tắc bậc thấp, đồ thị ngắn hạn', [ld['test_A60']['all']['metrics']], np.mean(ld['test_A60']['all']['turnover'][1:]), 1)
 tb += mrow('Phân bổ đều (1/N)', [bl['Equal-weight']['metrics']], np.mean(bl['Equal-weight']['turnover'][1:]), 1)
 tb += "\\bottomrule\n\\end{tabular}\n"
 open(os.path.join(TAB, 'norl_test.tex'), 'w').write(tb)
@@ -55,11 +72,11 @@ S['test'] = {'ppo': stats([o['test']['metrics']['sharpe'] for o in ppo]),
              'sup_turn': float(np.mean([np.mean(o['test']['turnover'][1:]) for o in sup])),
              'sup_val': stats([o['best_val_sharpe'] for o in sup]),
              'sup_beat_ew': int(sum(o['test']['metrics']['sharpe'] > bl['Equal-weight']['metrics']['sharpe'] for o in sup)),
-             'lowdeg_A250': ld['test_A250']['metrics'], 'lowdeg_A60': ld['test_A60']['metrics']}
+             'lowdeg_A250': ld['test_A250']['all']['metrics'], 'lowdeg_A60': ld['test_A60']['all']['metrics']}
 # trùng lặp mã giữa mô hình PPO và quy tắc bậc thấp
 ov = []
 for o in ppo:
-    for w, sy, h in zip(o['test']['weights'], o['test']['symbols'], ld['test_A250']['held']):
+    for w, sy, h in zip(o['test']['weights'], o['test']['symbols'], ld['test_A250']['all']['held']):
         ov.append(len(set(np.array(sy)[w > 0]) & set(h)) / 20)
 S['test']['overlap_ppo_lowdeg'] = float(np.mean(ov))
 
@@ -71,17 +88,20 @@ tb = head
 tb += mrow('\\textbf{Transformer + GAT + PPO} (đề xuất)', pm(wfp), np.mean([v['turn'] for v in wfp.values()]), len(wfp))
 tb += mrow('Transformer + GAT + học có giám sát', pm(wfs), np.mean([v['turn'] for v in wfs.values()]), len(wfs))
 tb += mrow('Transformer + GAT chưa huấn luyện', [o['metrics'] for o in unw], np.mean([o['turnover'] for o in unw]), len(unw))
-tb += mrow('Quy tắc bậc thấp, đồ thị dài hạn', [ld['wf_A250']['metrics']], np.mean(ld['wf_A250']['turnover'][1:]), 1)
-tb += mrow('Quy tắc bậc thấp, đồ thị ngắn hạn', [ld['wf_A60']['metrics']], np.mean(ld['wf_A60']['turnover'][1:]), 1)
+tb += RESID_WF
+tb += mrow('Quy tắc bậc thấp, đồ thị dài hạn', [ld['wf_A250']['all']['metrics']], np.mean(ld['wf_A250']['all']['turnover'][1:]), 1)
+tb += mrow('Quy tắc bậc thấp, đồ thị ngắn hạn', [ld['wf_A60']['all']['metrics']], np.mean(ld['wf_A60']['all']['turnover'][1:]), 1)
 tb += mrow('Phân bổ đều (1/N)', [bw['Equal-weight']['metrics']], np.mean(bw['Equal-weight']['turnover'][1:]), 1)
 tb += "\\bottomrule\n\\end{tabular}\n"
 open(os.path.join(TAB, 'norl_wf.tex'), 'w').write(tb)
 S['wf'] = {'ppo': stats([m['sharpe'] for m in pm(wfp)]), 'sup': stats([m['sharpe'] for m in pm(wfs)]),
            'sup_values': {int(k): C.perf_metrics(v['returns'], 12)['sharpe'] for k, v in wfs.items()},
            'sup_cum': stats([m['cum_return'] for m in pm(wfs)]), 'sup_mdd': stats([m['max_drawdown'] for m in pm(wfs)]),
-           'n_sup': len(wfs), 'lowdeg_A250': ld['wf_A250']['metrics'], 'lowdeg_A60': ld['wf_A60']['metrics']}
+           'n_sup': len(wfs), 'lowdeg_A250': ld['wf_A250']['all']['metrics'], 'lowdeg_A60': ld['wf_A60']['all']['metrics']}
 ens = np.mean([v['returns'] for v in wfs.values()], axis=0); S['wf']['sup_ensemble'] = C.perf_metrics(ens, 12)
-S['liq'] = {'lowdeg_A250': ld['liq_A250']['metrics'], 'lowdeg_A60': ld['liq_A60']['metrics']}
+S['liq'] = {'lowdeg_A250': ld['liq_A250']['all']['metrics'], 'lowdeg_A60': ld['liq_A60']['all']['metrics']}
+for k in ld: S.setdefault('lowdeg_random', {})[k] = [float(np.percentile([m['sharpe'] for m in ld[k]['random']['metrics']], q)) for q in (5, 50, 95)]
+S['lowdeg_nheld'] = {k: float(np.mean(ld[k]['all']['n_held'])) for k in ld}
 
 # ── bảng chỉ số bỏ họ Vingroup ──
 ppo_m = [o['test']['metrics'] for o in ppo]

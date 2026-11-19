@@ -39,7 +39,7 @@ Luận văn so sánh mô hình đề xuất với ba nhóm đối chứng.
   \item \textbf{Không đồ thị:} chỉ giữ khuyên trong ma trận kề, nên mỗi cổ phiếu không nhận thông tin từ cổ phiếu khác.
   \item \textbf{GCN thay cho GAT:} trọng số gộp cố định theo độ lớn tương quan thay cho trọng số chú ý học được.
   \item \textbf{LSTM thay cho Transformer} ở bộ mã hóa thời gian.
-  \item \textbf{LSTM thuần} và \textbf{GRU thuần:} bộ mã hóa hồi quy không dùng đồ thị, với cùng tác tử PPO -- tương ứng với các mô hình học sâu chuỗi thời gian đơn lẻ nêu trong đề cương.
+  \item \textbf{LSTM thuần} và \textbf{GRU thuần:} bộ mã hóa hồi quy không dùng đồ thị, với cùng tác tử PPO -- đại diện cho các mô hình học sâu chuỗi thời gian đơn lẻ.
 \end{itemize}
 Mô hình đề xuất và biến thể đồ thị ngắn hạn được huấn luyện với 10 hạt giống; các biến thể còn lại với 3 hạt giống.
 
@@ -356,6 +356,53 @@ Mô hình đề xuất chưa vượt VN-Index trên giai đoạn 2024--2025 (M�
 \textit{Kết quả.} Bảng~\ref{tab:vingroup} cho thấy trên 2024--2025, chỉ số vốn hóa tự dựng đạt tỷ số Sharpe 1,48 và lợi suất 47,7\%, gần với VN-Index (1,45; 50,4\%). Khi loại họ Vingroup, tỷ số Sharpe giảm xuống 0,95 và lợi suất giảm xuống 29,1\%, thấp hơn mô hình đề xuất (1,25; 42,2\%). Trong khi đó, loại họ Vingroup gần như không ảnh hưởng đến danh mục phân bổ đều (0,83 so với 0,90), vì nhóm này chỉ chiếm vài phần trăm tỷ trọng của danh mục đó. Mô hình đề xuất cũng không dựa vào nhóm này: tỷ trọng trung bình của họ Vingroup trong danh mục của mô hình chỉ từ 0,4\% đến 5,9\% tùy hạt giống. Như vậy, phần lớn khoảng cách giữa mô hình và VN-Index trên 2024--2025 đến từ một nhóm nhỏ cổ phiếu vốn hóa lớn mà một danh mục đa dạng hóa bị giới hạn tỷ trọng 10\% mỗi mã khó nắm giữ đủ.
 
 Trên giai đoạn 2020--2025, việc loại họ Vingroup gần như không thay đổi kết quả của chỉ số vốn hóa tự dựng (0,39 so với 0,42), cho thấy ảnh hưởng của nhóm này tập trung vào năm 2025. Cũng cần lưu ý rằng trên giai đoạn dài này, chỉ số tự dựng có lợi suất thấp hơn VN-Index (48,4\% so với 76,0\%) dù tương quan cao, vì nó chỉ gồm các cổ phiếu đủ điều kiện trong tập dữ liệu và chưa tính cổ tức. Kết quả này vì vậy chỉ nên được hiểu là bằng chứng định tính rằng VN-Index trên 2024--2025 bị chi phối bởi một nhóm nhỏ cổ phiếu lớn, chứ không phải một phép so sánh chính xác với một chỉ số chính thức.
+
+\section{Kiểm tra độ vững: cấu trúc đồ thị, khoảng tin cậy và chi phí giao dịch}
+\label{sec:robust2}
+
+Mục này trình bày ba phép kiểm tra không đòi hỏi huấn luyện lại mô hình, nhằm trả lời ba câu hỏi: kết luận về đồ thị dài hạn có phụ thuộc vào lựa chọn cửa sổ và ngưỡng hay không; các chênh lệch tỷ số Sharpe có đáng tin về mặt thống kê hay không; và kết quả có còn đứng vững khi chi phí giao dịch cao hơn hay không.
+
+\subsection{Độ nhạy theo cửa sổ ước lượng và ngưỡng tương quan}
+
+Mô hình đầy đủ dùng một cấu hình đồ thị duy nhất (250 phiên, ngưỡng 0,3), chọn trước khi xem kết quả. Huấn luyện lại mô hình trên một lưới cấu hình là quá tốn kém, nên độ nhạy được khảo sát bằng quy tắc bậc thấp (Mục~\ref{sec:norl}), vốn không cần huấn luyện và phản ánh trực tiếp thông tin mà đồ thị cung cấp. Lưới gồm ba độ dài cửa sổ (120, 250, 500 phiên) và ba ngưỡng (0,2; 0,3; 0,4).
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Độ nhạy theo cửa sổ và ngưỡng của đồ thị, đo bằng quy tắc bậc thấp không học. Mật độ và tỷ lệ cạnh giữ lại qua mỗi tháng tính trên 2024--2025; in đậm: cấu hình dùng trong mô hình}
+\label{tab:sensgraph}
+\begin{adjustbox}{max width=\textwidth}\input{tables/sens_graph}\end{adjustbox}
+\end{table}
+
+Bảng~\ref{tab:sensgraph} cho thấy hai điều. Thứ nhất, cửa sổ càng dài thì cấu trúc càng ổn định: tỷ lệ cạnh giữ lại qua mỗi tháng tăng từ 76--87\% với 120 phiên lên 89--95\% với 250 phiên và 91--95\% với 500 phiên, ở mọi ngưỡng. Thứ hai, trên chuỗi cuốn chiếu 71 tháng, cửa sổ 250 và 500 phiên cho tỷ số Sharpe 0,43--0,67, cao hơn cửa sổ 120 phiên (0,33--0,41) ở cả ba ngưỡng. Trên giai đoạn 2024--2025, kết quả dao động mạnh (0,72--1,19) và không có xu hướng rõ, phù hợp với việc hai năm là quá ngắn để phân biệt các cấu hình. Cấu hình dùng trong mô hình không phải là cấu hình tốt nhất trong lưới, cho thấy kết quả của luận văn không đến từ việc chọn tham số sau khi xem kết quả. Như vậy, lợi ích của việc dùng quan hệ dài hạn không phụ thuộc vào một lựa chọn ngưỡng cụ thể.
+
+\subsection{Khoảng tin cậy bootstrap cho chênh lệch tỷ số Sharpe}
+
+Sai số chuẩn ở Mục~\ref{sec:reliability} dựa trên giả định lợi suất độc lập và phân phối chuẩn. Để kiểm tra mà không cần giả định này, luận văn dùng phương pháp bootstrap khối dừng (stationary bootstrap) với độ dài khối trung bình 3 tháng và 5000 lần lặp. Mỗi lần lặp lấy cùng một chuỗi tháng cho mô hình và chiến lược đối chứng, nên phép so sánh có tính đến tương quan giữa hai chuỗi lợi suất. Mô hình được đại diện bởi danh mục lấy trung bình lợi suất của các hạt giống (10 hạt giống trên 2024--2025, 8 hạt giống trong kiểm định cuốn chiếu). Giá trị $p$ là tỷ lệ số lần lặp mà chênh lệch không dương.
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{Chênh lệch tỷ số Sharpe giữa mô hình đề xuất (trung bình các hạt giống) và các chiến lược khác: khoảng tin cậy 95\% (KTC) và giá trị $p$ một phía từ bootstrap khối dừng}
+\label{tab:bootstrap}
+\begin{adjustbox}{max width=\textwidth}\input{tables/bootstrap}\end{adjustbox}
+\end{table}
+
+Bảng~\ref{tab:bootstrap} xác nhận nhận định ở các mục trước. Chênh lệch giữa mô hình và phân bổ đều, VN-Index, danh mục trung bình--phương sai hay quy tắc bậc thấp đều có khoảng tin cậy chứa 0 ở cả hai giai đoạn; giá trị $p$ nhỏ nhất là 0,07 (so với phân bổ đều trên 2024--2025). Ngược lại, chênh lệch giữa đồ thị dài hạn và đồ thị ngắn hạn có ý nghĩa thống kê ở cả hai giai đoạn: 0,52 với khoảng tin cậy [0,15; 0,90] và $p = 0{,}002$ trên 2024--2025, 0,23 với khoảng tin cậy [0,03; 0,49] và $p = 0{,}01$ trên 2020--2025. Đây là kết luận được hỗ trợ mạnh nhất về mặt thống kê trong luận văn.
+
+\subsection{Độ nhạy theo chi phí giao dịch}
+
+Phí 10 điểm cơ bản dùng trong huấn luyện thấp hơn chi phí thực tế, đặc biệt với cổ phiếu kém thanh khoản (Mục~\ref{sec:liquid}). Bảng~\ref{tab:costs} tính lại lợi suất ròng của các danh mục với trọng số giữ nguyên, ở các mức phí 30 và 50 điểm cơ bản, và với phí phụ thuộc thanh khoản: tại mỗi ngày quyết định, 30\% số cổ phiếu kém thanh khoản nhất theo chỉ số Amihud chịu phí 50 điểm cơ bản, 40\% ở giữa chịu 25 điểm và 30\% thanh khoản nhất chịu 10 điểm. Vì mô hình không được huấn luyện lại với các mức phí này, kết quả là cận dưới cho những gì một mô hình được huấn luyện với chi phí cao hơn có thể đạt.
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Tỷ số Sharpe theo mức phí giao dịch (trọng số giữ nguyên, chỉ tính lại chi phí)}
+\label{tab:costs}
+\begin{adjustbox}{max width=\textwidth}\input{tables/costs}\end{adjustbox}
+\end{table}
+
+Trên 2024--2025, mô hình vẫn hơn phân bổ đều ở mọi mức phí (1,05 so với 0,88 ở 50 điểm; 1,13 so với 0,89 với phí theo thanh khoản). Trên chuỗi cuốn chiếu thì khác: ưu thế nhỏ của mô hình so với phân bổ đều (0,63 so với 0,55 ở 10 điểm) biến mất ở 30 điểm (0,54 so với 0,54) và với phí theo thanh khoản (0,54 so với 0,54), và đảo chiều ở 50 điểm (0,46 so với 0,54). Nguyên nhân là mức luân chuyển của mô hình (khoảng 0,7 mỗi tháng) cao hơn nhiều so với phân bổ đều (khoảng 0,05), và mô hình nghiêng về cổ phiếu kém thanh khoản, vốn chịu phí cao hơn. Kết quả này củng cố nhận định ở Mục~\ref{sec:liquid}: ở mức chi phí thực tế, mô hình hiện tại chưa có ưu thế đáng kể so với phân bổ đều trên giai đoạn dài, và việc đưa chi phí phụ thuộc thanh khoản vào quá trình huấn luyện là một hướng cải tiến cần thiết.
 
 \section{Tổng kết chương}
 
