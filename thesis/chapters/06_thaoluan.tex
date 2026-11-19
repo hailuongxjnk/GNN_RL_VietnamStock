@@ -18,12 +18,12 @@ Khía cạnh & Bằng chứng & Kết luận \\
 \midrule
 Cơ sở dữ liệu của ý tưởng & Tương quan dài hạn có cấu trúc theo nhóm ngành; 76\% cặp tương quan mạnh ở 2016--2022 vẫn mạnh ở 2024--2025; đồ thị 250 phiên giữ 81\% cạnh qua mỗi tháng (Mục~\ref{sec:graph}) & Đạt \\
 Tính đúng đắn & Huấn luyện đầu--cuối chạy được trên tập cổ phiếu thay đổi (35--179 mã); danh mục luôn thỏa ràng buộc; không dùng thông tin tương lai; chi phí tính toán thấp (dưới 15 phút mỗi lần huấn luyện trên CPU) & Đạt \\
-Hiệu quả so với mốc không lựa chọn & 2024--2025: Sharpe $1{,}25$ so với $0{,}90$ (phân bổ đều) và $0{,}82$ (ngẫu nhiên), cả 10 hạt giống đều cao hơn. 2020--2025 (cuốn chiếu): $0{,}76$ so với $0{,}55$ và $0{,}61$. Chênh lệch chưa có ý nghĩa thống kê & Đạt, chưa có ý nghĩa thống kê \\
+Hiệu quả so với mốc không lựa chọn & 2024--2025: Sharpe $1{,}25$ so với $0{,}90$ (phân bổ đều) và $0{,}82$ (ngẫu nhiên), cả 10 hạt giống đều cao hơn. 2020--2025 (cuốn chiếu, 8 hạt giống): $0{,}63$ so với $0{,}55$ và $0{,}61$, sáu trong tám hạt giống hơn phân bổ đều. Chênh lệch chưa có ý nghĩa thống kê & Đạt, chưa có ý nghĩa thống kê \\
 Hiệu quả so với mốc mạnh & 2024--2025: thấp hơn VN-Index (1,45) và trung bình--phương sai (1,56). 2020--2025: cao hơn cả hai (0,54 và 0,49). Mọi chênh lệch trong phạm vi sai số & Không kết luận được \\
 Độ ổn định & Độ lệch chuẩn Sharpe giữa các hạt giống 0,19 (10 hạt giống); không có lần chạy kém trên 2024--2025 & Đạt \\
-Vai trò của đồ thị dài hạn & Hơn đồ thị ngắn hạn trên 2024--2025 (10 hạt giống) và trên 2020--2025 (mọi hạt giống, năm trong sáu năm); giảm độ biến động so với không đồ thị; nhất quán ở mạng chưa huấn luyện. Chưa kiểm chứng trên tập thanh khoản & Được xác nhận trên tập đầy đủ \\
-Vai trò của học tăng cường & 2024--2025: không khác mạng chưa huấn luyện. 2020--2025 (huấn luyện lại hằng năm): 0,76 so với 0,48, khoảng ba sai số chuẩn. Chính sách chưa học phân bổ tỷ trọng & Có dấu hiệu, cần thêm bằng chứng \\
-Khả năng triển khai & Danh mục nghiêng về cổ phiếu kém thanh khoản; trên tập thanh khoản tốt, Sharpe giảm còn 0,79 (phân bổ đều 0,66) và ưu thế về rủi ro biến mất; mô hình chi phí đơn giản & Hạn chế, cần nghiên cứu thêm \\
+Vai trò của đồ thị dài hạn & Hơn đồ thị ngắn hạn trên 2024--2025 (10 hạt giống), trên 2020--2025 (bảy trong tám hạt giống) và trên tập thanh khoản tốt; giảm độ biến động so với không đồ thị; nhất quán ở mạng chưa huấn luyện & Được xác nhận \\
+Vai trò của học tăng cường & 2024--2025: không khác mạng chưa huấn luyện. Tập thanh khoản: không khác. 2020--2025 (huấn luyện lại hằng năm): 0,63 so với 0,48, khoảng hai sai số chuẩn. Chính sách chưa học phân bổ tỷ trọng & Có dấu hiệu, cần thêm bằng chứng \\
+Khả năng triển khai & Danh mục nghiêng về cổ phiếu kém thanh khoản; trên tập thanh khoản tốt, Sharpe giảm còn 0,80 (phân bổ đều 0,66) và ưu thế về rủi ro biến mất; mô hình chi phí đơn giản & Hạn chế, cần nghiên cứu thêm \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -46,7 +46,7 @@ Một hệ quả thú vị là cơ chế này hoạt động theo hướng của
 
 \subsection{Về đóng góp của học tăng cường}
 
-Hai giai đoạn đánh giá cho hai bức tranh khác nhau. Trên 2024--2025, mô hình sau huấn luyện không khác biệt về trung bình so với mạng chưa huấn luyện. Trên kiểm định cuốn chiếu 2020--2025, khi mô hình được huấn luyện lại hằng năm, mô hình đã huấn luyện vượt rõ mạng chưa huấn luyện (0,76 so với 0,48). Một cách giải thích là lợi ích của huấn luyện thể hiện chủ yếu qua khả năng \emph{thích nghi} với dữ liệu gần nhất, và lợi ích ấy chỉ đo được khi đánh giá trên nhiều giai đoạn. Dù vậy, với 3 hạt giống trong kiểm định cuốn chiếu, bằng chứng này chưa đủ mạnh, và tín hiệu học hiện vẫn yếu vì các lý do sau (Mục~\ref{sec:training-analysis}):
+Hai giai đoạn đánh giá cho hai bức tranh khác nhau. Trên 2024--2025, mô hình sau huấn luyện không khác biệt về trung bình so với mạng chưa huấn luyện. Trên kiểm định cuốn chiếu 2020--2025, khi mô hình được huấn luyện lại hằng năm, mô hình đã huấn luyện cao hơn mạng chưa huấn luyện (0,63 so với 0,48, khoảng hai sai số chuẩn), dù trên tập thanh khoản tốt hai bên lại tương đương. Một cách giải thích là lợi ích của huấn luyện thể hiện chủ yếu qua khả năng \emph{thích nghi} với dữ liệu gần nhất, và lợi ích ấy chỉ đo được khi đánh giá trên nhiều giai đoạn. Dù vậy, chênh lệch này chỉ ở mức ranh giới của ý nghĩa thống kê và đã giảm khi tăng số hạt giống từ 3 lên 8, và tín hiệu học hiện vẫn yếu vì các lý do sau (Mục~\ref{sec:training-analysis}):
 \begin{itemize}
   \item Tác tử chỉ có 79 bước quyết định theo tháng để học, và 48 bước gradient cho hơn 120 nghìn tham số.
   \item Phần lớn biến động của phần thưởng đến từ thị trường chung, không phụ thuộc vào hành động của tác tử; phần tín hiệu thực sự do lựa chọn cổ phiếu tạo ra là nhỏ so với nhiễu.
@@ -57,7 +57,7 @@ Các nguyên nhân này đều thuộc về lượng dữ liệu và thiết k�
 
 \subsection{Về việc chưa vượt VN-Index}
 
-Giai đoạn 2024--2025 là giai đoạn mà chỉ số tính theo vốn hóa có lợi thế cấu trúc: VN-Index tăng 50,4\% trong khi cổ phiếu trung vị chỉ tăng 9,4\%. Mọi chiến lược đa dạng hóa bị giới hạn tỷ trọng đều khó theo kịp chỉ số trong điều kiện này; danh mục phân bổ đều chỉ đạt 28,0\%. Mô hình đề xuất đạt 42,2\% với độ biến động tương đương chỉ số. Kiểm định cuốn chiếu xác nhận rằng thứ hạng này phụ thuộc vào giai đoạn: trên 2020--2025, gồm cả năm 2021 thị trường tăng rộng và năm 2022 thị trường giảm sâu, mô hình có tỷ số Sharpe 0,76 so với 0,54 của VN-Index và lợi suất tích lũy 119,9\% so với 76,0\%. Ngay cả trên giai đoạn dài này, chênh lệch vẫn chưa có ý nghĩa thống kê, nên luận văn không kết luận mô hình tốt hơn hay kém hơn chỉ số.
+Giai đoạn 2024--2025 là giai đoạn mà chỉ số tính theo vốn hóa có lợi thế cấu trúc: VN-Index tăng 50,4\% trong khi cổ phiếu trung vị chỉ tăng 9,4\%. Mọi chiến lược đa dạng hóa bị giới hạn tỷ trọng đều khó theo kịp chỉ số trong điều kiện này; danh mục phân bổ đều chỉ đạt 28,0\%. Mô hình đề xuất đạt 42,2\% với độ biến động tương đương chỉ số. Kiểm định cuốn chiếu xác nhận rằng thứ hạng này phụ thuộc vào giai đoạn: trên 2020--2025, gồm cả năm 2021 thị trường tăng rộng và năm 2022 thị trường giảm sâu, mô hình có tỷ số Sharpe 0,63 so với 0,54 của VN-Index và lợi suất tích lũy 91,6\% so với 76,0\%, nhưng mức sụt giảm tối đa lớn hơn ($-40{,}2\%$ so với $-32{,}2\%$). Ngay cả trên giai đoạn dài này, chênh lệch vẫn chưa có ý nghĩa thống kê, nên luận văn không kết luận mô hình tốt hơn hay kém hơn chỉ số.
 
 
 
@@ -119,9 +119,9 @@ Nghiên cứu có các hạn chế sau, xếp theo mức độ ảnh hưởng đ
 
 \textit{(1) Điều chỉnh giá mới ở mức gần đúng.} Phép điều chỉnh ở Mục~\ref{sec:adjust} chỉ nhận diện được các sự kiện có tỷ lệ pha loãng từ khoảng 16\% trở lên; các đợt phát hành tỷ lệ nhỏ không được xử lý và cổ tức tiền mặt chưa được cộng vào lợi suất. Lợi suất của các chiến lược dựa trên cổ phiếu vì vậy vẫn bị đánh giá thấp so với VN-Index. Cách khắc phục triệt để là dùng trực tiếp chuỗi giá đã điều chỉnh và dữ liệu cổ tức từ nhà cung cấp.
 
-\textit{(2) Ưu thế phụ thuộc vào cổ phiếu kém thanh khoản.} Trên tập cổ phiếu thanh khoản tốt (Mục~\ref{sec:liquid}), tỷ số Sharpe của mô hình giảm từ 1,25 xuống 0,79, chênh lệch so với phân bổ đều giảm từ 0,35 xuống 0,14, ưu thế về độ biến động và mức sụt giảm biến mất, và hai danh mục Markowitz tốt hơn hẳn. Đây là hạn chế quan trọng nhất về khả năng áp dụng thực tế. Thí nghiệm này mới có 5 hạt giống và chưa so sánh đồ thị dài hạn với đồ thị ngắn hạn trên tập thanh khoản.
+\textit{(2) Ưu thế phụ thuộc vào cổ phiếu kém thanh khoản.} Trên tập cổ phiếu thanh khoản tốt (Mục~\ref{sec:liquid}), tỷ số Sharpe của mô hình giảm từ 1,25 xuống 0,80 (10 hạt giống), chênh lệch so với phân bổ đều giảm từ 0,35 xuống 0,14, ưu thế về độ biến động và mức sụt giảm biến mất, và hai danh mục Markowitz tốt hơn hẳn. Đây là hạn chế quan trọng nhất về khả năng áp dụng thực tế. Trên tập này, mô hình đã huấn luyện cũng không tốt hơn mạng chưa huấn luyện; điều duy nhất được giữ nguyên là ưu thế của đồ thị dài hạn so với đồ thị ngắn hạn.
 
-\textit{(3) Chưa có ý nghĩa thống kê.} Giai đoạn kiểm tra chính hai năm cho sai số chuẩn của tỷ số Sharpe vào khoảng 0,75; kiểm định cuốn chiếu 71 tháng giảm con số này xuống khoảng 0,42, nhưng chênh lệch giữa mô hình và các chiến lược truyền thống vẫn nhỏ hơn sai số này. Kiểm định cuốn chiếu cũng chỉ có 3 hạt giống cho mỗi cấu hình.
+\textit{(3) Chưa có ý nghĩa thống kê.} Giai đoạn kiểm tra chính hai năm cho sai số chuẩn của tỷ số Sharpe vào khoảng 0,75; kiểm định cuốn chiếu 71 tháng giảm con số này xuống khoảng 0,42, nhưng chênh lệch giữa mô hình và các chiến lược truyền thống vẫn nhỏ hơn sai số này. Với 8 hạt giống, kết quả cuốn chiếu còn phân tán đáng kể (tỷ số Sharpe từ 0,28 đến 0,89), và trung bình giảm từ 0,76 xuống 0,63 khi thêm 5 hạt giống, cho thấy kết luận dựa trên ít lần chạy dễ bị lạc quan.
 
 \textit{(4) Quy mô huấn luyện nhỏ.} Mỗi lần huấn luyện chỉ gồm 12 vòng lặp trên một quỹ đạo tối đa 79 bước, tức 48 bước gradient, với 3--10 hạt giống cho mỗi cấu hình. Chưa có tìm kiếm siêu tham số hay phân tích độ nhạy theo ngưỡng tương quan và độ dài cửa sổ như đề cương dự kiến. Do đó nhận định về đóng góp hạn chế của học tăng cường là kết luận về cấu hình cụ thể này, chưa phải về lớp mô hình lai nói chung.
 
