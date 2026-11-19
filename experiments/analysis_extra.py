@@ -141,16 +141,27 @@ if liq and bl:
                 'n_eligible': float(np.mean(bl['_n_eligible']))}
     rs = np.array([m['sharpe'] for m in bl['_random20_hold']['metrics']])
     S['liq']['pct_random'] = [float((rs < r['test']['metrics']['sharpe']).mean()) for r in liq]
-    S['liq']['sharpe_values'] = [r['test']['metrics']['sharpe'] for r in liq]
+    S['liq']['sharpe_values'] = {r['seed']: r['test']['metrics']['sharpe'] for r in liq}
+    S['liq']['pct_random_by_seed'] = {r['seed']: float((rs < r['test']['metrics']['sharpe']).mean()) for r in liq}
     up = os.path.join(R, 'untrained_liq.pkl')
     if os.path.exists(up): S['liq']['untrained'] = stats([o['metrics'] for o in pickle.load(open(up, 'rb'))])
     body = ("\\begin{tabular}{@{}lcccccc@{}}\n\\toprule\nChiến lược (tập thanh khoản) & Số lần & Sharpe & Lợi suất (\\%) & Biến động (\\%) & MDD (\\%) & Calmar \\\\\n\\midrule\n")
     q = lambda d, k, s=1, dd=2: f"{f(d[k]['mean']*s, dd)} $\\pm$ {f(d[k]['std']*s, dd)}"
     m = S['liq']['model']
     body += f"\\textbf{{Mô hình, đồ thị dài hạn}} & {len(liq)} & {q(m,'sharpe')} & {q(m,'cum_return',100,1)} & {q(m,'ann_vol',100,1)} & {q(m,'max_drawdown',100,1)} & {q(m,'calmar')} \\\\\n"
+    liq60 = [pickle.load(open(fn, 'rb')) for fn in sorted(glob.glob(os.path.join(R, 'full_liq_seed*.pkl')))]
+    if liq60:
+        S['liq']['model_short'] = m6 = stats([r['test']['metrics'] for r in liq60]); S['liq']['n_short'] = len(liq60)
+        S['liq']['sharpe_values_short'] = {r['seed']: r['test']['metrics']['sharpe'] for r in liq60}
+        S['liq']['turnover_short'] = float(np.mean([np.mean(r['test']['turnover'][1:]) for r in liq60]))
+        body += f"Mô hình, đồ thị ngắn hạn & {len(liq60)} & {q(m6,'sharpe')} & {q(m6,'cum_return',100,1)} & {q(m6,'ann_vol',100,1)} & {q(m6,'max_drawdown',100,1)} & {q(m6,'calmar')} \\\\\n"
     if 'untrained' in S['liq']:
         u = S['liq']['untrained']
-        body += f"Mạng chưa huấn luyện & 30 & {q(u,'sharpe')} & {q(u,'cum_return',100,1)} & {q(u,'ann_vol',100,1)} & {q(u,'max_drawdown',100,1)} & {q(u,'calmar')} \\\\\n"
+        body += f"Mạng chưa huấn luyện, dài hạn & 30 & {q(u,'sharpe')} & {q(u,'cum_return',100,1)} & {q(u,'ann_vol',100,1)} & {q(u,'max_drawdown',100,1)} & {q(u,'calmar')} \\\\\n"
+    up6 = os.path.join(R, 'untrained_liq_A60.pkl')
+    if os.path.exists(up6):
+        S['liq']['untrained_short'] = u6 = stats([o['metrics'] for o in pickle.load(open(up6, 'rb'))])
+        body += f"Mạng chưa huấn luyện, ngắn hạn & 30 & {q(u6,'sharpe')} & {q(u6,'cum_return',100,1)} & {q(u6,'ann_vol',100,1)} & {q(u6,'max_drawdown',100,1)} & {q(u6,'calmar')} \\\\\n"
     body += "\\midrule\n"
     for b, lab in base_names.items():
         mm = bl[b]['metrics']

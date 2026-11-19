@@ -34,6 +34,9 @@ if __name__ == '__main__':
         pickle.dump(B.run('M', dates=wf_dates, graph='A250'), open(os.path.join(C.RESULTS, 'baselines_wf.pkl'), 'wb'))
         for g in ('A250', 'A60'):
             pickle.dump(untrained(g, wf_dates), open(os.path.join(C.RESULTS, f'untrained_wf_{g}.pkl'), 'wb'))
+    elif part == 'liq60':
+        tdates = C.quiet_split(df, 'M')['test']
+        pickle.dump(untrained('A60_liq', tdates), open(os.path.join(C.RESULTS, 'untrained_liq_A60.pkl'), 'wb'))
     else:
         tdates = C.quiet_split(df, 'M')['test']
         pickle.dump(B.run('M', dates=tdates, graph='A250_liq'), open(os.path.join(C.RESULTS, 'baselines_liq.pkl'), 'wb'))

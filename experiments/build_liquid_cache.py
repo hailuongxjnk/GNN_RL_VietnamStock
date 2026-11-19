@@ -31,3 +31,10 @@ pickle.dump(out, open(os.path.join(C.CACHE, 'snap_M_A250_liq.pkl'), 'wb'))
 st = pd.DataFrame(stat, columns=['date', 'n_elig', 'n_liquid']).set_index('date').sort_index()
 st.to_csv(os.path.join(C.RESULTS, 'liquid_universe.csv'))
 print(st.describe().round(1)); print(st.loc['2024':].mean().round(1))
+
+# Đồ thị ngắn hạn (60 phiên) trên cùng tập thanh khoản: cache/snap_M_A60_liq.pkl (khoá 'A60_liq')
+s60 = pickle.load(open(os.path.join(C.CACHE, 'snap_M_A60.pkl'), 'rb'))
+out60 = {d: {'X': s60[d]['X'], 'mask': out[d]['mask'], 'symbols': s60[d]['symbols'], 'A60_liq': s60[d]['A60']} for d in out}
+assert all(list(s60[d]['symbols']) == list(out[d]['symbols']) for d in out)
+pickle.dump(out60, open(os.path.join(C.CACHE, 'snap_M_A60_liq.pkl'), 'wb'))
+print('A60_liq', len(out60))
