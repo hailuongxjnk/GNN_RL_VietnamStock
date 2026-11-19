@@ -1,10 +1,10 @@
 """
-Hai cải tiến cho thành phần học tăng cường (Mục 4.12 của luận văn). Code gốc KHÔNG bị sửa: vòng huấn luyện
+Hai cải tiến cho thành phần học tăng cường (Mục "Thử nghiệm hai cải tiến cho thành phần học tăng cường" của luận văn). Code gốc KHÔNG bị sửa: vòng huấn luyện
 dưới đây là bản sao của train_v2.train_ppo (vòng huấn luyện dùng cho mọi thí nghiệm), chỉ thêm hai lựa chọn:
 
   cost='tier'   — phí giao dịch phụ thuộc thanh khoản ngay TRONG huấn luyện (và khi chọn mô hình trên tập
                   kiểm định): tại ngày quyết định, 30% mã kém thanh khoản nhất theo Amihud 20 phiên chịu 50 bps,
-                  40% ở giữa 25 bps, 30% thanh khoản nhất 10 bps (giống phép tính lại ở Mục 4.12/robustness2.py).
+                  40% ở giữa 25 bps, 30% thanh khoản nhất 10 bps (giống phép tính lại ở robustness2.py).
   reward='excess' — phần thưởng DSR tính trên lợi suất VƯỢT quy tắc bậc thấp (giữ mọi mã có bậc <= bậc nhỏ thứ 20
                   trên đồ thị A250, tỷ trọng đều, cùng mô hình phí). Mục tiêu: tác tử chỉ được thưởng khi làm tốt
                   hơn mốc đơn giản, thay vì được thưởng cho biến động chung của thị trường.
