@@ -1,0 +1,13 @@
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+ & \multicolumn{2}{c}{Kiểm tra 2024--2025} & \multicolumn{2}{c}{Cuốn chiếu 2020--2025} & \multicolumn{2}{c}{Tập thanh khoản} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+Cấu hình & 10 bps & Theo TK & 10 bps & Theo TK & 10 bps & Theo TK \\
+\midrule
+PPO gốc (thưởng DSR, phí 10 bps, 12 vòng) & 1{,}25 $\pm$ 0{,}18 & 1{,}13 $\pm$ 0{,}15 & 0{,}63 $\pm$ 0{,}18 & 0{,}54 $\pm$ 0{,}17 & 0{,}80 $\pm$ 0{,}21 & 0{,}70 $\pm$ 0{,}22 \\
+(A) Học với phí theo thanh khoản & 1{,}17 $\pm$ 0{,}26 & 1{,}04 $\pm$ 0{,}25 & 0{,}67 $\pm$ 0{,}11 & 0{,}58 $\pm$ 0{,}10 & 0{,}93 $\pm$ 0{,}37 & 0{,}81 $\pm$ 0{,}38 \\
+(B) Thưởng trên lợi suất vượt quy tắc, 20 vòng & 1{,}02 $\pm$ 0{,}30 & 0{,}91 $\pm$ 0{,}31 & -- & -- & 1{,}00 $\pm$ 0{,}24 & 0{,}89 $\pm$ 0{,}22 \\
+Đối chứng: thưởng DSR, 20 vòng & 1{,}10 $\pm$ 0{,}17 & 0{,}99 $\pm$ 0{,}18 & -- & -- & -- & -- \\
+Quy tắc bậc thấp (không học) & 0{,}92 & 0{,}84 & 0{,}55 & 0{,}49 & 1{,}38 & 1{,}28 \\
+\bottomrule
+\end{tabular}
