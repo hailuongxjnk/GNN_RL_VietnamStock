@@ -302,8 +302,65 @@ Mục~\ref{sec:graph-role} cho thấy mô hình nghiêng về các cổ phiếu 
 
 \textit{Diễn giải.} Kết quả này cho thấy một phần đáng kể ưu thế của mô hình trên tập cổ phiếu đầy đủ -- đặc biệt là độ biến động và mức sụt giảm thấp -- gắn với các cổ phiếu kém thanh khoản. Như đã thảo luận ở Mục~\ref{sec:graph-role}, giá của các cổ phiếu này phản ứng chậm nên vừa ít tương quan với thị trường vừa có độ biến động đo được thấp hơn rủi ro thực. Khi loại chúng ra, mô hình vẫn vận hành đúng, vẫn cho kết quả không kém phân bổ đều và danh mục ngẫu nhiên, nhưng không còn thể hiện lợi thế rõ rệt. Đây là một hạn chế quan trọng đối với khả năng áp dụng thực tế và được thảo luận thêm ở Mục~\ref{sec:hanche}. Ngược lại, ưu thế của đồ thị dài hạn so với đồ thị ngắn hạn vẫn được giữ nguyên trên tập này.
 
+\section{Học tăng cường có cần thiết không: so sánh với học có giám sát và quy tắc đơn giản}
+\label{sec:norl}
+
+Các mục trước cho thấy mô hình đã huấn luyện không khác biệt rõ so với mạng chưa huấn luyện trên 2024--2025 và trên tập thanh khoản, và chỉ có dấu hiệu tốt hơn trong kiểm định cuốn chiếu. Mục này đặt câu hỏi trực tiếp hơn: nếu thay PPO bằng một cách đơn giản hơn để biến biểu diễn đồ thị thành danh mục, kết quả có kém đi không?
+
+\textit{Thiết kế.} Hai phương án thay thế được so sánh với mô hình đề xuất, trên cùng tập cổ phiếu, cùng phí giao dịch 10 điểm cơ bản và cùng quy tắc giữ 20 mã:
+\begin{itemize}
+  \item \textit{Học có giám sát.} Giữ nguyên bộ mã hóa Transformer và mạng GAT trên đồ thị dài hạn, thay tác tử PPO bằng một lớp tuyến tính cho điểm từng cổ phiếu. Mạng được huấn luyện để dự báo lợi suất kỳ nắm giữ kế tiếp đã chuẩn hóa theo lát cắt ngang (z-score, kẹp trong $[-3, 3]$), với hàm mất mát sai số bình phương. Ngân sách tối ưu giống PPO (12 vòng, mỗi vòng 4 lượt cập nhật trên toàn bộ dữ liệu huấn luyện, Adam với tốc độ học $3\cdot10^{-4}$), và mô hình cũng được chọn theo tỷ số Sharpe trên tập kiểm định. Danh mục gồm 20 mã có điểm cao nhất với tỷ trọng đều 5\%.
+  \item \textit{Quy tắc bậc thấp.} Không học gì: tại mỗi ngày quyết định, chọn 20 mã đủ điều kiện có ít cạnh nhất trong đồ thị tương quan, tỷ trọng đều. Đây là phát biểu bằng một dòng của hành vi mà mô hình đã học được (Mục~\ref{sec:graph-role}): ưu tiên các cổ phiếu ít liên kết. Quy tắc được áp dụng trên cả đồ thị dài hạn và đồ thị ngắn hạn.
+\end{itemize}
+Mô hình học có giám sát được huấn luyện với 10 hạt giống trên cách chia chính và 8 hạt giống trong kiểm định cuốn chiếu, giống mô hình đề xuất.
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{So sánh mô hình đề xuất với các phương án không dùng học tăng cường trên giai đoạn kiểm tra 2024--2025}
+\label{tab:norltest}
+\begin{adjustbox}{max width=\textwidth}\input{tables/norl_test}\end{adjustbox}
+\end{table}
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{So sánh mô hình đề xuất với các phương án không dùng học tăng cường trong kiểm định cuốn chiếu 01/2020--12/2025}
+\label{tab:norlwf}
+\begin{adjustbox}{max width=\textwidth}\input{tables/norl_wf}\end{adjustbox}
+\end{table}
+
+\textit{PPO tốt hơn học có giám sát.} Trên 2024--2025, mô hình học có giám sát đạt tỷ số Sharpe $0{,}95\pm0{,}45$ và lợi suất 19,3\%, thấp hơn mô hình đề xuất ($1{,}25\pm0{,}19$; 42,2\%) và phân tán hơn nhiều (từ 0,25 đến 1,56). Trong kiểm định cuốn chiếu, khoảng cách tương tự: $0{,}48\pm0{,}17$ so với $0{,}63\pm0{,}19$. Chênh lệch ở hai giai đoạn lần lượt bằng khoảng 1,9 và 1,6 lần sai số chuẩn. Học có giám sát tạo ra danh mục có độ biến động rất thấp (9,6\% trên 2024--2025) nhưng lợi suất cũng thấp, và thậm chí không tốt hơn mạng chưa huấn luyện ($1{,}27$ và $0{,}48$). Một cách giải thích là lợi suất một tháng của từng cổ phiếu là mục tiêu dự báo rất nhiễu; mạng học có giám sát học theo nhiễu này, trong khi PPO tối ưu trực tiếp lợi suất của cả danh mục sau chi phí. Như vậy, \emph{nếu đã dùng một mạng học để chấm điểm cổ phiếu}, học tăng cường là cách huấn luyện phù hợp hơn học có giám sát trong thí nghiệm này.
+
+\textit{Nhưng một quy tắc không học đạt kết quả tương đương hoặc tốt hơn.} Quy tắc bậc thấp trên đồ thị dài hạn đạt tỷ số Sharpe 1,26 trên 2024--2025, bằng mô hình đề xuất (1,25), với lợi suất thấp hơn (35,8\% so với 42,2\%) nhưng độ biến động thấp hơn (13,4\% so với 16,0\%). Trong kiểm định cuốn chiếu, quy tắc này đạt 0,76 và lợi suất 98,8\%, cao hơn mô hình đề xuất (0,63; 91,6\%) và mọi chiến lược khác được so sánh. Trên tập cổ phiếu thanh khoản tốt, quy tắc đạt 1,37, cao hơn hẳn mô hình đề xuất (0,80) và phân bổ đều (0,66). Mức luân chuyển của quy tắc chỉ khoảng 0,23--0,39 mỗi tháng, bằng một phần ba đến một nửa mô hình. Danh mục của mô hình đề xuất trùng trung bình 37\% số mã với danh mục của quy tắc, so với khoảng 12\% nếu chọn ngẫu nhiên, xác nhận rằng hành vi học được của mô hình gần với quy tắc này nhưng không trùng hoàn toàn.
+
+\textit{Giá trị nằm ở đồ thị dài hạn.} Khi áp dụng cùng quy tắc lên đồ thị ngắn hạn 60 phiên, kết quả kém hẳn: tỷ số Sharpe 0,83 trên 2024--2025 và 0,29 trên 2020--2025 (so với 1,26 và 0,76 với đồ thị dài hạn), với mức luân chuyển gấp ba. Trên tập thanh khoản tốt, khoảng cách nhỏ hơn (1,29 so với 1,37). Kết quả này lặp lại, ở dạng đơn giản nhất, kết luận của Mục~\ref{sec:graph-role} và Mục~\ref{sec:walkforward}: thông tin hữu ích nằm ở cấu trúc tương quan dài hạn, cụ thể là ở việc xác định cổ phiếu nào ít liên kết với phần còn lại của thị trường.
+
+\textit{Diễn giải.} Thí nghiệm này cho thấy rõ giới hạn của thành phần học tăng cường trong cấu hình hiện tại: với lượng dữ liệu và ngân sách huấn luyện của luận văn, PPO học được một chính sách gần với quy tắc ``chọn cổ phiếu ít liên kết'', nhưng không vượt được chính quy tắc đó. Đây không phải bằng chứng rằng học tăng cường vô ích cho bài toán, mà cho thấy phần đóng góp chắc chắn của mô hình lai hiện nay đến từ đồ thị tương quan dài hạn. Quy tắc bậc thấp vì vậy nên được xem là mốc so sánh tối thiểu mà các cải tiến của thành phần học trong tương lai cần vượt qua.
+
+\section{Ảnh hưởng của nhóm cổ phiếu vốn hóa lớn đến VN-Index}
+\label{sec:vingroup}
+
+Mô hình đề xuất chưa vượt VN-Index trên giai đoạn 2024--2025 (Mục~\ref{sec:overall}). VN-Index là chỉ số tính theo vốn hóa, nên một số ít cổ phiếu lớn có thể chi phối biến động của nó. Trong giai đoạn kiểm tra, nhóm cổ phiếu thuộc họ Vingroup (VIC, VHM, VRE và VPL từ khi niêm yết năm 2025) tăng tỷ trọng vốn hóa trong tập cổ phiếu của luận văn từ khoảng 8\% đầu năm 2024 lên khoảng 15\% cuối năm 2025. Danh mục vốn hóa của nhóm này giảm khoảng 10\% trong năm 2024 nhưng tăng hơn 300\% trong năm 2025. Mục này kiểm tra xem lợi thế của VN-Index có phụ thuộc vào nhóm này hay không.
+
+\textit{Thiết kế.} Vì không có thành phần chính xác của VN-Index, luận văn dựng một chỉ số vốn hóa từ dữ liệu: tại mỗi ngày quyết định, các cổ phiếu đủ điều kiện được gán tỷ trọng tỷ lệ với vốn hóa, ước lượng bằng vốn hóa Bloomberg ở kỳ công bố gần nhất trước ngày đó nhân với biến động giá từ kỳ công bố đến ngày quyết định. Chỉ số tự dựng có tương quan 0,96 với VN-Index trên 2024--2025 và 0,99 trên 2020--2025, nên mô phỏng tốt biến động của VN-Index. Sau đó, chỉ số được tính lại sau khi loại họ Vingroup. Để đối chiếu, danh mục phân bổ đều cũng được tính lại khi loại nhóm này.
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\caption{Chỉ số vốn hóa có và không có họ Vingroup (VIC, VHM, VRE, VPL)}
+\label{tab:vingroup}
+\begin{adjustbox}{max width=\textwidth}\input{tables/vingroup}\end{adjustbox}
+\end{table}
+
+\textit{Kết quả.} Bảng~\ref{tab:vingroup} cho thấy trên 2024--2025, chỉ số vốn hóa tự dựng đạt tỷ số Sharpe 1,48 và lợi suất 47,7\%, gần với VN-Index (1,45; 50,4\%). Khi loại họ Vingroup, tỷ số Sharpe giảm xuống 0,95 và lợi suất giảm xuống 29,1\%, thấp hơn mô hình đề xuất (1,25; 42,2\%). Trong khi đó, loại họ Vingroup gần như không ảnh hưởng đến danh mục phân bổ đều (0,83 so với 0,90), vì nhóm này chỉ chiếm vài phần trăm tỷ trọng của danh mục đó. Mô hình đề xuất cũng không dựa vào nhóm này: tỷ trọng trung bình của họ Vingroup trong danh mục của mô hình chỉ từ 0,4\% đến 5,9\% tùy hạt giống. Như vậy, phần lớn khoảng cách giữa mô hình và VN-Index trên 2024--2025 đến từ một nhóm nhỏ cổ phiếu vốn hóa lớn mà một danh mục đa dạng hóa bị giới hạn tỷ trọng 10\% mỗi mã khó nắm giữ đủ.
+
+Trên giai đoạn 2020--2025, việc loại họ Vingroup gần như không thay đổi kết quả của chỉ số vốn hóa tự dựng (0,39 so với 0,42), cho thấy ảnh hưởng của nhóm này tập trung vào năm 2025. Cũng cần lưu ý rằng trên giai đoạn dài này, chỉ số tự dựng có lợi suất thấp hơn VN-Index (48,4\% so với 76,0\%) dù tương quan cao, vì nó chỉ gồm các cổ phiếu đủ điều kiện trong tập dữ liệu và chưa tính cổ tức. Kết quả này vì vậy chỉ nên được hiểu là bằng chứng định tính rằng VN-Index trên 2024--2025 bị chi phối bởi một nhóm nhỏ cổ phiếu lớn, chứ không phải một phép so sánh chính xác với một chỉ số chính thức.
+
 \section{Tổng kết chương}
 
 Chương này đã đánh giá tính khả thi của mô hình lai trên dữ liệu thị trường Việt Nam. Về tính đúng đắn, mô hình vận hành đầu--cuối với tập cổ phiếu thay đổi theo thời gian và luôn tạo ra danh mục hợp lệ. Về hiệu quả, trên giai đoạn kiểm tra chính 2024--2025, mô hình với đồ thị tương quan dài hạn đạt tỷ số Sharpe $1{,}25\pm0{,}19$ và lợi suất 42,2\% trên 10 hạt giống, cao hơn phân bổ đều và trung vị danh mục ngẫu nhiên ở mọi hạt giống, nhưng chưa vượt VN-Index và danh mục trung bình--phương sai. Trên kiểm định cuốn chiếu 71 tháng (2020--2025, 8 hạt giống), mô hình đạt tỷ số Sharpe $0{,}63\pm0{,}19$, cao hơn một chút so với phân bổ đều (0,55), VN-Index (0,54) và trung vị danh mục ngẫu nhiên (0,61), với kết quả phân tán đáng kể giữa các hạt giống. Tuy nhiên, ở cả hai giai đoạn, chênh lệch so với phân bổ đều và VN-Index vẫn nằm trong sai số thống kê.
 
-Về vai trò của các thành phần, đồ thị tương quan dài hạn là yếu tố có ảnh hưởng lớn và nhất quán nhất: nó cho kết quả tốt hơn đồ thị ngắn hạn trên cả giai đoạn kiểm tra chính (10 hạt giống) lẫn kiểm định cuốn chiếu (bảy trong tám hạt giống) và trên tập cổ phiếu thanh khoản tốt, với mức luân chuyển thấp hơn. Đóng góp của quá trình huấn luyện PPO không thấy được trên giai đoạn 2024--2025 và trên tập thanh khoản, nhưng có dấu hiệu trong kiểm định cuốn chiếu, khi mô hình được huấn luyện lại hằng năm (khoảng hai sai số chuẩn). Chính sách hiện mới đóng vai trò chọn cổ phiếu chứ chưa phân bổ tỷ trọng. Cuối cùng, khi giới hạn ở các cổ phiếu thanh khoản tốt, ưu thế của mô hình thu hẹp đáng kể, cho thấy một phần kết quả gắn với nhóm cổ phiếu kém thanh khoản. Chương tiếp theo thảo luận ý nghĩa của các kết quả này.
+Về vai trò của các thành phần, đồ thị tương quan dài hạn là yếu tố có ảnh hưởng lớn và nhất quán nhất: nó cho kết quả tốt hơn đồ thị ngắn hạn trên cả giai đoạn kiểm tra chính (10 hạt giống) lẫn kiểm định cuốn chiếu (bảy trong tám hạt giống) và trên tập cổ phiếu thanh khoản tốt, với mức luân chuyển thấp hơn. Đóng góp của quá trình huấn luyện PPO không thấy được trên giai đoạn 2024--2025 và trên tập thanh khoản, nhưng có dấu hiệu trong kiểm định cuốn chiếu, khi mô hình được huấn luyện lại hằng năm (khoảng hai sai số chuẩn). Chính sách hiện mới đóng vai trò chọn cổ phiếu chứ chưa phân bổ tỷ trọng. Khi giới hạn ở các cổ phiếu thanh khoản tốt, ưu thế của mô hình thu hẹp đáng kể, cho thấy một phần kết quả gắn với nhóm cổ phiếu kém thanh khoản.
+
+Hai thí nghiệm cuối chương làm rõ thêm hai điểm. Thứ nhất, thay PPO bằng học có giám sát trên cùng kiến trúc làm kết quả kém đi, nhưng một quy tắc không học -- chọn 20 cổ phiếu ít liên kết nhất trên đồ thị dài hạn -- đạt kết quả tương đương mô hình trên 2024--2025 (1,26) và tốt hơn trong kiểm định cuốn chiếu (0,76) và trên tập thanh khoản (1,37); cùng quy tắc đó trên đồ thị ngắn hạn kém hẳn. Giá trị của mô hình lai hiện nay vì vậy đến chủ yếu từ đồ thị tương quan dài hạn chứ không từ thành phần học tăng cường. Thứ hai, lợi thế của VN-Index trên 2024--2025 phụ thuộc lớn vào họ Vingroup: khi loại nhóm này, chỉ số vốn hóa tự dựng giảm từ 1,48 xuống 0,95, thấp hơn mô hình đề xuất. Chương tiếp theo thảo luận ý nghĩa của các kết quả này.

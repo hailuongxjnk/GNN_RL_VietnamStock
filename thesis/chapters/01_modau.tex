@@ -54,7 +54,7 @@ Về dữ liệu, luận văn thu thập dữ liệu giao dịch hằng ngày, b
 
 Về mô hình, luận văn cài đặt toàn bộ kiến trúc bằng PyTorch, trong đó mạng đồ thị và vòng lặp PPO được tự cài đặt để kiểm soát đầy đủ luồng gradient từ hàm mục tiêu của tác tử ngược về mạng đồ thị và bộ mã hóa thời gian.
 
-Về đánh giá, luận văn áp dụng quy trình kiểm thử ngược (backtest) theo thứ tự thời gian, chọn mô hình theo tỷ số Sharpe trên tập kiểm định, báo cáo kết quả trên nhiều hạt giống ngẫu nhiên dưới dạng trung bình và độ lệch chuẩn, và so sánh với phân phối kết quả của các danh mục chọn ngẫu nhiên nhằm phân biệt kỹ năng lựa chọn của mô hình với may rủi. Ngoài giai đoạn kiểm tra chính, mô hình còn được đánh giá bằng kiểm định cuốn chiếu (walk-forward) trên sáu năm 2020--2025, huấn luyện lại mỗi năm, và trên một tập cổ phiếu được lọc theo thanh khoản.
+Về đánh giá, luận văn áp dụng quy trình kiểm thử ngược (backtest) theo thứ tự thời gian, chọn mô hình theo tỷ số Sharpe trên tập kiểm định, báo cáo kết quả trên nhiều hạt giống ngẫu nhiên dưới dạng trung bình và độ lệch chuẩn, và so sánh với phân phối kết quả của các danh mục chọn ngẫu nhiên nhằm phân biệt kỹ năng lựa chọn của mô hình với may rủi. Ngoài giai đoạn kiểm tra chính, mô hình còn được đánh giá bằng kiểm định cuốn chiếu (walk-forward) trên sáu năm 2020--2025, huấn luyện lại mỗi năm, trên một tập cổ phiếu được lọc theo thanh khoản, và được so sánh với các phương án không dùng học tăng cường (học có giám sát trên cùng kiến trúc và một quy tắc đơn giản trên đồ thị).
 
 \section*{Nội dung nghiên cứu}
 
