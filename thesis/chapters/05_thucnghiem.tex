@@ -362,10 +362,10 @@ Mô hình đề xuất chưa vượt VN-Index trên giai đoạn 2024--2025 (M�
 
 Trên giai đoạn 2020--2025, việc loại họ Vingroup gần như không thay đổi kết quả của chỉ số vốn hóa tự dựng (0,39 so với 0,42), cho thấy ảnh hưởng của nhóm này tập trung vào năm 2025. Cũng cần lưu ý rằng trên giai đoạn dài này, chỉ số tự dựng có lợi suất thấp hơn VN-Index (48,4\% so với 76,0\%) dù tương quan cao, vì nó chỉ gồm các cổ phiếu đủ điều kiện trong tập dữ liệu và chưa tính cổ tức. Kết quả này vì vậy chỉ nên được hiểu là bằng chứng định tính rằng VN-Index trên 2024--2025 bị chi phối bởi một nhóm nhỏ cổ phiếu lớn, chứ không phải một phép so sánh chính xác với một chỉ số chính thức.
 
-\section{Kiểm tra độ vững: cấu trúc đồ thị, khoảng tin cậy và chi phí giao dịch}
+\section{Kiểm tra độ vững: cấu trúc đồ thị, khoảng tin cậy, chi phí giao dịch và ràng buộc danh mục}
 \label{sec:robust2}
 
-Mục này trình bày ba phép kiểm tra không đòi hỏi huấn luyện lại mô hình, nhằm trả lời ba câu hỏi: kết luận về đồ thị dài hạn có phụ thuộc vào lựa chọn cửa sổ và ngưỡng hay không; các chênh lệch tỷ số Sharpe có đáng tin về mặt thống kê hay không; và kết quả có còn đứng vững khi chi phí giao dịch cao hơn hay không.
+Mục này trình bày bốn phép kiểm tra không đòi hỏi huấn luyện lại mô hình, nhằm trả lời bốn câu hỏi: kết luận về đồ thị dài hạn có phụ thuộc vào lựa chọn cửa sổ và ngưỡng hay không; các chênh lệch tỷ số Sharpe có đáng tin về mặt thống kê hay không; kết quả có còn đứng vững khi chi phí giao dịch cao hơn hay không; và kết quả có phụ thuộc vào số mã nắm giữ và trần tỷ trọng hay không.
 
 \subsection{Độ nhạy theo cửa sổ ước lượng và ngưỡng tương quan}
 
@@ -408,6 +408,20 @@ Phí 10 điểm cơ bản dùng trong huấn luyện thấp hơn chi phí thực
 \end{table}
 
 Trên 2024--2025, mô hình vẫn hơn phân bổ đều ở mọi mức phí (1,05 so với 0,88 ở 50 điểm; 1,13 so với 0,89 với phí theo thanh khoản). Trên chuỗi cuốn chiếu thì khác: ưu thế nhỏ của mô hình so với phân bổ đều (0,63 so với 0,55 ở 10 điểm) biến mất ở 30 điểm (0,54 so với 0,54) và với phí theo thanh khoản (0,54 so với 0,54), và đảo chiều ở 50 điểm (0,46 so với 0,54). Nguyên nhân là mức luân chuyển của mô hình (khoảng 0,7 mỗi tháng) cao hơn nhiều so với phân bổ đều (khoảng 0,05), và mô hình nghiêng về cổ phiếu kém thanh khoản, vốn chịu phí cao hơn. Kết quả này củng cố nhận định ở Mục~\ref{sec:liquid}: ở mức chi phí thực tế, mô hình hiện tại chưa có ưu thế đáng kể so với phân bổ đều trên giai đoạn dài, và việc đưa chi phí phụ thuộc thanh khoản vào quá trình huấn luyện là một hướng cải tiến cần thiết.
+
+\subsection{Độ nhạy theo số mã nắm giữ và trần tỷ trọng}
+
+Mô hình được huấn luyện với hai ràng buộc: giữ tối đa 20 mã và mỗi mã tối đa 10\%. Để kiểm tra kết quả có phụ thuộc vào hai lựa chọn này không, danh mục của các mô hình đã huấn luyện được tính lại với số mã 10, 20, 30, 40 và trần 5\%, 10\%, 20\% hoặc không trần. Vì hành động tất định của tác tử là kỳ vọng của phân phối Dirichlet, chỉ cần áp dụng lại bước chiếu lên tham số Dirichlet đã lưu, không cần huấn luyện lại; với cấu hình gốc, phép tính lại cho đúng chuỗi lợi suất đã báo cáo (sai khác dưới $10^{-8}$). Kết quả vì vậy cho biết mức độ phụ thuộc vào ràng buộc của \emph{chính mô hình đã huấn luyện}, chứ không cho biết một mô hình được huấn luyện với ràng buộc khác sẽ đạt bao nhiêu.
+
+\begin{table}[ht]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{Tỷ số Sharpe trung bình theo số mã nắm giữ (hàng) và trần tỷ trọng mỗi mã (cột), tính lại từ mô hình đã huấn luyện; in đậm: cấu hình dùng trong luận văn; ``--'': không khả thi (số mã $\times$ trần $< 100\%$)}
+\label{tab:sensweights}
+\begin{adjustbox}{max width=\textwidth}\input{tables/sens_weights}\end{adjustbox}
+\end{table}
+
+Bảng~\ref{tab:sensweights} cho thấy trần tỷ trọng không có ảnh hưởng: ở mọi số mã, kết quả gần như không đổi giữa trần 5\%, 10\%, 20\% và không trần. Lý do là tỷ trọng mà tác tử gán cho các mã được chọn gần như đều nhau: tỷ trọng lớn nhất trung bình chỉ khoảng 5,5\% trên 2024--2025 và không mã nào chạm trần 10\% ở bất kỳ kỳ nào. Điều này xác nhận trực tiếp nhận định ở Mục~\ref{sec:policy-behaviour}: chính sách hiện mới chọn mã, chưa phân bổ tỷ trọng. Số mã nắm giữ thì có ảnh hưởng: 20 mã cho kết quả tốt nhất trên 2024--2025 (1,25 so với 0,99 với 10 mã và 0,98 với 40 mã) và trên tập thanh khoản; trong kiểm định cuốn chiếu, khác biệt nhỏ (0,60--0,68). Khi tăng số mã, danh mục tiến dần về phân bổ đều nên kết quả giảm dần về mức của phân bổ đều; khi giảm xuống 10 mã, kết quả phân tán hơn nhiều giữa các hạt giống (độ lệch chuẩn 0,30 so với 0,18 trên 2024--2025). Lựa chọn 20 mã được đặt trước khi xem kết quả, và chênh lệch giữa các mức số mã trên 2024--2025 nhỏ hơn sai số chuẩn của tỷ số Sharpe, nên kết quả này cần được hiểu là độ nhạy vừa phải chứ không phải bằng chứng cho một số mã tối ưu.
 
 \section{Tổng kết chương}
 

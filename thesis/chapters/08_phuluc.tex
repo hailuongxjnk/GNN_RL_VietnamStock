@@ -33,6 +33,7 @@ Tệp & Nội dung \\
 \texttt{experiments/supervised.py}, \texttt{lowdeg\_variants.py}, \texttt{baselines\_noRL.py}, \texttt{analysis\_noRL.py} & Phương án không dùng học tăng cường (học có giám sát, quy tắc bậc thấp) và chỉ số vốn hóa bỏ họ Vingroup (Mục~\ref{sec:norl}, \ref{sec:vingroup}). \\
 \texttt{experiments/residual.py} & PPO học phần điều chỉnh quanh quy tắc bậc thấp (Mục~\ref{sec:norl}). \\
 \texttt{experiments/robustness2.py} & Độ nhạy theo cửa sổ và ngưỡng, bootstrap khối dừng, độ nhạy theo chi phí (Mục~\ref{sec:robust2}). \\
+\texttt{experiments/sens\_weights.py} & Độ nhạy theo số mã nắm giữ và trần tỷ trọng, tính lại từ mô hình đã huấn luyện (Mục~\ref{sec:robust2}). \\
 \texttt{experiments/build\_liquid\_cache.py} & Dựng tập cổ phiếu thanh khoản tốt. \\
 \texttt{experiments/analysis\_*.py}, \texttt{make\_tables.py} & Tổng hợp kết quả, vẽ hình và sinh bảng của luận văn. \\
 \bottomrule
@@ -67,6 +68,7 @@ python baselines_noRL.py      # chi so von hoa bo ho Vingroup
 python residual.py 3          # PPO hoc phan dieu chinh
 python analysis_noRL.py       # bang ket qua
 python robustness2.py         # do nhay, bootstrap, chi phi
+python sens_weights.py        # so ma, tran ty trong
 python analysis_extra.py       # bang va hinh cuon chieu, thanh khoan
 \end{verbatim}}
 
