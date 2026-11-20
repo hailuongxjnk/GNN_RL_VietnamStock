@@ -35,6 +35,7 @@ Tệp & Nội dung \\
 \texttt{experiments/robustness2.py} & Độ nhạy theo cửa sổ và ngưỡng, bootstrap khối dừng, độ nhạy theo chi phí (Mục~\ref{sec:robust2}). \\
 \texttt{experiments/sens\_weights.py} & Độ nhạy theo số mã nắm giữ và trần tỷ trọng, tính lại từ mô hình đã huấn luyện (Mục~\ref{sec:robust2}). \\
 \texttt{experiments/train\_v3.py}, \texttt{analysis\_v3.py} & Huấn luyện lại PPO với phí theo thanh khoản và thưởng trên lợi suất vượt quy tắc (Mục~\ref{sec:rlimprove}). \\
+\texttt{experiments/train\_v4.py}, \texttt{analysis\_v4.py} & Thay PPO bằng A2C hoặc tối ưu Sharpe trực tiếp (Mục~\ref{sec:algo}). \\
 \texttt{experiments/build\_liquid\_cache.py} & Dựng tập cổ phiếu thanh khoản tốt. \\
 \texttt{experiments/analysis\_*.py}, \texttt{make\_tables.py} & Tổng hợp kết quả, vẽ hình và sinh bảng của luận văn. \\
 \bottomrule
@@ -72,6 +73,8 @@ python robustness2.py         # do nhay, bootstrap, chi phi
 python sens_weights.py        # so ma, tran ty trong
 python train_v3.py 4          # hai cai tien cho PPO
 python analysis_v3.py         # bang ket qua cai tien
+python train_v4.py 4          # A2C, toi uu Sharpe truc tiep
+python analysis_v4.py         # bang ket qua
 python analysis_extra.py       # bang va hinh cuon chieu, thanh khoan
 \end{verbatim}}
 
